@@ -71,7 +71,8 @@ export async function performAnnualArchive() {
   const results = await Promise.all([
     prisma.serviceRequest.deleteMany({ where: { status: { in: ["Completed", "Rejected"] } } }),
     prisma.appointment.deleteMany({ where: { status: { in: ["COMPLETED", "CANCELLED"] } } }),
-    prisma.scholarshipApp.deleteMany({ where: { status: { in: ["Approved", "Rejected"] } } })
+    prisma.scholarshipApp.deleteMany({ where: { status: { in: ["Approved", "Rejected"] } } }),
+    prisma.referral.deleteMany({ where: { status: { in: ["Sanctioned", "Dismissed"] } } })
   ]);
 
   revalidatePath("/admin");
@@ -81,6 +82,7 @@ export async function performAnnualArchive() {
   return {
     archivedRequests: results[0].count,
     archivedAppointments: results[1].count,
-    archivedScholarships: results[2].count
+    archivedScholarships: results[2].count,
+    archivedReferrals: results[3].count
   };
 }
