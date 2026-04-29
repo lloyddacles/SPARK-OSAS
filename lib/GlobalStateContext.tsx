@@ -6,16 +6,16 @@ import { createContext, useContext, useState, ReactNode } from "react";
 export type User = {
   id: string;
   name: string;
-  firstName?: string;
-  middleName?: string;
-  lastName?: string;
-  username?: string;
-  password?: string;
-  email?: string;
-  contactNumber?: string;
-  address?: string;
-  department?: string;
-  advisorySection?: string;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+  password?: string | null;
+  email?: string | null;
+  contactNumber?: string | null;
+  address?: string | null;
+  department?: string | null;
+  advisorySection?: string | null;
   role: "SYSTEM_ADMIN" | "OSAS_DIRECTOR" | "GUIDANCE_COUNSELOR" | "STUDENT_APPLICANT" | "STUDENT_LEADER" | "ADVISER";
   vault: { [key: string]: { uploaded: boolean, date: string, status?: string, remarks?: string } };
 };
@@ -740,7 +740,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const updatedUser = await dbUpdateProfile(currentUser.id, updatePayload);
     if (updatedUser) {
       setCurrentUser(updatedUser as any);
-      setUsers(prev => prev.map(u => u.id === (updatedUser as any).id ? updatedUser : u));
+      setUsers(prev => prev.map(u => u.id === (updatedUser as any).id ? (updatedUser as any) : u));
     }
   };
 
