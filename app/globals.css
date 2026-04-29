@@ -1,0 +1,206 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Sapphire Grid - Institutional IT Palette */
+  --bg-deep: #05070a;
+  --bg-surface: #0a0c1b;
+  --bg-accent: #11142b;
+  
+  --primary: #00e5ff; /* Cyber Cyan */
+  --primary-glow: rgba(0, 229, 255, 0.4);
+  --secondary: #6366f1; /* Indigo */
+  
+  --text-main: #ffffff;
+  --text-dim: #94a3b8;
+  --text-dark: #0f172a;
+  
+  --border-dim: rgba(255, 255, 255, 0.05);
+  --border-active: rgba(0, 229, 255, 0.2);
+  
+  --radius-sharp: 0px; /* Futuristic sharp edges */
+  --radius-soft: 4px;
+  
+  --sidebar-width: 280px;
+}
+
+/* Light Mode - Ivory Grid */
+[data-theme="light"] {
+  --bg-deep: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-accent: #f1f5f9;
+  
+  --primary: #2563eb; /* Royal Blue */
+  --primary-glow: rgba(37, 99, 235, 0.2);
+  --secondary: #4f46e5;
+  
+  --text-main: #000000;
+  --text-dim: #334155;
+  --text-dark: #f8fafc;
+  
+  --border-dim: rgba(0, 0, 0, 0.1);
+  --border-active: rgba(37, 99, 235, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: 'Geist', sans-serif;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow: hidden; /* We'll use internal scrolling */
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Scrollbar Reconstruction */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-accent); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* The Sapphire Glass Effect */
+.sapphire-glass {
+  background: rgba(10, 12, 27, 0.7);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-dim);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.sapphire-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-dim);
+  border-left: 2px solid transparent;
+  padding: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sapphire-card:hover {
+  background: var(--bg-accent);
+  border-left-color: var(--primary);
+  border-right-color: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Interactive Elements */
+button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.btn-cyan {
+  background: var(--primary);
+  color: var(--text-dark);
+  font-weight: 900;
+  padding: 0.75rem 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 2px;
+  border: 1px solid transparent;
+}
+
+.btn-cyan:hover {
+  background: white;
+  box-shadow: 0 0 25px var(--primary-glow);
+  transform: translateY(-1px);
+}
+
+input, select, textarea {
+  background: var(--bg-accent);
+  border: 1px solid var(--border-dim);
+  color: var(--text-main);
+  padding: 0.85rem 1.25rem;
+  outline: none;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--primary);
+  background: var(--bg-surface);
+}
+
+@keyframes pulse-cyan {
+  0% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(0, 229, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 229, 255, 0); }
+}
+
+.status-pulse {
+  animation: pulse-cyan 2s infinite;
+}
+
+/* MOBILE RESPONSIVENESS ARCHITECTURE */
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+
+  .sidebar-root {
+    position: fixed !important;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    width: 280px !important;
+    z-index: 9999;
+    transition: left 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+  }
+
+  .sidebar-root.mobile-open {
+    left: 0;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  main > div {
+    padding: 1.5rem !important;
+  }
+
+  header {
+    padding: 0 1.5rem !important;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 1.75rem !important;
+  }
+}
+

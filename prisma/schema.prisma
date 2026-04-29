@@ -1,0 +1,167 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String   @id @default(cuid())
+  name            String
+  firstName       String?
+  middleName      String?
+  lastName        String?
+  username        String?  @unique
+  password        String?
+  email           String?
+  contactNumber   String?
+  address         String?
+  department      String?
+  advisorySection String?
+  role            String   @default("STUDENT_APPLICANT")
+  vault           Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ServiceRequest {
+  id           String   @id @default(cuid())
+  type         String
+  studentName  String
+  date         String
+  status       String   @default("Pending")
+  requirements Json     @default("{}")
+  createdAt    DateTime @default(now())
+}
+
+model ServiceType {
+  id           String   @id @default(cuid())
+  name         String
+  description  String
+  requiredDocs String[]
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  category  String
+  date      String
+  author    String
+  createdAt DateTime @default(now())
+}
+
+model StudentOrg {
+  id          String   @id @default(cuid())
+  name        String
+  acronym     String
+  category    String
+  status      String   @default("Recognized")
+  president   String
+  adviser     String
+  adviserId   String?
+  logo        String?
+  renewalDate String?
+}
+
+model OrgActivity {
+  id           String   @id @default(cuid())
+  orgId        String
+  title        String
+  date         String
+  status       String
+  description  String
+  budget       String
+  venue        String
+  participants String
+  osasComments String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  desc      String
+  time      String
+  unread    Boolean  @default(true)
+  targetId  String?  // For targeted notifications
+  createdAt DateTime @default(now())
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  date        String
+  startTime   String
+  endTime     String
+  type        String
+  status      String   @default("PENDING")
+  studentName String
+}
+
+model Referral {
+  id                String   @id @default(cuid())
+  studentName       String
+  adviserName       String
+  adviserId         String?
+  reason            String
+  status            String
+  counselorFindings String?
+  osasVerdict       String?
+  dateFiled         String
+}
+
+model ScholarshipProgram {
+  id          String   @id @default(cuid())
+  name        String
+  provider    String
+  description String
+  deadline    String
+  status      String   @default("Active")
+}
+
+model ScholarshipApp {
+  id                  String   @id @default(cuid())
+  studentName         String
+  requirements        Json
+  status              String
+  recommendationLevel String?
+  batchId             Int?
+  dateApplied         String
+}
+
+model BatchConfig {
+  id        Int      @id @default(autoincrement())
+  name      String
+  startDate String
+  endDate   String
+  status    String   @default("Active")
+}
+
+model GoodMoralConfig {
+  id         String @id @default("CURRENT")
+  content    String
+  signatories Json
+}
+
+model IssuedCertificate {
+  id         String   @id @default(cuid())
+  requestId  String
+  studentId  String
+  signedUrl  String
+  dateIssued DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  user      String
+  role      String
+  timestamp DateTime @default(now())
+  details   String
+  severity  String
+}

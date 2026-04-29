@@ -1,0 +1,600 @@
+{
+  "organizations": [
+    {
+      "id": "ORG-ALPHA",
+      "name": "COMPUTING SOCIETY",
+      "acronym": "CS",
+      "category": "Academic",
+      "status": "Recognized",
+      "president": "STUDENT_LEADER",
+      "adviser": "ADVISER_PROF",
+      "adviserId": "USER-ADVISER"
+    }
+  ],
+  "activities": [
+    {
+      "id": "ACT-1",
+      "orgId": "ORG-ALPHA",
+      "title": "TECH SUMMIT 2026",
+      "description": "Annual tech seminar",
+      "date": "2026-11-15",
+      "budget": "5000",
+      "venue": "Main Hall",
+      "participants": "200",
+      "status": "Pending Adviser Review",
+      "osasComments": "",
+      "createdAt": "2026-04-27T00:00:00Z"
+    }
+  ],
+  "referrals": [
+    {
+      "id": "REF-5zhqpxvl3",
+      "studentName": "JUAN DELA CRUZ",
+      "reason": "ABSENTISM",
+      "adviserName": "Myael Ursolino",
+      "adviserId": "USER-COUNSELOR",
+      "status": "Referred to Guidance",
+      "dateFiled": "2026-04-27T08:59:22.917Z"
+    },
+    {
+      "id": "REF-yn5ycpd1b",
+      "studentName": "JUAN DELA CRUZ",
+      "reason": "ABSENTISM",
+      "adviserName": "Myael Ursolino",
+      "adviserId": "USER-COUNSELOR",
+      "status": "Endorsed to OSAS",
+      "dateFiled": "2026-04-27T09:00:55.792Z",
+      "counselorFindings": "ASSESSED"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ANN-TEST-1",
+      "title": "SYSTEM UPGRADE",
+      "content": "All nodes operating on v2.2 protocols.",
+      "category": "System",
+      "date": "Oct 27, 2026",
+      "author": "SYSTEM_ADMIN",
+      "active": true
+    },
+    {
+      "id": "ANN-sma6ylmtr",
+      "title": "Test Broadcast",
+      "content": "Broadcast Details",
+      "category": "News",
+      "author": "JANNETH_DIRECTOR",
+      "createdAt": "2026-04-27T05:03:19.989Z"
+    },
+    {
+      "id": "ANN-ikgtqrbzp",
+      "title": "NEWS BROADCAST",
+      "content": "NEWS BROADCAST",
+      "category": "News",
+      "author": "JANNETH_DIRECTOR",
+      "createdAt": "2026-04-27T05:21:26.330Z"
+    }
+  ],
+  "scholarships": [],
+  "scholarshipApps": [],
+  "batchConfigs": [],
+  "serviceRequests": [],
+  "serviceTypes": [
+    {
+      "id": "ST-1",
+      "name": "Good Moral Certificate",
+      "description": "Official certification of student conduct.",
+      "requiredDocs": [
+        "1x1 Photo",
+        "ID Copy",
+        "Clearance Form"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "USER-ADMIN",
+      "name": "Administrator",
+      "username": "admin",
+      "password": "password",
+      "role": "SYSTEM_ADMIN",
+      "vault": {},
+      "createdAt": "2026-04-27T00:00:00Z"
+    },
+    {
+      "id": "USER-DIRECTOR",
+      "name": "Janneth Calubayan",
+      "username": "j.calubayan",
+      "password": "password",
+      "role": "OSAS_DIRECTOR",
+      "vault": {},
+      "createdAt": "2026-04-27T00:00:00Z"
+    },
+    {
+      "id": "USER-COUNSELOR",
+      "name": "Myael Ursolino",
+      "username": "m.ursolino",
+      "password": "password",
+      "role": "GUIDANCE_COUNSELOR",
+      "vault": {},
+      "createdAt": "2026-04-27T00:00:00Z"
+    },
+    {
+      "id": "USER-ADVISER",
+      "name": "Lloyd Christopher F. Dacles",
+      "username": "l.dacles",
+      "password": "password",
+      "role": "ADVISER",
+      "vault": {},
+      "createdAt": "2026-04-27T00:00:00Z"
+    },
+    {
+      "id": "USER-LEADER",
+      "name": "Student Leader",
+      "username": "leader",
+      "password": "password",
+      "role": "STUDENT_LEADER",
+      "vault": {},
+      "createdAt": "2026-04-27T00:00:00Z"
+    },
+    {
+      "id": "USER-STUDENT",
+      "name": "Student",
+      "username": "student",
+      "password": "password",
+      "role": "STUDENT_APPLICANT",
+      "vault": {
+        "IDENTIFICATION PHOTO 1X1": {
+          "uploaded": true,
+          "status": "Verified",
+          "date": "Apr 27, 2026",
+          "fileType": "application/pdf",
+          "remarks": ""
+        },
+        "INSTITUTIONAL ID COPY": {
+          "uploaded": true,
+          "status": "Verified",
+          "date": "Apr 27, 2026",
+          "fileType": "application/pdf",
+          "remarks": ""
+        },
+        "PSA BIRTH CERTIFICATE": {
+          "uploaded": true,
+          "status": "Not Yet Verified",
+          "date": "Apr 28, 2026",
+          "fileType": "application/pdf"
+        },
+        "RESIDENCE PHOTOGRAPHS": {
+          "uploaded": true,
+          "status": "Not Yet Verified",
+          "date": "Apr 28, 2026",
+          "fileType": "application/pdf"
+        },
+        "ACADEMIC REPORT CARD": {
+          "uploaded": true,
+          "status": "Not Yet Verified",
+          "date": "Apr 28, 2026",
+          "fileType": "application/pdf"
+        }
+      },
+      "createdAt": "2026-04-27T00:00:00Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-HQ09UB",
+      "timestamp": "2026-04-29T05:55:04.296Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-6MS9VT",
+      "timestamp": "2026-04-28T11:03:53.156Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-SBHW52",
+      "timestamp": "2026-04-28T11:03:26.125Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-KMRTQL",
+      "timestamp": "2026-04-28T10:55:06.138Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-1PKL6X",
+      "timestamp": "2026-04-28T10:28:25.607Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-YPGK6I",
+      "timestamp": "2026-04-28T08:58:12.677Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-PB5P6F",
+      "timestamp": "2026-04-28T05:24:56.787Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-KTG7I0",
+      "timestamp": "2026-04-28T05:24:18.024Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-49080F",
+      "timestamp": "2026-04-28T05:24:05.001Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-WPRB9H",
+      "timestamp": "2026-04-28T05:09:05.902Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-53Q2PV",
+      "timestamp": "2026-04-28T05:08:01.385Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-KICDUT",
+      "timestamp": "2026-04-28T04:59:50.842Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-FR9OYT",
+      "timestamp": "2026-04-28T04:54:55.230Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-XNMG6X",
+      "timestamp": "2026-04-28T03:57:05.495Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Myael Ursolino authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-T2G33G",
+      "timestamp": "2026-04-28T03:37:57.181Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-FU8M0A",
+      "timestamp": "2026-04-28T03:25:11.227Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-2BZEZV",
+      "timestamp": "2026-04-28T03:12:02.647Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-R8FVAL",
+      "timestamp": "2026-04-28T03:03:53.765Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Myael Ursolino authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-LV47HZ",
+      "timestamp": "2026-04-28T02:51:14.239Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-PXJWSY",
+      "timestamp": "2026-04-28T02:51:03.570Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-HT1ZND",
+      "timestamp": "2026-04-28T02:46:30.959Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-83TGGU",
+      "timestamp": "2026-04-28T02:37:03.537Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-Y0KCRO",
+      "timestamp": "2026-04-27T09:17:43.131Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Myael Ursolino authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-DLVZSD",
+      "timestamp": "2026-04-27T09:11:40.099Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Myael Ursolino authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-6BBWO5",
+      "timestamp": "2026-04-27T09:00:41.253Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Myael Ursolino authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-6HEE0K",
+      "timestamp": "2026-04-27T08:58:47.650Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-3RDMQO",
+      "timestamp": "2026-04-27T08:38:55.224Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-4N2VB9",
+      "timestamp": "2026-04-27T08:36:48.410Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-QA5TBC",
+      "timestamp": "2026-04-27T08:30:16.796Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-Y1NW36",
+      "timestamp": "2026-04-27T08:22:42.278Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-Z2NQ0N",
+      "timestamp": "2026-04-27T08:13:38.307Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-0C8TDH",
+      "timestamp": "2026-04-27T08:08:41.663Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-OQVG3Z",
+      "timestamp": "2026-04-27T07:51:12.527Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-YUN1LK",
+      "timestamp": "2026-04-27T07:50:25.183Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-1SV6D2",
+      "timestamp": "2026-04-27T07:47:03.561Z"
+    },
+    {
+      "action": "DOCUMENT_VERIFIED",
+      "user": "Janneth Calubayan",
+      "role": "OSAS_DIRECTOR",
+      "details": "Doc: INSTITUTIONAL ID COPY | Status: Verified | Target: Student",
+      "severity": "LOW",
+      "id": "L-V8L4XF",
+      "timestamp": "2026-04-27T07:46:45.086Z"
+    },
+    {
+      "action": "DOCUMENT_VERIFIED",
+      "user": "Janneth Calubayan",
+      "role": "OSAS_DIRECTOR",
+      "details": "Doc: IDENTIFICATION PHOTO 1X1 | Status: Verified | Target: Student",
+      "severity": "LOW",
+      "id": "L-S0JGVP",
+      "timestamp": "2026-04-27T07:46:40.519Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Janneth Calubayan authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-G7BKIL",
+      "timestamp": "2026-04-27T07:46:31.514Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-W4G2MD",
+      "timestamp": "2026-04-27T07:46:00.935Z"
+    },
+    {
+      "action": "USER_LOGIN",
+      "user": "SYSTEM",
+      "role": "SYSTEM",
+      "details": "User Student authenticated via credentials.",
+      "severity": "LOW",
+      "id": "L-NE451T",
+      "timestamp": "2026-04-27T07:43:07.891Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "NOTIF-vmlx04gcu",
+      "title": "Vault Updated",
+      "desc": "Document 'ACADEMIC REPORT CARD' is now awaiting OSAS verification.",
+      "targetId": "USER-STUDENT",
+      "time": "2026-04-28T05:12:05.825Z",
+      "unread": true
+    },
+    {
+      "id": "NOTIF-7gb6wq9oj",
+      "title": "Vault Updated",
+      "desc": "Document 'RESIDENCE PHOTOGRAPHS' is now awaiting OSAS verification.",
+      "targetId": "USER-STUDENT",
+      "time": "2026-04-28T05:12:04.799Z",
+      "unread": true
+    },
+    {
+      "id": "NOTIF-i6o12n6rn",
+      "title": "Vault Updated",
+      "desc": "Document 'PSA BIRTH CERTIFICATE' is now awaiting OSAS verification.",
+      "targetId": "USER-STUDENT",
+      "time": "2026-04-28T05:12:03.651Z",
+      "unread": true
+    },
+    {
+      "id": "NOTIF-b6sc2y4hh",
+      "title": "New Referral",
+      "desc": "Student JUAN DELA CRUZ referred by Myael Ursolino.",
+      "time": "2026-04-27T09:00:55.826Z",
+      "unread": false
+    },
+    {
+      "id": "NOTIF-a9jejs0n3",
+      "title": "New Referral",
+      "desc": "Student JUAN DELA CRUZ referred by Myael Ursolino.",
+      "time": "2026-04-27T08:59:22.946Z",
+      "unread": false
+    },
+    {
+      "id": "NOTIF-et2mghosp",
+      "title": "Document Verified",
+      "desc": "Your 'INSTITUTIONAL ID COPY' has been Verified. ",
+      "targetId": "USER-STUDENT",
+      "time": "2026-04-27T07:46:45.045Z",
+      "unread": true
+    },
+    {
+      "id": "NOTIF-xh8y2tl1o",
+      "title": "Document Verified",
+      "desc": "Your 'IDENTIFICATION PHOTO 1X1' has been Verified. ",
+      "targetId": "USER-STUDENT",
+      "time": "2026-04-27T07:46:40.476Z",
+      "unread": true
+    }
+  ]
+}
