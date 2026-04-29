@@ -692,8 +692,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       name: org.name, 
       acronym: org.acronym, 
       category: org.category, 
-      presidentName: org.president,
-      adviserName: org.adviser,
+      president: org.president,
+      adviser: org.adviser,
       adviserId: org.adviserId || "",
       logo: org.logo
     });
