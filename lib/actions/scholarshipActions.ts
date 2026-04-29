@@ -43,7 +43,8 @@ export async function submitScholarshipApp(form: { studentName: string; scholars
     data: {
       studentName: form.studentName,
       requirements: form.requirements,
-      status: isComplete ? "For OSAS Review" : "Pending Requirements"
+      status: isComplete ? "For OSAS Review" : "Pending Requirements",
+      dateApplied: new Date().toISOString().split('T')[0]
     }
   });
   revalidatePath("/scholarships");
