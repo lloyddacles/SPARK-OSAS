@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   // THE INSTITUTIONAL MASTER KEY
   // This bypasses the database to restore access to Mr. Lloyd Christopher F. Dacles
   
@@ -22,6 +22,8 @@ export async function GET() {
     maxAge: 60 * 60 * 24 // 24 hours
   });
 
-  // Redirect to dashboard with the fresh session
-  return NextResponse.redirect(new URL("/dashboard", "https://spark-osas.vercel.app"));
+  // Redirect to dashboard relative to current domain
+  const url = req.nextUrl.clone();
+  url.pathname = "/dashboard";
+  return NextResponse.redirect(url);
 }
