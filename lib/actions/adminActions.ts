@@ -19,9 +19,13 @@ export async function updateUser(userId: string, updates: any) {
 export async function toggleUserArchive(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (user) {
-    // Note: status is not in the schema yet, using role or adding it might be needed.
-    // For now, we could use a custom field in the Json vault or add it to schema.
+    const newStatus = user.status === "Archived" ? "Active" : "Archived";
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: { status: newStatus }
+    });
     revalidatePath("/admin");
+    return updated;
   }
 }
 
@@ -31,7 +35,15 @@ export async function clearAllAppointments() {
   revalidatePath("/appointments");
 }
 
-export async function createUser(form: { name: string; username: string; password?: string; role: string }) {
+export async function createUser(form: { 
+  name: string; 
+  username: string; 
+  password?: string; 
+  role: string;
+  department?: string;
+  contactNumber?: string;
+  status?: string;
+}) {
   const newUser = await prisma.user.create({
     data: {
       ...form,
@@ -43,6 +55,11 @@ export async function createUser(form: { name: string; username: string; passwor
 }
 
 export async function deleteUser(userId: string) {
+  // Check if it's the master admin before deleting
+  if (userId === "USER-ADMIN-RECOVERY" || userId === "ADMIN-MASTER") {
+    throw new Error("CANNOT_DELETE_MASTER_ADMIN");
+  }
+
   await prisma.user.delete({
     where: { id: userId }
   });

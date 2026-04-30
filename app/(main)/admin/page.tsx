@@ -42,6 +42,8 @@ export default function AdminCenterPage() {
   const [newUserUsername, setNewUserUsername] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
   const [newUserRole, setNewUserRole] = useState("STUDENT_APPLICANT");
+  const [newUserDept, setNewUserDept] = useState("");
+  const [newUserContact, setNewUserContact] = useState("");
 
   // Editing States
   const [isEditingUser, setIsEditingUser] = useState(false);
@@ -49,6 +51,8 @@ export default function AdminCenterPage() {
   const [editUsername, setEditUsername] = useState("");
   const [editPassword, setEditPassword] = useState("");
   const [editRole, setEditRole] = useState("");
+  const [editDept, setEditDept] = useState("");
+  const [editContact, setEditContact] = useState("");
   
   const [confirmConfig, setConfirmConfig] = useState<{
     isOpen: boolean;
@@ -95,6 +99,8 @@ export default function AdminCenterPage() {
     setEditUsername(user.username || "");
     setEditPassword(user.password || "");
     setEditRole(user.role);
+    setEditDept(user.department || "");
+    setEditContact(user.contactNumber || "");
     setIsEditingUser(true);
   };
 
@@ -102,29 +108,43 @@ export default function AdminCenterPage() {
     e.preventDefault();
     if (!selectedUser) return;
     
-    await updateUser(selectedUser.id, {
-      name: editName,
-      username: editUsername,
-      password: editPassword,
-      role: editRole
-    });
-
-    logAudit("IDENTITY_MODIFIED", `User ${selectedUser.name} identity updated by Admin.`, "MEDIUM");
-    setMessage("IDENTITY_UPDATED: SUCCESS");
-    setIsEditingUser(false);
-    setSelectedUser(null);
-    fetchData();
-    setTimeout(() => setMessage(""), 3000);
+    try {
+      const updated = await updateUser(selectedUser.id, { 
+        name: editName, 
+        username: editUsername, 
+        password: editPassword, 
+        role: editRole,
+        department: editDept,
+        contactNumber: editContact
+      });
+      setIsEditingUser(false);
+      setSelectedUser(updated);
+      logAudit("IDENTITY_MODIFIED", `User ${selectedUser.name} identity updated by Admin.`, "MEDIUM");
+      setMessage("IDENTITY_UPDATED: SUCCESS");
+      fetchData();
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err: any) {
+      setMessage(`ERROR: ${err.message}`);
+    }
   };
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createUser({ name: newUserName, username: newUserUsername, password: newUserPassword, role: newUserRole });
+    await createUser({ 
+        name: newUserName, 
+        username: newUserUsername, 
+        password: newUserPassword, 
+        role: newUserRole,
+        department: newUserDept,
+        contactNumber: newUserContact
+    });
     logAudit("IDENTITY_PROVISIONED", `New identity '${newUserName}' created.`, "LOW");
     setMessage("IDENTITY_CREATED: SUCCESS");
     setNewUserName("");
     setNewUserUsername("");
     setNewUserPassword("");
+    setNewUserDept("");
+    setNewUserContact("");
     setIsAddingUser(false);
     fetchData();
     setTimeout(() => setMessage(""), 3000);
@@ -148,9 +168,12 @@ export default function AdminCenterPage() {
   };
 
   const handleToggleArchive = async (userId: string) => {
-    await toggleUserArchive(userId);
+    const updated = await toggleUserArchive(userId);
     logAudit("IDENTITY_STATUS_CHANGE", `Archive status toggled for user ${userId}.`, "LOW");
     setMessage("IDENTITY_STATUS_UPDATED: SUCCESS");
+    if (selectedUser?.id === userId) {
+      setSelectedUser(updated);
+    }
     fetchData();
     setTimeout(() => setMessage(""), 3000);
   };
@@ -341,6 +364,14 @@ export default function AdminCenterPage() {
                                 <option value="GUIDANCE_COUNSELOR">GUIDANCE COUNSELOR</option>
                                 <option value="ADVISER">FACULTY ADVISER</option>
                             </select>
+                          </div>
+                          <div>
+                            <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DEPARTMENT / COLLEGE</label>
+                            <input value={newUserDept} onChange={e => setNewUserDept(e.target.value)} placeholder="E.G. CAS, CBA, COT..." style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
+                          </div>
+                          <div>
+                            <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>CONTACT NUMBER</label>
+                            <input value={newUserContact} onChange={e => setNewUserContact(e.target.value)} placeholder="E.G. 09XX XXX XXXX..." style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                           </div>
                           <button type="submit" className="btn-cyan" style={{ padding: "1.1rem", gridColumn: "span 2" }}>PROVISION USER IDENTITY</button>
                         </form>
@@ -565,6 +596,14 @@ export default function AdminCenterPage() {
                     <div>
                        <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>RESET PASSWORD</label>
                        <input type="password" value={editPassword} onChange={e => setEditPassword(e.target.value)} placeholder="••••••••" style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
+                    </div>
+                    <div>
+                       <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DEPARTMENT</label>
+                       <input value={editDept} onChange={e => setEditDept(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
+                    </div>
+                    <div>
+                       <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>CONTACT</label>
+                       <input value={editContact} onChange={e => setEditContact(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                     </div>
                     <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                        <button onClick={() => setIsEditingUser(false)} type="button" style={{ flex: 1, padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>CANCEL</button>
