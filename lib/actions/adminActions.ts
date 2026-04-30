@@ -45,7 +45,13 @@ export async function createUser(form: {
   status?: string;
 }) {
   try {
-    const newUser = await prisma.user.create({
+    const { prisma: db } = await import("@/lib/prisma");
+    
+    if (!db) {
+      return { success: false, message: "DATABASE_CONNECTION_NOT_INITIALIZED" };
+    }
+
+    const newUser = await db.user.create({
       data: {
         ...form,
         vault: {}
