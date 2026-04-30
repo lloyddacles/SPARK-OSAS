@@ -2,37 +2,37 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
 
+/**
+ * LOGIN ENGINE - THE GATEKEEPER
+ */
 export async function login(usernameInput: string, passwordInput: string) {
-  try {
-    const username = usernameInput.trim().toLowerCase();
-    const password = passwordInput.trim();
+  const username = (usernameInput || "").trim().toLowerCase();
+  const password = (passwordInput || "").trim();
 
-    // EMERGENCY ADMIN BYPASS (Hardcoded for Mr. Dacles)
-    if (username === "admin" && password === "admin") {
-      const adminSession = {
-        id: "USER-ADMIN-MASTER",
-        name: "Administrator",
-        username: "admin",
-        role: "SYSTEM_ADMIN" as any
-      };
-      cookies().set("session_user", JSON.stringify(adminSession), {
-        httpOnly: true,
-        secure: true,
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24
-      });
-      return { success: true, user: adminSession };
-    }
-
-    // 1. Find the institutional account
-    const user = await prisma.user.findUnique({
-      where: { username: username }
+  // 1. ABSOLUTE ADMIN BYPASS (Hardcoded Emergency Gateway)
+  // This bypasses the database completely to ensure Mr. Dacles never gets locked out.
+  if (username === "admin" && password === "admin") {
+    const adminSession = { 
+      id: "ADMIN-MASTER", 
+      name: "Administrator", 
+      username: "admin", 
+      role: "SYSTEM_ADMIN" 
+    };
+    cookies().set("session_user", JSON.stringify(adminSession), { 
+      httpOnly: true, 
+      secure: true, 
+      path: "/", 
+      maxAge: 86400 // 24 Hours
     });
+    return { success: true, user: adminSession };
+  }
 
-    // 2. Strict Credential Verification
+  // 2. DATABASE AUTHENTICATION (For Students & Staff)
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    const user = await prisma.user.findUnique({ where: { username } });
+    
     if (!user) {
       return { success: false, message: "ACCOUNT NOT FOUND" };
     }
@@ -41,35 +41,36 @@ export async function login(usernameInput: string, passwordInput: string) {
       return { success: false, message: "INVALID CREDENTIALS" };
     }
 
-    // 3. Establish Secure Session
-    const session = {
-      id: user.id,
-      name: user.name,
-      username: user.username,
-      role: user.role
+    const session = { 
+      id: user.id, 
+      name: user.name, 
+      username: user.username, 
+      role: user.role 
     };
 
-    cookies().set("session_user", JSON.stringify(session), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 // 24 hours
+    cookies().set("session_user", JSON.stringify(session), { 
+      httpOnly: true, 
+      secure: true, 
+      path: "/", 
+      maxAge: 86400 
     });
 
     revalidatePath("/");
     return { success: true, user: session };
   } catch (error: any) {
-    console.error("Auth Error:", error);
-    return { success: false, message: "SYSTEM UNAVAILABLE" };
+    console.error("Auth DB Error:", error);
+    return { success: false, message: `DATABASE_OFFLINE: ${error.message}` };
   }
 }
 
+/**
+ * REGISTRATION ENGINE
+ */
 export async function register(formData: { name: string, username: string, password: string }) {
   try {
+    const { prisma } = await import("@/lib/prisma");
     const username = formData.username.trim().toLowerCase();
     
-    // Check if user exists
     const existing = await prisma.user.findUnique({ where: { username } });
     if (existing) {
       return { success: false, message: "USERNAME ALREADY TAKEN" };
@@ -93,11 +94,13 @@ export async function register(formData: { name: string, username: string, passw
 
     return { success: true, user: newUser };
   } catch (error: any) {
-    console.error("Registration Error:", error);
-    return { success: false, message: "REGISTRATION FAILED" };
+    return { success: false, message: `REGISTRATION_ERROR: ${error.message}` };
   }
 }
 
+/**
+ * SESSION MANAGEMENT
+ */
 export async function logout() {
   cookies().delete("session_user");
   revalidatePath("/");
@@ -114,23 +117,30 @@ export async function getSession() {
   }
 }
 
+/**
+ * PROFILE UPDATES
+ */
 export async function updateProfile(userId: string, updates: any) {
-  const updatedUser = await prisma.user.update({
-    where: { id: userId },
-    data: updates
-  });
-
-  if (updatedUser) {
-    // Update session cookie
-    cookies().set("session_user", JSON.stringify(updatedUser), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24,
-      path: "/"
+  try {
+    const { prisma } = await import("@/lib/prisma");
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updates
     });
-    
-    revalidatePath("/");
-    return updatedUser;
+
+    if (updatedUser) {
+      cookies().set("session_user", JSON.stringify(updatedUser), {
+        httpOnly: true,
+        secure: true,
+        maxAge: 86400,
+        path: "/"
+      });
+      
+      revalidatePath("/");
+      return updatedUser;
+    }
+  } catch (e) {
+    console.error("Profile Update Error:", e);
+    return null;
   }
-  return null;
 }
