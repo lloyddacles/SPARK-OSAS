@@ -89,9 +89,14 @@ export default function AdminCenterPage() {
   }
 
   const fetchData = async () => {
-    const [u, h] = await Promise.all([getAllUsers(), getSystemHealth()]);
-    setUsers(u);
-    setHealth(h);
+    try {
+      const [u, h] = await Promise.all([getAllUsers(), getSystemHealth()]);
+      setUsers(u || []);
+      setHealth(h);
+    } catch (error: any) {
+      console.error("ADMIN_FETCH_FAIL:", error);
+      setMessage(`SYSTEM_DATA_SYNC_FAILED: ${error.message}`);
+    }
   };
 
   const startEdit = (user: any) => {
@@ -316,33 +321,46 @@ export default function AdminCenterPage() {
                       </tr>
                     </thead>
                     <tbody style={{ fontSize: "0.75rem" }}>
-                      {users.filter(u => u.name.toLowerCase().includes(searchTerm.toLowerCase())).map((user) => (
-                        <tr 
-                          key={user.id} 
-                          onClick={() => setSelectedUser(user)}
-                          style={{ 
-                            borderBottom: "1px solid var(--border-dim)", 
-                            cursor: "pointer", 
-                            background: selectedUser?.id === user.id ? "rgba(0, 229, 255, 0.05)" : "transparent",
-                            transition: "all 0.2s"
-                          }}
-                        >
-                          <td style={{ padding: "1.25rem 2rem" }}>
-                            <p style={{ fontWeight: "800", color: "var(--text-main)" }}>{user.name.toUpperCase()}</p>
-                            <p style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "700" }}>USER: {user.username || "NOT SET"}</p>
-                          </td>
-                          <td style={{ padding: "1.25rem 2rem" }}>
-                            <span style={{ fontSize: "0.55rem", fontWeight: "900", padding: "0.3rem 0.75rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--primary)" }}>
-                              {user.role.replace(/_/g, " ")}
-                            </span>
-                          </td>
-                          <td style={{ padding: "1.25rem 2rem" }}>
-                            <span style={{ fontSize: "0.55rem", fontWeight: "900", color: user.status === "Archived" ? "#ef4444" : "#10b981" }}>
-                              {(user.status || "Active").toUpperCase()}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {(() => {
+                        const filtered = (users || []).filter(u => (u.name || "").toLowerCase().includes(searchTerm.toLowerCase()));
+                        if (filtered.length === 0) {
+                          return (
+                            <tr>
+                              <td colSpan={3} style={{ padding: "4rem", textAlign: "center", color: "var(--text-dim)" }}>
+                                <Users size={40} style={{ margin: "0 auto 1.5rem", opacity: 0.2 }} />
+                                <p style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>NO IDENTITY RECORDS MATCHING SEARCH</p>
+                              </td>
+                            </tr>
+                          );
+                        }
+                        return filtered.map((user) => (
+                          <tr 
+                            key={user.id} 
+                            onClick={() => setSelectedUser(user)}
+                            style={{ 
+                              borderBottom: "1px solid var(--border-dim)", 
+                              cursor: "pointer", 
+                              background: selectedUser?.id === user.id ? "rgba(0, 229, 255, 0.05)" : "transparent",
+                              transition: "all 0.2s"
+                            }}
+                          >
+                            <td style={{ padding: "1.25rem 2rem" }}>
+                              <p style={{ fontWeight: "800", color: "var(--text-main)" }}>{user.name?.toUpperCase()}</p>
+                              <p style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "700" }}>USER: {user.username || "NOT SET"}</p>
+                            </td>
+                            <td style={{ padding: "1.25rem 2rem" }}>
+                              <span style={{ fontSize: "0.55rem", fontWeight: "900", padding: "0.3rem 0.75rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--primary)" }}>
+                                {user.role?.replace(/_/g, " ")}
+                              </span>
+                            </td>
+                            <td style={{ padding: "1.25rem 2rem" }}>
+                              <span style={{ fontSize: "0.55rem", fontWeight: "900", color: user.status === "Archived" ? "#ef4444" : "#10b981" }}>
+                                {(user.status || "Active").toUpperCase()}
+                              </span>
+                            </td>
+                          </tr>
+                        ));
+                      })()}
                     </tbody>
                   </table>
                 </div>
