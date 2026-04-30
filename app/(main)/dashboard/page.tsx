@@ -47,9 +47,19 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
-  const isGuidance = currentUser?.role === "GUIDANCE_COUNSELOR";
-  const isStudent = currentUser?.role === "STUDENT_APPLICANT" || currentUser?.role === "STUDENT_LEADER";
-  const isStaff = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
+  // SAFETY GATE: Ensure we have a user before rendering role-specific content
+  if (!mounted || !currentUser) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh", color: "var(--primary)" }}>
+        <Activity className="animate-pulse" size={48} />
+      </div>
+    );
+  }
+
+  const isGuidance = currentUser.role === "GUIDANCE_COUNSELOR";
+  const isAdmin = currentUser.role === "SYSTEM_ADMIN" || currentUser.role === "OSAS_DIRECTOR";
+  const isStudent = currentUser.role === "STUDENT_APPLICANT" || currentUser.role === "STUDENT_LEADER";
+  const isStaff = isAdmin || isGuidance;
   
   const activeAnnouncements = (announcements || []).slice(0, 5); // Display top 5 recent announcements
 
