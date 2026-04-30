@@ -130,24 +130,30 @@ export default function AdminCenterPage() {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    await createUser({ 
-        name: newUserName, 
-        username: newUserUsername, 
-        password: newUserPassword, 
-        role: newUserRole,
-        department: newUserDept,
-        contactNumber: newUserContact
-    });
-    logAudit("IDENTITY_PROVISIONED", `New identity '${newUserName}' created.`, "LOW");
-    setMessage("IDENTITY_CREATED: SUCCESS");
-    setNewUserName("");
-    setNewUserUsername("");
-    setNewUserPassword("");
-    setNewUserDept("");
-    setNewUserContact("");
-    setIsAddingUser(false);
-    fetchData();
-    setTimeout(() => setMessage(""), 3000);
+    try {
+      await createUser({ 
+          name: newUserName, 
+          username: newUserUsername, 
+          password: newUserPassword, 
+          role: newUserRole,
+          department: newUserDept,
+          contactNumber: newUserContact
+      });
+      logAudit("IDENTITY_PROVISIONED", `New identity '${newUserName}' created.`, "LOW");
+      setMessage("IDENTITY_CREATED: SUCCESS");
+      setNewUserName("");
+      setNewUserUsername("");
+      setNewUserPassword("");
+      setNewUserDept("");
+      setNewUserContact("");
+      setIsAddingUser(false);
+      fetchData();
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err: any) {
+      console.error("Provisioning Error:", err);
+      setMessage(`PROVISIONING_FAILED: ${err.message || "USERNAME MAY BE TAKEN"}`);
+      setTimeout(() => setMessage(""), 5000);
+    }
   };
 
   const handleDeleteUser = async (userId: string) => {
@@ -366,11 +372,11 @@ export default function AdminCenterPage() {
                             </select>
                           </div>
                           <div>
-                            <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DEPARTMENT / COLLEGE</label>
+                            <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DEPARTMENT / COLLEGE (OPTIONAL)</label>
                             <input value={newUserDept} onChange={e => setNewUserDept(e.target.value)} placeholder="E.G. CAS, CBA, COT..." style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                           </div>
                           <div>
-                            <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>CONTACT NUMBER</label>
+                            <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>CONTACT NUMBER (OPTIONAL)</label>
                             <input value={newUserContact} onChange={e => setNewUserContact(e.target.value)} placeholder="E.G. 09XX XXX XXXX..." style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                           </div>
                           <button type="submit" className="btn-cyan" style={{ padding: "1.1rem", gridColumn: "span 2" }}>PROVISION USER IDENTITY</button>
