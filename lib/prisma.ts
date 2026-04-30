@@ -5,9 +5,10 @@ const prismaClientSingleton = () => {
     return new PrismaClient({
       log: ['error', 'warn'],
     })
-  } catch (e) {
+  } catch (e: any) {
     console.error("PRISMA_INIT_CRITICAL_FAIL", e);
-    return null as any;
+    // Instead of null, let's throw so the caller sees the reason
+    throw new Error(`PRISMA_GEN_FAIL: ${e.message}`);
   }
 }
 
