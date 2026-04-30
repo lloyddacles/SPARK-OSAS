@@ -222,7 +222,7 @@ type GlobalStateContextType = {
 
   currentUser: User | null;
   users: User[];
-  login: (username: string, password?: string) => void;
+  login: (username: string, password?: string) => Promise<{ success: boolean; message?: string; user?: any }>;
   logout: () => void;
   uploadToVault: (docName: string) => void;
 
@@ -419,13 +419,13 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   }, [currentUser?.id]);
 
   const login = async (username: string, password?: string) => {
-    const user = await dbLogin(username, password);
-    if (user) {
-      setCurrentUser(user as any);
-      await logAudit("USER_LOGIN", `User ${user.name} authenticated via credentials.`, "LOW");
+    const res = await dbLogin(username, password);
+    if (res.success && res.user) {
+      setCurrentUser(res.user as any);
+      await logAudit("USER_LOGIN", `User ${res.user.name} authenticated via credentials.`, "LOW");
     }
     setIsLoading(false);
-    return user;
+    return res;
   };
 
   const logAudit = async (action: string, details: string, severity: AuditLog["severity"] = "LOW") => {
