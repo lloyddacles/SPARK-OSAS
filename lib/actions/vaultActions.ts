@@ -1,12 +1,19 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+
+async function getDB() {
+  const { getPrisma } = await import("@/lib/prisma");
+  return getPrisma();
+}
 
 export type VaultStatus = "Verified" | "Not Yet Verified" | "For Re-upload" | "Wrong Document" | "Blurred";
 
 export async function uploadToVault(userId: string, docName: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+  const user = await db.user.findUnique({ where: { id: userId } });
   if (!user) return;
 
   const currentVault = user.vault as any || {};
@@ -20,7 +27,7 @@ export async function uploadToVault(userId: string, docName: string) {
     }
   };
 
-  const updatedUser = await prisma.user.update({
+  const updatedUser = await db.user.update({
     where: { id: userId },
     data: { vault: updatedVault }
   });
@@ -30,7 +37,10 @@ export async function uploadToVault(userId: string, docName: string) {
 }
 
 export async function verifyDocument(userId: string, docName: string, status: VaultStatus, remarks?: string) {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+  const user = await db.user.findUnique({ where: { id: userId } });
   if (!user) return;
 
   const vault = user.vault as any || {};
@@ -39,13 +49,10 @@ export async function verifyDocument(userId: string, docName: string, status: Va
     vault[docName].remarks = remarks;
   }
 
-  const updatedUser = await prisma.user.update({
+  const updatedUser = await db.user.update({
     where: { id: userId },
     data: { vault }
   });
-
-  // Optional: Update matching scholarship apps based on studentName
-  // (In a real app we'd use studentId, but our current schema uses studentName)
 
   revalidatePath("/submissions");
   revalidatePath("/scholarships");
@@ -53,7 +60,9 @@ export async function verifyDocument(userId: string, docName: string, status: Va
 }
 
 export async function getAllStudentVaults() {
-  return await prisma.user.findMany({
+  const db = await getDB();
+  if (!db) return [];
+  return await db.user.findMany({
     where: { role: "STUDENT_APPLICANT" }
   });
 }
