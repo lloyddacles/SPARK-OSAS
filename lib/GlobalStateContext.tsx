@@ -222,7 +222,7 @@ type GlobalStateContextType = {
 
   currentUser: User | null;
   users: User[];
-  login: (username: string, password?: string) => Promise<{ success: boolean; message?: string; user?: any }>;
+  login: (username: string, password: string) => Promise<{ success: boolean; message?: string; user?: any }>;
   logout: () => void;
   uploadToVault: (docName: string) => void;
 
@@ -418,7 +418,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [currentUser?.id]);
 
-  const login = async (username: string, password?: string) => {
+  const login = async (username: string, password: string) => {
     const res = await dbLogin(username, password);
     if (res.success && res.user) {
       setCurrentUser(res.user as any);
