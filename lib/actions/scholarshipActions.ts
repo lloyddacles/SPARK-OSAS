@@ -1,14 +1,22 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+
+async function getDB() {
+  const { getPrisma } = await import("@/lib/prisma");
+  return getPrisma();
+}
 
 export async function getScholarshipPrograms() {
-  return await prisma.scholarshipProgram.findMany();
+  const db = await getDB();
+  if (!db) return [];
+  return await db.scholarshipProgram.findMany();
 }
 
 export async function addScholarshipProgram(form: { name: string; provider: string; description: string; deadline: string }) {
-  const newProg = await prisma.scholarshipProgram.create({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  const newProg = await db.scholarshipProgram.create({
     data: {
       ...form,
       status: "Active"
@@ -19,7 +27,9 @@ export async function addScholarshipProgram(form: { name: string; provider: stri
 }
 
 export async function updateScholarshipProgram(id: string, updates: any) {
-  await prisma.scholarshipProgram.update({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.scholarshipProgram.update({
     where: { id },
     data: updates
   });
@@ -27,19 +37,25 @@ export async function updateScholarshipProgram(id: string, updates: any) {
 }
 
 export async function deleteScholarshipProgram(id: string) {
-  await prisma.scholarshipProgram.delete({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.scholarshipProgram.delete({
     where: { id }
   });
   revalidatePath("/scholarships");
 }
 
 export async function getScholarshipApps() {
-  return await prisma.scholarshipApp.findMany();
+  const db = await getDB();
+  if (!db) return [];
+  return await db.scholarshipApp.findMany();
 }
 
 export async function submitScholarshipApp(form: { studentName: string; scholarshipId: string; requirements: any }) {
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
   const isComplete = Object.values(form.requirements).every(v => v === true);
-  const newApp = await prisma.scholarshipApp.create({
+  const newApp = await db.scholarshipApp.create({
     data: {
       studentName: form.studentName,
       requirements: form.requirements,
@@ -52,7 +68,9 @@ export async function submitScholarshipApp(form: { studentName: string; scholars
 }
 
 export async function updateAppStatus(id: string, updates: any) {
-  await prisma.scholarshipApp.update({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.scholarshipApp.update({
     where: { id },
     data: updates
   });
@@ -60,11 +78,15 @@ export async function updateAppStatus(id: string, updates: any) {
 }
 
 export async function getBatchConfigs() {
-  return await prisma.batchConfig.findMany();
+  const db = await getDB();
+  if (!db) return [];
+  return await db.batchConfig.findMany();
 }
 
 export async function updateBatchTimeline(id: number, updates: any) {
-  await prisma.batchConfig.update({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.batchConfig.update({
     where: { id },
     data: updates
   });
@@ -72,7 +94,9 @@ export async function updateBatchTimeline(id: number, updates: any) {
 }
 
 export async function addBatchConfig(form: { name: string; startDate: string; endDate: string }) {
-  const newBatch = await prisma.batchConfig.create({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  const newBatch = await db.batchConfig.create({
     data: {
       ...form,
       status: "Inactive"
@@ -83,7 +107,9 @@ export async function addBatchConfig(form: { name: string; startDate: string; en
 }
 
 export async function deleteBatchConfig(id: number) {
-  await prisma.batchConfig.delete({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.batchConfig.delete({
     where: { id }
   });
   revalidatePath("/scholarships");

@@ -1,16 +1,24 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+
+async function getDB() {
+  const { getPrisma } = await import("@/lib/prisma");
+  return getPrisma();
+}
 
 export async function getAnnouncements() {
-  return await prisma.announcement.findMany({
+  const db = await getDB();
+  if (!db) return [];
+  return await db.announcement.findMany({
     orderBy: { createdAt: "desc" }
   });
 }
 
 export async function addAnnouncement(form: { title: string; content: string; category: string; author: string }) {
-  const newAnn = await prisma.announcement.create({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  const newAnn = await db.announcement.create({
     data: {
       ...form,
       date: new Date().toDateString()
@@ -21,18 +29,24 @@ export async function addAnnouncement(form: { title: string; content: string; ca
 }
 
 export async function deleteAnnouncement(id: string) {
-  await prisma.announcement.delete({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.announcement.delete({
     where: { id }
   });
   revalidatePath("/events");
 }
 
 export async function getReferrals() {
-  return await prisma.referral.findMany();
+  const db = await getDB();
+  if (!db) return [];
+  return await db.referral.findMany();
 }
 
 export async function addReferral(form: { studentName: string; reason: string; adviserName: string; adviserId: string }) {
-  const newRef = await prisma.referral.create({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  const newRef = await db.referral.create({
     data: {
       ...form,
       status: "Referred to Guidance",
@@ -44,7 +58,9 @@ export async function addReferral(form: { studentName: string; reason: string; a
 }
 
 export async function updateReferralStatus(id: string, updates: any) {
-  await prisma.referral.update({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.referral.update({
     where: { id },
     data: updates
   });

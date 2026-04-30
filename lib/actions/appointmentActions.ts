@@ -1,16 +1,24 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
+
+async function getDB() {
+  const { getPrisma } = await import("@/lib/prisma");
+  return getPrisma();
+}
 
 export async function getAppointments() {
-  return await prisma.appointment.findMany({
+  const db = await getDB();
+  if (!db) return [];
+  return await db.appointment.findMany({
     orderBy: { date: "asc" }
   });
 }
 
 export async function bookAppointment(form: { title: string; date: string; startTime: string; endTime: string; type: string; description: string; studentName: string }) {
-  const newApp = await prisma.appointment.create({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  const newApp = await db.appointment.create({
     data: {
       ...form,
       status: "PENDING"
@@ -22,7 +30,9 @@ export async function bookAppointment(form: { title: string; date: string; start
 }
 
 export async function updateAppointmentStatus(id: string, status: string) {
-  await prisma.appointment.update({
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.appointment.update({
     where: { id },
     data: { status }
   });

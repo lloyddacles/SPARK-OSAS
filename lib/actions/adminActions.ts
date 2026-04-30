@@ -4,16 +4,11 @@ import { prisma as globalPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 /**
- * DATABASE CONNECTOR - LAZY & RESILIENT
+ * DATABASE CONNECTOR - ULTRA-LAZY
  */
 async function getDB() {
-  try {
-    const { prisma } = await import("@/lib/prisma");
-    return prisma;
-  } catch (e) {
-    console.error("DB_ACCESS_CRITICAL_FAIL", e);
-    return null;
-  }
+  const { getPrisma } = await import("@/lib/prisma");
+  return getPrisma();
 }
 
 /**

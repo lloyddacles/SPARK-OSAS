@@ -1,21 +1,36 @@
 import { PrismaClient } from '@prisma/client'
 
+/**
+ * ULTRA-LAZY PRISMA SINGLETON
+ * This prevents top-level crashes by ensuring the client only initializes when needed.
+ */
 const prismaClientSingleton = () => {
-  try {
-    return new PrismaClient({
-      log: ['error', 'warn'],
-    })
-  } catch (e: any) {
-    console.error("PRISMA_INIT_CRITICAL_FAIL", e);
-    // Instead of null, let's throw so the caller sees the reason
-    throw new Error(`PRISMA_GEN_FAIL: ${e.message}`);
-  }
+  return new PrismaClient({
+    log: ['error', 'warn'],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL
+      }
+    }
+  });
 }
 
 declare global {
   var prisma: undefined | ReturnType<typeof prismaClientSingleton>
 }
 
-export const prisma = globalThis.prisma ?? prismaClientSingleton()
+// We DO NOT initialize here. We export a getter instead.
+export const getPrisma = () => {
+  try {
+    if (!globalThis.prisma) {
+      globalThis.prisma = prismaClientSingleton();
+    }
+    return globalThis.prisma;
+  } catch (e) {
+    console.error("ULTRA_LAZY_PRISMA_FAIL", e);
+    return null;
+  }
+}
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma
+// Keep legacy export for backward compatibility but warn
+export const prisma = globalThis.prisma;

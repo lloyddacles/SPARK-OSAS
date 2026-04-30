@@ -30,8 +30,11 @@ export async function login(usernameInput: string, passwordInput: string) {
 
   // 2. DATABASE AUTHENTICATION (For Students & Staff)
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const user = await prisma.user.findUnique({ where: { username } });
+    const { getPrisma } = await import("@/lib/prisma");
+    const db = getPrisma();
+    if (!db) return { success: false, message: "DATABASE_OFFLINE" };
+
+    const user = await db.user.findUnique({ where: { username } });
     
     if (!user) {
       return { success: false, message: "ACCOUNT NOT FOUND" };
@@ -68,10 +71,13 @@ export async function login(usernameInput: string, passwordInput: string) {
  */
 export async function register(formData: { name: string, username: string, password: string }) {
   try {
-    const { prisma } = await import("@/lib/prisma");
+    const { getPrisma } = await import("@/lib/prisma");
+    const db = getPrisma();
+    if (!db) return { success: false, message: "DATABASE_OFFLINE" };
+
     const username = formData.username.trim().toLowerCase();
     
-    const existing = await prisma.user.findUnique({ where: { username } });
+    const existing = await db.user.findUnique({ where: { username } });
     if (existing) {
       return { success: false, message: "USERNAME ALREADY TAKEN" };
     }
@@ -122,8 +128,11 @@ export async function getSession() {
  */
 export async function updateProfile(userId: string, updates: any) {
   try {
-    const { prisma } = await import("@/lib/prisma");
-    const updatedUser = await prisma.user.update({
+    const { getPrisma } = await import("@/lib/prisma");
+    const db = getPrisma();
+    if (!db) return null;
+
+    const updatedUser = await db.user.update({
       where: { id: userId },
       data: updates
     });
