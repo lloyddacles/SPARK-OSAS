@@ -4,52 +4,47 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 
-export async function login(username: string, password?: string) {
-  // SECURE SQL AUTH: Find user by credentials
-  let user = await prisma.user.findFirst({
-    where: {
-      OR: [
-        { username: username },
-        { name: username }
-      ]
-    }
-  });
+export async function login(usernameInput: string, passwordInput: string) {
+  try {
+    const username = usernameInput.trim().toLowerCase();
+    const password = passwordInput.trim();
 
-  // Basic security check (Note: In production, use bcrypt)
-  if (user && password && user.password !== password) {
-    throw new Error("INVALID CREDENTIALS");
-  }
-
-  if (!user) {
-    const defaultRole = "STUDENT_APPLICANT";
-    user = await prisma.user.create({
-      data: {
-        name: username,
-        username: username,
-        password: password,
-        role: defaultRole,
-        vault: {
-          "1x1 Photo": { uploaded: false, date: null, fileType: null },
-          "ID Copy": { uploaded: false, date: null, fileType: null },
-          "Birth Certificate": { uploaded: false, date: null, fileType: null },
-          "Good Moral": { uploaded: false, date: null, fileType: null },
-          "Report Card": { uploaded: false, date: null, fileType: null }
-        }
-      }
+    // 1. Find the institutional account
+    const user = await prisma.user.findUnique({
+      where: { username: username }
     });
+
+    // 2. Strict Credential Verification
+    if (!user) {
+      return { success: false, message: "ACCOUNT NOT FOUND" };
+    }
+
+    if (user.password !== password) {
+      return { success: false, message: "INVALID CREDENTIALS" };
+    }
+
+    // 3. Establish Secure Session
+    const session = {
+      id: user.id,
+      name: user.name,
+      username: user.username,
+      role: user.role
+    };
+
+    cookies().set("session_user", JSON.stringify(session), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 // 24 hours
+    });
+
+    revalidatePath("/");
+    return { success: true, user: session };
+  } catch (error: any) {
+    console.error("Auth Error:", error);
+    return { success: false, message: "SYSTEM UNAVAILABLE" };
   }
-
-  // Set secure session cookie
-  cookies().set("session_user", JSON.stringify(user), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 // 24 hours
-  });
-
-  revalidatePath("/");
-  return user;
 }
 
 export async function logout() {

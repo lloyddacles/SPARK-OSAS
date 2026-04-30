@@ -50,16 +50,18 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
     
-    // Artificial institutional handshake
-    setTimeout(async () => {
-      try {
-        await login(username, password);
+    try {
+      const res = await login(username, password);
+      if (res && res.success) {
         router.push("/dashboard");
-      } catch (err) {
-        setError("AUTHENTICATION FAILED: INVALID CREDENTIALS");
+      } else {
+        setError(`AUTHENTICATION FAILED: ${res?.message || "INVALID CREDENTIALS"}`);
         setIsLoading(false);
       }
-    }, 1500);
+    } catch (err) {
+      setError("AUTHENTICATION FAILED: SYSTEM OFFLINE");
+      setIsLoading(false);
+    }
   };
 
   return (
