@@ -82,7 +82,7 @@ export async function register(formData: { name: string, username: string, passw
       return { success: false, message: "USERNAME ALREADY TAKEN" };
     }
 
-    const newUser = await prisma.user.create({
+    const newUser = await db.user.create({
       data: {
         name: formData.name,
         username: username,
