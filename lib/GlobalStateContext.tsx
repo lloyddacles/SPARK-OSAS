@@ -363,48 +363,50 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const hydrate = async () => {
       try {
-        const [dbOrgs, dbAnns, dbRefs, dbProgs, dbApps, dbBatches, dbRequests, dbAppts, dbUsers, dbNotifs, dbLogs, dbTypes, dbGM, dbCerts, session] = await Promise.all([
-          dbGetOrgs(),
-          dbGetAnns(),
-          dbGetRefs(),
-          dbGetProgs(),
-          dbGetApps(),
-          dbGetBatches(),
-          dbGetRequests(),
-          dbGetAppts(),
-          dbGetAllUsers(),
-          dbGetNotifs(currentUser?.id),
-          dbGetAuditLogs(),
-          dbGetServiceTypes(),
-          dbGetGMConfig(),
-          dbGetIssuedCerts(),
-          dbGetSession()
-        ]);
+        // 1. LOAD SESSION FIRST (DB-Independent)
+        const session = await dbGetSession();
+        if (session) {
+          setCurrentUser(session);
+        }
 
-        // Load Theme
+        // 2. Load Theme
         const savedTheme = localStorage.getItem("spark_theme") as any;
         if (savedTheme) setTheme(savedTheme);
 
-        if (dbOrgs.length > 0) setOrganizations(dbOrgs as any);
-        const dbActivities = await dbGetActivities();
-        if (dbActivities.length > 0) setActivities(dbActivities as any);
-        if (dbAnns.length > 0) setAnnouncements(dbAnns as any);
-        if (dbRefs.length > 0) setReferrals(dbRefs as any);
-        if (dbProgs.length > 0) setScholarshipPrograms(dbProgs as any);
-        if (dbApps.length > 0) setScholarshipApps(dbApps as any);
-        if (dbBatches.length > 0) setBatchConfigs(dbBatches as any);
-        if (dbRequests.length > 0) setRequests(dbRequests as any);
-        if (dbAppts.length > 0) setAppointments(dbAppts as any);
+        // 3. Hydrate DB Data in the background
+        const [dbOrgs, dbAnns, dbRefs, dbProgs, dbApps, dbBatches, dbRequests, dbAppts, dbUsers, dbNotifs, dbLogs, dbTypes, dbGM, dbCerts] = await Promise.all([
+          dbGetOrgs().catch(() => []),
+          dbGetAnns().catch(() => []),
+          dbGetRefs().catch(() => []),
+          dbGetProgs().catch(() => []),
+          dbGetApps().catch(() => []),
+          dbGetBatches().catch(() => []),
+          dbGetRequests().catch(() => []),
+          dbGetAppts().catch(() => []),
+          dbGetAllUsers().catch(() => []),
+          dbGetNotifs(session?.id).catch(() => []), 
+          dbGetAuditLogs().catch(() => []),
+          dbGetServiceTypes().catch(() => []),
+          dbGetGMConfig().catch(() => null),
+          dbGetIssuedCerts().catch(() => [])
+        ]);
+
+        if (dbOrgs && dbOrgs.length > 0) setOrganizations(dbOrgs as any);
+        const dbActivities = await dbGetActivities().catch(() => []);
+        if (dbActivities && dbActivities.length > 0) setActivities(dbActivities as any);
+        if (dbAnns && dbAnns.length > 0) setAnnouncements(dbAnns as any);
+        if (dbRefs && dbRefs.length > 0) setReferrals(dbRefs as any);
+        if (dbProgs && dbProgs.length > 0) setScholarshipPrograms(dbProgs as any);
+        if (dbApps && dbApps.length > 0) setScholarshipApps(dbApps as any);
+        if (dbBatches && dbBatches.length > 0) setBatchConfigs(dbBatches as any);
+        if (dbRequests && dbRequests.length > 0) setRequests(dbRequests as any);
+        if (dbAppts && dbAppts.length > 0) setAppointments(dbAppts as any);
         if (dbUsers && dbUsers.length > 0) setUsers(dbUsers as any);
         if (dbNotifs && dbNotifs.length > 0) setNotifications(dbNotifs.map((n: any) => ({ ...n, time: new Date(n.createdAt).toLocaleTimeString() })));
         if (dbLogs && dbLogs.length > 0) setAuditLogs(dbLogs.map((l: any) => ({ ...l, timestamp: new Date(l.timestamp).toLocaleString() })));
         if (dbTypes && dbTypes.length > 0) setServiceTypes(dbTypes as any);
         if (dbGM) setGoodMoralConfig(dbGM as any);
         if (dbCerts) setIssuedCertificates(dbCerts as any);
-        
-        if (session) {
-          setCurrentUser(session);
-        }
 
       } catch (error) {
         console.error("Hydration failed:", error);
