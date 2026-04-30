@@ -131,7 +131,7 @@ export default function AdminCenterPage() {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createUser({ 
+      const res = await createUser({ 
           name: newUserName, 
           username: newUserUsername, 
           password: newUserPassword, 
@@ -139,19 +139,25 @@ export default function AdminCenterPage() {
           department: newUserDept,
           contactNumber: newUserContact
       });
-      logAudit("IDENTITY_PROVISIONED", `New identity '${newUserName}' created.`, "LOW");
-      setMessage("IDENTITY_CREATED: SUCCESS");
-      setNewUserName("");
-      setNewUserUsername("");
-      setNewUserPassword("");
-      setNewUserDept("");
-      setNewUserContact("");
-      setIsAddingUser(false);
-      fetchData();
-      setTimeout(() => setMessage(""), 3000);
+
+      if (res.success) {
+        logAudit("IDENTITY_PROVISIONED", `New identity '${newUserName}' created.`, "LOW");
+        setMessage("IDENTITY_CREATED: SUCCESS");
+        setNewUserName("");
+        setNewUserUsername("");
+        setNewUserPassword("");
+        setNewUserDept("");
+        setNewUserContact("");
+        setIsAddingUser(false);
+        fetchData();
+        setTimeout(() => setMessage(""), 3000);
+      } else {
+        setMessage(`PROVISIONING_FAILED: ${res.message}`);
+        setTimeout(() => setMessage(""), 5000);
+      }
     } catch (err: any) {
       console.error("Provisioning Error:", err);
-      setMessage(`PROVISIONING_FAILED: ${err.message || "USERNAME MAY BE TAKEN"}`);
+      setMessage(`CRITICAL_ERROR: ${err.message || "SYSTEM_DISRUPTION"}`);
       setTimeout(() => setMessage(""), 5000);
     }
   };

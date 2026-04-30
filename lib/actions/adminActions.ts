@@ -44,14 +44,19 @@ export async function createUser(form: {
   contactNumber?: string;
   status?: string;
 }) {
-  const newUser = await prisma.user.create({
-    data: {
-      ...form,
-      vault: {}
-    }
-  });
-  revalidatePath("/admin");
-  return newUser;
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        ...form,
+        vault: {}
+      }
+    });
+    revalidatePath("/admin");
+    return { success: true, user: newUser };
+  } catch (error: any) {
+    console.error("ADMIN_CREATE_USER_ERROR:", error);
+    return { success: false, message: error.message || "DATABASE_PERSISTENCE_FAILURE" };
+  }
 }
 
 export async function deleteUser(userId: string) {
