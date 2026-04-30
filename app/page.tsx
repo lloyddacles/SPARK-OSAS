@@ -15,7 +15,9 @@ import {
   Fingerprint,
   Sun,
   Moon,
-  ShieldAlert
+  ShieldAlert,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
@@ -33,6 +35,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [bgIndex, setBgIndex] = useState(0);
   const { login, theme, toggleTheme } = useGlobalState();
   const router = useRouter();
@@ -262,7 +265,7 @@ export default function LoginPage() {
                 <Fingerprint size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
                 <input 
                   required
-                  type="password" 
+                  type={showPassword ? "text" : "password"} 
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••••••"
@@ -276,6 +279,23 @@ export default function LoginPage() {
                     color: "var(--text-main)"
                   }} 
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: "absolute",
+                    right: "1.25rem",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    color: "var(--primary)",
+                    cursor: "pointer",
+                    opacity: 0.7
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
@@ -296,9 +316,18 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={{ marginTop: "2.5rem", textAlign: "center" }}>
-            <p style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "900", letterSpacing: "0.1em" }}>
-              FORGOT YOUR CREDENTIALS? CONTACT <span style={{ color: "var(--primary)" }}>OSAS HELP DESK</span>
+          <div style={{ marginTop: "2.5rem", textAlign: "center", display: "grid", gap: "1rem" }}>
+            <p 
+              onClick={() => router.push("/register")}
+              style={{ fontSize: "0.55rem", color: "var(--primary)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer" }}
+            >
+              NEW STUDENT? <span style={{ textDecoration: "underline" }}>CREATE ACCOUNT</span>
+            </p>
+            <p 
+              onClick={() => router.push("/forgot-password")}
+              style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer" }}
+            >
+              FORGOT YOUR CREDENTIALS? <span style={{ color: "var(--primary)" }}>OSAS HELP DESK</span>
             </p>
           </div>
         </motion.div>

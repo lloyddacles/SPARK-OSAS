@@ -47,6 +47,39 @@ export async function login(usernameInput: string, passwordInput: string) {
   }
 }
 
+export async function register(formData: { name: string, username: string, password: string }) {
+  try {
+    const username = formData.username.trim().toLowerCase();
+    
+    // Check if user exists
+    const existing = await prisma.user.findUnique({ where: { username } });
+    if (existing) {
+      return { success: false, message: "USERNAME ALREADY TAKEN" };
+    }
+
+    const newUser = await prisma.user.create({
+      data: {
+        name: formData.name,
+        username: username,
+        password: formData.password,
+        role: "STUDENT_APPLICANT",
+        vault: {
+          "1x1 Photo": { uploaded: false, date: "", status: "Not Yet Verified" },
+          "ID Copy": { uploaded: false, date: "", status: "Not Yet Verified" },
+          "Birth Certificate": { uploaded: false, date: "", status: "Not Yet Verified" },
+          "Good Moral": { uploaded: false, date: "", status: "Not Yet Verified" },
+          "Report Card": { uploaded: false, date: "", status: "Not Yet Verified" }
+        }
+      }
+    });
+
+    return { success: true, user: newUser };
+  } catch (error: any) {
+    console.error("Registration Error:", error);
+    return { success: false, message: "REGISTRATION FAILED" };
+  }
+}
+
 export async function logout() {
   cookies().delete("session_user");
   revalidatePath("/");

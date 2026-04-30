@@ -223,6 +223,7 @@ type GlobalStateContextType = {
   currentUser: User | null;
   users: User[];
   login: (username: string, password: string) => Promise<{ success: boolean; message?: string; user?: any }>;
+  register: (formData: { name: string, username: string, password: string }) => Promise<{ success: boolean; message?: string; user?: any }>;
   logout: () => void;
   uploadToVault: (docName: string) => void;
 
@@ -303,6 +304,7 @@ import {
 } from "@/lib/actions/requestActions";
 import { 
   login as dbLogin, 
+  register as dbRegister,
   logout as dbLogout, 
   getSession as dbGetSession,
   updateProfile as dbUpdateProfile 
@@ -423,6 +425,17 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     if (res.success && res.user) {
       setCurrentUser(res.user as any);
       await logAudit("USER_LOGIN", `User ${res.user.name} authenticated via credentials.`, "LOW");
+    }
+    setIsLoading(false);
+    return res;
+  };
+  
+  const register = async (formData: { name: string, username: string, password: string }) => {
+    setIsLoading(true);
+    const res = await dbRegister(formData);
+    if (res.success && res.user) {
+      setCurrentUser(res.user as any);
+      await logAudit("USER_REGISTER", `New student account created: ${res.user.name}.`, "LOW");
     }
     setIsLoading(false);
     return res;
@@ -782,6 +795,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       deleteBatchConfig,
       currentUser,
       login,
+      register,
       logout,
       users,
       uploadToVault,
