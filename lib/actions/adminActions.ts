@@ -65,14 +65,19 @@ export async function toggleUserArchive(userId: string) {
   }
 }
 
-export async function createUser(form: any) {
-  try {
-    const db = await getDB();
-    if (!db) return { success: false, message: "DATABASE_UNAVAILABLE" };
+export async function createUser(formData: any) {
+  const db = await getDB();
+  if (!db) {
+    return { 
+      success: false, 
+      message: process.env.DATABASE_URL ? "DATABASE_OFFLINE_OR_BUSY" : "CRITICAL_CONFIG_ERROR: DATABASE_URL_MISSING" 
+    };
+  }
 
+  try {
     const newUser = await db.user.create({
       data: {
-        ...form,
+        ...formData,
         vault: {}
       }
     });

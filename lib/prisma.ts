@@ -17,6 +17,11 @@ declare global {
 // We DO NOT initialize here. We export a getter instead.
 export const getPrisma = () => {
   try {
+    if (!process.env.DATABASE_URL) {
+      console.error("CRITICAL_CONFIG_ERROR: DATABASE_URL_MISSING");
+      return null;
+    }
+
     if (!globalThis.prisma) {
       globalThis.prisma = prismaClientSingleton();
     }
