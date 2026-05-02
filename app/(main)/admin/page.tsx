@@ -393,6 +393,7 @@ export default function AdminCenterPage() {
                                 <option value="OSAS_DIRECTOR">OSAS DIRECTOR</option>
                                 <option value="GUIDANCE_COUNSELOR">GUIDANCE COUNSELOR</option>
                                 <option value="ADVISER">FACULTY ADVISER</option>
+                                <option value="SYSTEM_ADMIN">SYSTEM ADMIN</option>
                             </select>
                           </div>
                           <div>
