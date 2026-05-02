@@ -121,6 +121,15 @@ export default function SubmissionsPage() {
         </header>
 
         <div style={{ textAlign: "right", width: "340px" }}>
+          {(currentUser.role === "SYSTEM_ADMIN" || currentUser.role === "OSAS_DIRECTOR") && (
+            <motion.a 
+              href="/submissions/verify"
+              whileHover={{ x: 5 }}
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem", justifyContent: "flex-end", color: "var(--primary)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.15em", marginBottom: "2rem", textDecoration: "none" }}
+            >
+              SWITCH TO VERIFICATION TERMINAL <ArrowRight size={14} />
+            </motion.a>
+          )}
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.1em" }}>
             <span style={{ color: "var(--text-dim)" }}>PROGRESS</span>
             <span style={{ color: "var(--primary)" }}>{progress}% COMPLETE</span>

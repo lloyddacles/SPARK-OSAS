@@ -180,7 +180,7 @@ export default function DashboardPage() {
                   <h3 style={{ fontSize: "1rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
                      <Activity size={20} color="var(--primary)" /> INSTITUTIONAL PULSE
                   </h3>
-                  <div style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>REAL-TIME TELEMETRY</div>
+                  <a href="/submissions/verify" style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", textDecoration: "none", border: "1px solid var(--primary)", padding: "0.5rem 1rem", borderRadius: "2px" }}>OPEN VERIFICATION TERMINAL</a>
                </div>
 
                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}>
