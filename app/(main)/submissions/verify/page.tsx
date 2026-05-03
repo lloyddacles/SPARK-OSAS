@@ -31,27 +31,45 @@ export default function VerificationTerminalPage() {
   const [activeDoc, setActiveDoc] = useState<string | null>(null);
   const [remarks, setRemarks] = useState("");
   const [filter, setFilter] = useState<"ALL" | "PENDING" | "VERIFIED">("ALL");
-
-  const isAuth = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
+  const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {
+    setIsHydrated(true);
     if (isAuth) {
       fetchData();
     }
-  }, [isAuth]);
+  }, [currentUser]);
+
+  const isAuth = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
 
   const fetchData = async () => {
     const data = await getAllStudentVaults();
     setStudents(data);
   };
 
+  if (!isHydrated) {
+    return (
+      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+         <ShieldCheck size={48} className="status-pulse" color="var(--primary)" />
+      </div>
+    );
+  }
+
   if (!isAuth) {
     return (
-      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2rem" }}>
-         <ShieldCheck size={64} color="#ef4444" />
+      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2.5rem" }}>
+         <div style={{ position: "relative" }}>
+            <ShieldCheck size={80} color="#ef4444" style={{ opacity: 0.2 }} />
+            <X size={32} color="#ef4444" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
+         </div>
          <div style={{ textAlign: "center" }}>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>UNAUTHORIZED ACCESS</h2>
-            <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.5rem" }}>INSTITUTIONAL CLEARANCE REQUIRED: OSAS_DIRECTOR_ONLY.</p>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>ACCESS DENIED</h2>
+            <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.75rem", fontSize: "0.85rem" }}>INSTITUTIONAL CLEARANCE LEVEL 4 REQUIRED.</p>
+            <p style={{ color: "var(--primary)", fontWeight: "900", marginTop: "1rem", fontSize: "0.6rem", letterSpacing: "0.1em" }}>REQUIRED ROLE: OSAS_DIRECTOR | SYSTEM_ADMIN</p>
+         </div>
+         <div style={{ display: "flex", gap: "1rem" }}>
+            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>RETURN HOME</a>
+            <a href="/login" className="btn-cyan" style={{ padding: "1rem 2rem", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>AUTHORIZE SESSION</a>
          </div>
       </div>
     );

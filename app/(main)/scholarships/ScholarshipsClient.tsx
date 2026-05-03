@@ -55,9 +55,27 @@ export default function ScholarshipsClient() {
     verifyDocument
   } = useGlobalState();
   const [activeTab, setActiveTab] = useState<"Student" | "OSAS">("Student");
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const isStudent = currentUser?.role === "STUDENT_APPLICANT" || currentUser?.role === "STUDENT_LEADER";
   const isStaff = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
+
+  useEffect(() => {
+    setIsHydrated(true);
+    // Force correct tab based on role once hydrated
+    if (currentUser) {
+      if (isStaff && !isStudent) setActiveTab("OSAS");
+      else setActiveTab("Student");
+    }
+  }, [currentUser]);
+
+  if (!isHydrated) {
+    return (
+      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+         <Activity size={48} className="status-pulse" color="var(--primary)" />
+      </div>
+    );
+  }
   
   // OSAS Navigation State
   const [osasView, setOsasView] = useState<"Applications" | "Programs" | "Batches">("Applications");
