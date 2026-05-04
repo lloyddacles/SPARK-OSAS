@@ -68,9 +68,10 @@ export async function toggleUserArchive(userId: string) {
 export async function createUser(formData: any) {
   const db = await getDB();
   if (!db) {
+    const lastError = (globalThis as any).PRISMA_LAST_ERROR;
     return { 
       success: false, 
-      message: process.env.DATABASE_URL ? "DATABASE_OFFLINE_OR_BUSY" : "CRITICAL_CONFIG_ERROR: DATABASE_URL_MISSING" 
+      message: lastError ? `DATABASE_ERROR: ${lastError}` : (process.env.DATABASE_URL ? "DATABASE_OFFLINE_OR_BUSY" : "CRITICAL_CONFIG_ERROR: DATABASE_URL_MISSING")
     };
   }
 

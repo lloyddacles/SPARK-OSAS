@@ -26,8 +26,10 @@ export const getPrisma = () => {
       globalThis.prisma = prismaClientSingleton();
     }
     return globalThis.prisma;
-  } catch (e) {
-    console.error("ULTRA_LAZY_PRISMA_FAIL", e);
+  } catch (e: any) {
+    console.error("ULTRA_LAZY_PRISMA_FAIL", e.message || e);
+    // Store error on global for debugging if needed
+    (globalThis as any).PRISMA_LAST_ERROR = e.message || "UNKNOWN_ERROR";
     return null;
   }
 }
