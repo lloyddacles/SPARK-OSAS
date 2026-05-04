@@ -5,9 +5,7 @@ import { PrismaClient } from '@prisma/client'
  * This prevents top-level crashes by ensuring the client only initializes when needed.
  */
 const prismaClientSingleton = () => {
-  return new PrismaClient({
-    log: ['error', 'warn'],
-  });
+  return new PrismaClient();
 }
 
 declare global {
