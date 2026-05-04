@@ -5,14 +5,9 @@ import { PrismaClient } from '@prisma/client'
  * This prevents top-level crashes by ensuring the client only initializes when needed.
  */
 const prismaClientSingleton = () => {
-  return new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL
-      }
-    },
-    log: ['error', 'warn'],
-  } as any);
+  // Prisma 7 manages connections via prisma.config.ts and env variables.
+  // Manual overrides in the constructor are no longer supported in this environment.
+  return new PrismaClient();
 }
 
 declare global {
