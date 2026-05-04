@@ -24,7 +24,7 @@ import {
   Database,
   ShieldCheck
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
 
