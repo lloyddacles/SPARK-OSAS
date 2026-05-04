@@ -6,11 +6,13 @@ import { PrismaClient } from '@prisma/client'
  */
 const prismaClientSingleton = () => {
   return new PrismaClient({
-    // Prisma 7 requires datasourceUrl to be passed explicitly in some environments
-    // we use a type-safe cast to ensure the compiler allows it
-    ...({ datasourceUrl: process.env.DATABASE_URL } as any),
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL
+      }
+    },
     log: ['error', 'warn'],
-  });
+  } as any);
 }
 
 declare global {
