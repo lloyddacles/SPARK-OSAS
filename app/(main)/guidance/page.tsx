@@ -64,7 +64,7 @@ export default function GuidancePortal() {
             <p style={{ color: "var(--primary)", fontWeight: "900", marginTop: "1rem", fontSize: "0.6rem", letterSpacing: "0.1em" }}>REQUIRED ROLE: GUIDANCE_COUNSELOR_ONLY</p>
          </div>
          <div style={{ display: "flex", gap: "1rem" }}>
-            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>RETURN HOME</a>
+            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>RETURN HOME</a>
             <a href="/login" className="btn-cyan" style={{ padding: "1rem 2rem", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>AUTHORIZE</a>
          </div>
       </div>

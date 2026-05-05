@@ -68,7 +68,7 @@ export default function VerificationTerminalPage() {
             <p style={{ color: "var(--primary)", fontWeight: "900", marginTop: "1rem", fontSize: "0.6rem", letterSpacing: "0.1em" }}>REQUIRED ROLE: OSAS_DIRECTOR | SYSTEM_ADMIN</p>
          </div>
          <div style={{ display: "flex", gap: "1rem" }}>
-            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>RETURN HOME</a>
+            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>RETURN HOME</a>
             <a href="/login" className="btn-cyan" style={{ padding: "1rem 2rem", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>AUTHORIZE SESSION</a>
          </div>
       </div>
@@ -138,7 +138,7 @@ export default function VerificationTerminalPage() {
                     placeholder="SEARCH STUDENT..."
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    style={{ width: "100%", padding: "0.75rem 1rem 0.75rem 2.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", fontSize: "0.65rem", fontWeight: "900", color: "white" }}
+                    style={{ width: "100%", padding: "0.75rem 1rem 0.75rem 2.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-main)" }}
                   />
                </div>
                <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -278,7 +278,7 @@ export default function VerificationTerminalPage() {
                      value={remarks}
                      onChange={e => setRemarks(e.target.value)}
                      placeholder="ENTER REMARKS FOR THE STUDENT..."
-                     style={{ width: "100%", height: "120px", padding: "1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "700", resize: "none" }}
+                     style={{ width: "100%", height: "120px", padding: "1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.75rem", fontWeight: "700", resize: "none" }}
                    />
                 </div>
 

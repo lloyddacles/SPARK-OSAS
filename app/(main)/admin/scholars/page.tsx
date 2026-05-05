@@ -228,7 +228,7 @@ export default function ScholarInventoryPage() {
                    padding: "1rem 1rem 1rem 3rem", 
                    background: "var(--bg-accent)", 
                    border: "1px solid var(--border-dim)", 
-                   color: "white",
+                   color: "var(--text-main)",
                    fontSize: "0.75rem",
                    fontWeight: "700"
                  }}
