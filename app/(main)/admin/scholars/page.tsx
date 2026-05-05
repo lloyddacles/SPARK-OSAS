@@ -158,32 +158,25 @@ export default function ScholarInventoryPage() {
     setIsEditModalOpen(true);
   };
 
-  if (!isHydrated) {
-    return (
-      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-         <ShieldCheck size={48} className="status-pulse" color="var(--primary)" />
-      </div>
-    );
-  }
-
-  if (!isAuth) {
-    return (
-      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2rem" }}>
-         <AlertTriangle size={64} color="#ef4444" />
-         <div style={{ textAlign: "center" }}>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>UNAUTHORIZED ACCESS</h2>
-            <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.5rem" }}>INSTITUTIONAL CLEARANCE REQUIRED.</p>
-         </div>
-      </div>
-    );
-  }
-
   const totalPages = Math.ceil(total / pageSize);
 
   return (
     <div style={{ padding: "2rem 0" }}>
-      
-      {/* HEADER SECTION */}
+      {!isHydrated ? (
+        <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+           <ShieldCheck size={48} className="status-pulse" color="var(--primary)" />
+        </div>
+      ) : !isAuth ? (
+        <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2rem" }}>
+           <AlertTriangle size={64} color="#ef4444" />
+           <div style={{ textAlign: "center" }}>
+              <h2 style={{ fontSize: "1.25rem", fontWeight: "900", color: "var(--text-main)" }}>UNAUTHORIZED ACCESS</h2>
+              <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.5rem" }}>INSTITUTIONAL CLEARANCE REQUIRED.</p>
+           </div>
+        </div>
+      ) : (
+        <>
+          {/* HEADER SECTION */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem" }}>
          <div>
             <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>UNIT: OSAS_SCHOLARSHIP_DIVISION</p>
@@ -511,6 +504,7 @@ export default function ScholarInventoryPage() {
         onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
         type={confirmConfig.type}
       />
+      </>)}
     </div>
   );
 }

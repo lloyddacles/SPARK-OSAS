@@ -417,8 +417,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
 
     hydrate();
     
-    // Near Real-Time Sync: Poll every 5 seconds
-    const interval = setInterval(hydrate, 5000);
+    // Near Real-Time Sync: Poll every 30 seconds (Optimized for Network Stability)
+    const interval = setInterval(hydrate, 30000);
     return () => clearInterval(interval);
   }, [currentUser?.id]);
 
