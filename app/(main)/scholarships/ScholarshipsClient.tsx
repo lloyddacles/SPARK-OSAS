@@ -251,7 +251,9 @@ export default function ScholarshipsClient() {
        return;
     }
 
-    submitScholarshipApp(applyingTo.id, studentName || currentUser?.name || "Current Student", effectiveReqs);
+    if (applyingTo) {
+      submitScholarshipApp(applyingTo.id, studentName || currentUser?.name || "Current Student", effectiveReqs);
+    }
     setIsSuccess(true);
     setTimeout(() => {
        setIsSuccess(false);
