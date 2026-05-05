@@ -35,6 +35,11 @@ To provide a secure, "Digital First" environment for student coordination, schol
 *   **Digital Vault**: Secure storage for student documents (1x1 Photos, CORs, Grades).
 *   **Status Telemetry**: Real-time tracking of document processing.
 
+### 📊 Scholar Inventory Ledger
+*   **Paginated Management**: Effortlessly browse through new and continuing scholar registries with high-performance pagination.
+*   **Batch-Aware Tracking**: Categorize scholars by batch year, provider type (Institutional, Government, Private), and status.
+*   **Instant Search Node**: High-performance filtering of scholar records by student name, ID, or batch year.
+
 ### 🛡️ Institutional Security & Audit
 *   **Audit Pulsing**: Secure logging of every administrative action.
 *   **Role-Based Access**: Specialized dashboards for Admin, OSAS Director, and Guidance Counselors.

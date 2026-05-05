@@ -182,6 +182,12 @@ export async function getScholarInventory(page: number = 1, pageSize: number = 2
     const db = await getDB();
     if (!db) return { scholars: [], total: 0 };
 
+    // Safety check for missing model (if db push was not run)
+    if (!(db as any).scholarInventory) {
+      console.warn("SCHOLAR_INVENTORY_MODEL_MISSING: Registry sync pending.");
+      return { scholars: [], total: 0 };
+    }
+
     const skip = (page - 1) * pageSize;
     
     // Convert searchTerm to Prisma query

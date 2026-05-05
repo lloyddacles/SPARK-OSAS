@@ -35,6 +35,11 @@ export default function ScholarInventoryPage() {
   const [pageSize, setPageSize] = useState(20);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isHydrated, setIsHydrated] = useState(false);
+  
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
   
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -147,10 +152,18 @@ export default function ScholarInventoryPage() {
       category: scholar.category,
       batch: scholar.batch,
       status: scholar.status,
-      dateAwarded: new Date(scholar.dateAwarded).toISOString().split('T')[0]
+      dateAwarded: scholar.dateAwarded ? new Date(scholar.dateAwarded).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
     });
     setIsEditModalOpen(true);
   };
+
+  if (!isHydrated) {
+    return (
+      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+         <ShieldCheck size={48} className="status-pulse" color="var(--primary)" />
+      </div>
+    );
+  }
 
   if (!isAuth) {
     return (
