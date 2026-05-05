@@ -1,0 +1,18 @@
+0 verbose cli /usr/local/bin/node /usr/local/lib/node_modules/npm/bin/npm-cli.js
+1 info using npm@10.9.7
+2 info using node@v22.22.2
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/lloyd.dacles/Documents/Cursor Project/spark-osas/.npmrc
+5 silly config load:file:/usr/local/etc/npmrc
+6 verbose title npm exec prisma generate
+7 verbose argv "exec" "--" "prisma" "generate"
+8 verbose logfile logs-max:10 dir:/Users/lloyd.dacles/Documents/Cursor Project/spark-osas/.npm/_logs/2026-05-05T03_21_02_656Z-
+9 verbose logfile /Users/lloyd.dacles/Documents/Cursor Project/spark-osas/.npm/_logs/2026-05-05T03_21_02_656Z-debug-0.log
+10 silly logfile done cleaning log files
+11 http fetch GET https://registry.npmjs.org/npm attempt 1 failed with ENOTFOUND
+12 verbose cwd /Users/lloyd.dacles/Documents/Cursor Project/spark-osas
+13 verbose os Darwin 25.2.0
+14 verbose node v22.22.2
+15 verbose npm  v10.9.7
+16 verbose exit 0
+17 info ok

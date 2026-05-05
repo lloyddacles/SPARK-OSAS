@@ -173,3 +173,105 @@ export async function performAnnualArchive() {
     return { archivedRequests: 0, archivedAppointments: 0, archivedScholarships: 0, archivedReferrals: 0 };
   }
 }
+
+/**
+ * SCHOLAR INVENTORY MANAGEMENT
+ */
+export async function getScholarInventory(page: number = 1, pageSize: number = 20, searchTerm: string = "") {
+  try {
+    const db = await getDB();
+    if (!db) return { scholars: [], total: 0 };
+
+    const skip = (page - 1) * pageSize;
+    
+    // Convert searchTerm to Prisma query
+    const where: any = searchTerm ? {
+      OR: [
+        { studentName: { contains: searchTerm, mode: 'insensitive' } },
+        { programName: { contains: searchTerm, mode: 'insensitive' } },
+        { batch: { contains: searchTerm, mode: 'insensitive' } },
+        { studentId: { contains: searchTerm, mode: 'insensitive' } }
+      ]
+    } : {};
+
+    const [scholars, total] = await Promise.all([
+      db.scholarInventory.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { updatedAt: 'desc' }
+      }),
+      db.scholarInventory.count({ where })
+    ]);
+
+    return { scholars, total };
+  } catch (e) {
+    console.error("GET_SCHOLAR_INVENTORY_FAIL", e);
+    return { scholars: [], total: 0 };
+  }
+}
+
+export async function addScholarToInventory(data: any) {
+  try {
+    const db = await getDB();
+    if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+    const newScholar = await db.scholarInventory.create({
+      data: {
+        studentId: data.studentId,
+        studentName: data.studentName,
+        programId: data.programId,
+        programName: data.programName,
+        type: data.type,
+        category: data.category,
+        batch: data.batch,
+        status: data.status || "Active",
+        dateAwarded: data.dateAwarded ? new Date(data.dateAwarded) : new Date(),
+      }
+    });
+
+    revalidatePath("/admin/scholars");
+    return { success: true, scholar: newScholar };
+  } catch (e: any) {
+    console.error("ADD_SCHOLAR_FAIL", e);
+    return { success: false, message: e.message || "ADD_FAILED" };
+  }
+}
+
+export async function updateScholarInInventory(id: string, updates: any) {
+  try {
+    const db = await getDB();
+    if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+    const updated = await db.scholarInventory.update({
+      where: { id },
+      data: {
+        ...updates,
+        dateAwarded: updates.dateAwarded ? new Date(updates.dateAwarded) : undefined,
+      }
+    });
+
+    revalidatePath("/admin/scholars");
+    return { success: true, scholar: updated };
+  } catch (e: any) {
+    console.error("UPDATE_SCHOLAR_FAIL", e);
+    return { success: false, message: e.message || "UPDATE_FAILED" };
+  }
+}
+
+export async function deleteScholarFromInventory(id: string) {
+  try {
+    const db = await getDB();
+    if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+    await db.scholarInventory.delete({
+      where: { id }
+    });
+
+    revalidatePath("/admin/scholars");
+    return { success: true };
+  } catch (e: any) {
+    console.error("DELETE_SCHOLAR_FAIL", e);
+    return { success: false, message: e.message || "DELETE_FAILED" };
+  }
+}

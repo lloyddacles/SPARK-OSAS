@@ -1,0 +1,17 @@
+0 verbose cli /usr/local/bin/node /usr/local/lib/node_modules/npm/bin/npm-cli.js
+1 info using npm@10.9.7
+2 info using node@v22.22.2
+3 silly config load:file:/usr/local/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/lloyd.dacles/Documents/Cursor Project/spark-osas/.npmrc
+5 silly config load:file:/usr/local/etc/npmrc
+6 verbose title npm exec prisma db push
+7 verbose argv "exec" "--" "prisma" "db" "push"
+8 verbose logfile logs-max:10 dir:/Users/lloyd.dacles/Documents/Cursor Project/spark-osas/.npm/_logs/2026-05-05T03_21_04_106Z-
+9 verbose logfile /Users/lloyd.dacles/Documents/Cursor Project/spark-osas/.npm/_logs/2026-05-05T03_21_04_106Z-debug-0.log
+10 silly logfile done cleaning log files
+11 verbose cwd /Users/lloyd.dacles/Documents/Cursor Project/spark-osas
+12 verbose os Darwin 25.2.0
+13 verbose node v22.22.2
+14 verbose npm  v10.9.7
+15 verbose exit 1
+16 verbose code 1

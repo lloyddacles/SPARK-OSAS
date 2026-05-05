@@ -25,6 +25,7 @@ import {
   Monitor,
   Workflow,
   TrendingUp,
+  GraduationCap,
   X
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -65,6 +66,7 @@ export default function Sidebar() {
       group: "ADMINISTRATION",
       items: [
         { icon: <Database size={16} />, label: "DOCUMENT CHECK", href: "/guidance/vault-audit", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <GraduationCap size={16} />, label: "SCHOLAR INVENTORY", href: "/admin/scholars", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
         { icon: <Workflow size={16} />, label: "GUIDANCE CENTER", href: "/guidance", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR"] },
         { icon: <User size={16} />, label: "STUDENT REFERRALS", href: "/referrals", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "ADVISER"] },
         { icon: <ShieldAlert size={16} />, label: "SYSTEM ADMIN", href: "/admin", roles: ["SYSTEM_ADMIN"] },
