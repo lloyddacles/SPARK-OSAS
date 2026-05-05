@@ -1,3 +1,4 @@
+process.env.PRISMA_CLIENT_ENGINE_TYPE = 'library';
 import { PrismaClient } from '@prisma/client'
 
 /**
@@ -7,6 +8,8 @@ import { PrismaClient } from '@prisma/client'
 const prismaClientSingleton = () => {
   return new PrismaClient({
     log: ['error', 'warn'],
+    // Pass URL explicitly via type-safe override to ensure engine sync
+    ...({ datasources: { db: { url: process.env.DATABASE_URL } } } as any)
   });
 }
 
