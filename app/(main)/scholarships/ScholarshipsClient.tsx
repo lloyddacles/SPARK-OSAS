@@ -63,26 +63,6 @@ export default function ScholarshipsClient() {
    const isStudent = currentUser?.role === "STUDENT_APPLICANT" || currentUser?.role === "STUDENT_LEADER";
    const isStaff = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
 
-   useEffect(() => {
-      // Determine initial tab based on role
-      if (currentUser) {
-         if (isStaff && !isStudent) setActiveTab("OSAS");
-         else setActiveTab("Student");
-      }
-
-      // Finalize hydration after tab is set
-      setIsHydrated(true);
-   }, [currentUser, isStaff, isStudent]);
-
-   if (!isHydrated) {
-      return (
-         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Activity size={48} className="status-pulse" color="var(--primary)" />
-         </div>
-      );
-   }
-
-   // OSAS Navigation State
    const [osasView, setOsasView] = useState<"Applications" | "Programs" | "Batches">("Applications");
    const [applyingTo, setApplyingTo] = useState<ScholarshipProgram | null>(null);
    const [studentName, setStudentName] = useState("");
@@ -98,55 +78,8 @@ export default function ScholarshipsClient() {
 
    const { updateProfile } = useGlobalState();
 
-   const runAIMatchmaker = () => {
-      setIsScanning(true);
-      setAiMatch(null);
-      // Simulate AI computing vault parameters
-      setTimeout(() => {
-         setIsScanning(false);
-         // Pick the first active program as a demo match
-         if (scholarshipPrograms.length > 0) {
-            setAiMatch(scholarshipPrograms[0]);
-            setMatchScore(94);
-         }
-      }, 2500);
-   };
-
-   // Auto-fill effect
-   useEffect(() => {
-      if (currentUser) {
-         setStudentName(currentUser.name || "");
-         setFirstName(currentUser.firstName || "");
-         setMiddleName(currentUser.middleName || "");
-         setLastName(currentUser.lastName || "");
-      }
-   }, [currentUser]);
-
    const [reqs, setReqs] = useState({ pic1x1: false, letter: false, sketch: false, cor: false, grades: false, picHouse: false });
    const [isSuccess, setIsSuccess] = useState(false);
-
-   // Requirement Mapping & Lock Logic
-   const vaultMapping: { [key: string]: string } = {
-      pic1x1: "1x1 Photo",
-      letter: "Letter of Intent",
-      sketch: "Sketch of House",
-      cor: "ID Copy",
-      grades: "Report Card",
-      picHouse: "Picture of House"
-   };
-
-   const getEffectiveReqs = () => {
-      const effective = { ...reqs };
-      Object.entries(vaultMapping).forEach(([key, vaultName]) => {
-         const doc = currentUser?.vault?.[vaultName];
-         if (doc?.uploaded && doc.status === "Approved") {
-            (effective as any)[key] = true;
-         }
-      });
-      return effective;
-   };
-
-   const effectiveReqs = getEffectiveReqs();
 
    // OSAS View State
    const [selectedApp, setSelectedApp] = useState<string | null>(null);
@@ -183,6 +116,72 @@ export default function ScholarshipsClient() {
       onConfirm: () => { },
       type: "warning"
    });
+
+   useEffect(() => {
+      // Determine initial tab based on role
+      if (currentUser) {
+         if (isStaff && !isStudent) setActiveTab("OSAS");
+         else setActiveTab("Student");
+      }
+
+      // Finalize hydration after tab is set
+      setIsHydrated(true);
+   }, [currentUser, isStaff, isStudent]);
+
+   // Auto-fill effect
+   useEffect(() => {
+      if (currentUser) {
+         setStudentName(currentUser.name || "");
+         setFirstName(currentUser.firstName || "");
+         setMiddleName(currentUser.middleName || "");
+         setLastName(currentUser.lastName || "");
+      }
+   }, [currentUser]);
+
+   if (!isHydrated) {
+      return (
+         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Activity size={48} className="status-pulse" color="var(--primary)" />
+         </div>
+      );
+   }
+
+   const runAIMatchmaker = () => {
+      setIsScanning(true);
+      setAiMatch(null);
+      // Simulate AI computing vault parameters
+      setTimeout(() => {
+         setIsScanning(false);
+         // Pick the first active program as a demo match
+         if (scholarshipPrograms.length > 0) {
+            setAiMatch(scholarshipPrograms[0]);
+            setMatchScore(94);
+         }
+      }, 2500);
+   };
+
+   // Requirement Mapping & Lock Logic
+   const vaultMapping: { [key: string]: string } = {
+      pic1x1: "1x1 Photo",
+      letter: "Letter of Intent",
+      sketch: "Sketch of House",
+      cor: "ID Copy",
+      grades: "Report Card",
+      picHouse: "Picture of House"
+   };
+
+   const getEffectiveReqs = () => {
+      const effective = { ...reqs };
+      Object.entries(vaultMapping).forEach(([key, vaultName]) => {
+         const doc = currentUser?.vault?.[vaultName];
+         if (doc?.uploaded && doc.status === "Approved") {
+            (effective as any)[key] = true;
+         }
+      });
+      return effective;
+   };
+
+   const effectiveReqs = getEffectiveReqs();
 
    const handleCreateProgram = (e: React.FormEvent) => {
       e.preventDefault();
