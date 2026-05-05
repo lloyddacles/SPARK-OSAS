@@ -208,7 +208,9 @@ type GlobalStateContextType = {
   scholarshipApps: ScholarshipApp[];
   submitScholarshipApp: (scholarshipId: string, studentName: string, reqs: ScholarshipApp["requirements"]) => void;
   recommendScholarship: (id: string, level: "Partial" | "Half" | "Full", batchId: number) => void;
+  bulkRecommendScholarships: (ids: string[], level: "Partial" | "Half" | "Full", batchId: number) => Promise<void>;
   approveBatch: (batchId: number) => void;
+  bulkApproveScholarships: (ids: string[]) => Promise<void>;
 
   scholarshipPrograms: ScholarshipProgram[];
   addScholarshipProgram: (name: string, provider: string, description: string, deadline: string) => void;
@@ -626,6 +628,13 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     logAudit("SCHOLARSHIP_RECOMMENDED", `AppID: ${appId} | Level: ${level} | Batch: ${batchId}`, "MEDIUM");
   };
 
+  const bulkRecommendScholarships = async (ids: string[], level: string, batchId: number) => {
+    await Promise.all(ids.map(id => dbUpdateApp(id, { status: "Recommended", recommendationLevel: level, batchId })));
+    setScholarshipApps(prev => prev.map(a => ids.includes(a.id) ? { ...a, status: "Recommended", recommendationLevel: level as any, batchId } : a));
+    addNotification("Bulk Recommendation Successful", `${ids.length} applications have been recommended for ${level} scholarship.`);
+    logAudit("BULK_SCHOLARSHIP_RECOMMENDED", `Count: ${ids.length} | Level: ${level} | Batch: ${batchId}`, "HIGH");
+  };
+
   const addBatchConfig = async (name: string, startDate: string, endDate: string) => {
     const batch = await dbAddBatch({ name, startDate, endDate });
     setBatchConfigs([...batchConfigs, batch as any]);
@@ -645,7 +654,6 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   };
 
   const approveBatch = async (batchId: number) => {
-    // In a real app, we'd update multiple records. For demo, we'll iterate or use a multi-update action.
     const batchApps = scholarshipApps.filter(s => s.batchId === batchId);
     for (const app of batchApps) {
       await dbUpdateApp(app.id, { status: "Approved" });
@@ -653,6 +661,13 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     setScholarshipApps(prev => prev.map(s => s.batchId === batchId ? { ...s, status: "Approved" } : s));
     addNotification("Batch Approved", `Scholarship Batch ${batchId} has been approved by Management.`);
     logAudit("BATCH_APPROVED", `BatchID: ${batchId} | Students: ${batchApps.length}`, "HIGH");
+  };
+
+  const bulkApproveScholarships = async (ids: string[]) => {
+    await Promise.all(ids.map(id => dbUpdateApp(id, { status: "Approved" })));
+    setScholarshipApps(prev => prev.map(a => ids.includes(a.id) ? { ...a, status: "Approved" } : a));
+    addNotification("Bulk Approval Successful", `${ids.length} applications have been finalized and approved.`);
+    logAudit("BULK_SCHOLARSHIP_APPROVED", `Count: ${ids.length} | Status: Approved`, "HIGH");
   };
 
   const addScholarshipProgram = async (name: string, provider: string, description: string, deadline: string) => {
@@ -783,7 +798,9 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       scholarshipApps,
       submitScholarshipApp,
       recommendScholarship,
+      bulkRecommendScholarships,
       approveBatch,
+      bulkApproveScholarships,
       scholarshipPrograms,
       addScholarshipProgram,
       updateScholarshipProgram,

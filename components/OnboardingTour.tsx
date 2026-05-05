@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ChevronRight, ChevronLeft, Info, Search, Bell, User, LayoutDashboard } from "lucide-react";
+import { X, ChevronRight, ChevronLeft, Info, Search, Bell, User, LayoutDashboard, Sparkles, ShieldCheck } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 
 const steps = [
@@ -37,6 +37,22 @@ const steps = [
     icon: <User size={24} />,
     target: "[data-tour='profile-link']",
     position: "right"
+  },
+  {
+    id: "matchmaker",
+    title: "AI MATCHMAKER",
+    desc: "Let our AI do the work! We scan your documents and grades to instantly match you with the best scholarships.",
+    icon: <Sparkles size={24} />,
+    target: "[data-tour='ai-matchmaker']",
+    position: "bottom"
+  },
+  {
+    id: "vault",
+    title: "DIGITAL IDENTITY VAULT",
+    desc: "Your Digital Vault stores all your verified documents, making scholarship applications instant and paperless.",
+    icon: <ShieldCheck size={24} />,
+    target: "[data-tour='vault-info']",
+    position: "top"
   }
 ];
 

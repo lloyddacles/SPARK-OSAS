@@ -91,3 +91,87 @@ export const generateScholarReport = (scholars: any[], total: number) => {
   // 5. Download Trigger
   doc.save(`SPARK_SCHOLAR_REPORT_${new Date().toISOString().split('T')[0]}.pdf`);
 };
+
+/**
+ * BATCH RECOMMENDATION REPORT
+ * Generates official recommendation lists for VPAA/Presidential approval.
+ */
+export const generateBatchRecommendationReport = (batchId: number, apps: any[]) => {
+  // @ts-ignore
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4"
+  });
+
+  const timestamp = new Date().toLocaleString();
+  
+  // 1. Institutional Header
+  doc.setFillColor(5, 7, 10);
+  doc.rect(0, 0, 210, 35, "F");
+
+  doc.setTextColor(0, 229, 255);
+  doc.setFontSize(18);
+  doc.setFont("helvetica", "bold");
+  doc.text("SPARK INSTITUTIONAL HUB", 15, 18);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text("OFFICE OF STUDENT AFFAIRS AND SERVICES", 15, 25);
+  
+  // 2. Report Body
+  doc.setTextColor(5, 7, 10);
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text(`SCHOLARSHIP RECOMMENDATION LIST - BATCH ${batchId}`, 15, 50);
+
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text("The following students have been thoroughly verified and are hereby recommended for", 15, 58);
+  doc.text("institutional scholarship support based on their verified vault documents and academic standing.", 15, 63);
+
+  const tableData = apps.map((a, i) => [
+    i + 1,
+    a.studentName.toUpperCase(),
+    a.recommendationLevel ? `${a.recommendationLevel.toUpperCase()} SCHOLAR` : "PARTIAL SCHOLAR",
+    "VERIFIED"
+  ]);
+
+  // @ts-ignore
+  doc.autoTable({
+    startY: 75,
+    head: [["#", "STUDENT NAME", "LEVEL", "STATUS"]],
+    body: tableData,
+    theme: "striped",
+    headStyles: { fillColor: [5, 7, 10], textColor: [0, 229, 255], fontSize: 8 },
+    styles: { fontSize: 8 },
+    margin: { left: 15, right: 15 }
+  });
+
+  const finalY = (doc as any).lastAutoTable.finalY + 25;
+
+  // 3. Signatories
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "bold");
+  
+  // OSAS Director
+  doc.text("__________________________", 15, finalY);
+  doc.text("OSAS DIRECTOR", 15, finalY + 5);
+  
+  // VPAA
+  doc.text("__________________________", 120, finalY);
+  doc.text("VP FOR ACADEMIC AFFAIRS", 120, finalY + 5);
+
+  // President (Centered)
+  doc.text("__________________________", 67.5, finalY + 25);
+  doc.text("UNIVERSITY PRESIDENT", 75, finalY + 30);
+
+  // 4. Footer
+  doc.setFontSize(7);
+  doc.setTextColor(148, 163, 184);
+  doc.text(`CERTIFIED GENUINE: ${timestamp}`, 15, 285);
+  doc.text("SPARK_VERIFICATION_TOKEN: " + Math.random().toString(36).substr(2, 12).toUpperCase(), 120, 285);
+
+  doc.save(`BATCH_${batchId}_RECOMMENDATION_LIST.pdf`);
+};

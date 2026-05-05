@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useGlobalState, ScholarshipProgram, BatchConfig } from "@/lib/GlobalStateContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ProcessGuide from "@/components/ProcessGuide";
+import { generateBatchRecommendationReport } from "@/lib/utils/reportGenerator";
 import {
    GraduationCap,
    Award,
@@ -51,7 +52,10 @@ export default function ScholarshipsClient() {
       deleteBatchConfig,
       currentUser,
       users,
-      verifyDocument
+      verifyDocument,
+      bulkRecommendScholarships,
+      bulkApproveScholarships,
+      auditLogs
    } = useGlobalState();
    const [activeTab, setActiveTab] = useState<"Student" | "OSAS">("Student");
    const [isHydrated, setIsHydrated] = useState(false);
@@ -146,6 +150,7 @@ export default function ScholarshipsClient() {
 
    // OSAS View State
    const [selectedApp, setSelectedApp] = useState<string | null>(null);
+   const [selectedApps, setSelectedApps] = useState<string[]>([]);
    const [recommendationLevel, setRecommendationLevel] = useState<"Partial" | "Half" | "Full">("Partial");
    const [viewBatch, setViewBatch] = useState<number>(1);
 
@@ -302,16 +307,47 @@ export default function ScholarshipsClient() {
       }
    };
 
+   const handleBulkRecommend = () => {
+      if (selectedApps.length === 0) return;
+      const matchingBatch = batchConfigs.find(b => b.status === "Active");
+      if (!matchingBatch) {
+         alert("Please activate a batch before bulk recommending.");
+         return;
+      }
+
+      setConfirmConfig({
+         isOpen: true,
+         title: "Bulk Recommendation",
+         message: `Recommend ${selectedApps.length} students for a ${recommendationLevel} scholarship in ${matchingBatch.name}?`,
+         type: "success",
+         onConfirm: async () => {
+            await bulkRecommendScholarships(selectedApps, recommendationLevel, matchingBatch.id);
+            setSelectedApps([]);
+         }
+      });
+   };
+
+   const handleBulkApprove = () => {
+      if (selectedApps.length === 0) return;
+      setConfirmConfig({
+         isOpen: true,
+         title: "Bulk Approval",
+         message: `Finalize and approve ${selectedApps.length} scholarship applications?`,
+         type: "success",
+         onConfirm: async () => {
+            await bulkApproveScholarships(selectedApps);
+            setSelectedApps([]);
+         }
+      });
+   };
+
    const handlePrintBatch = () => {
-      const content = `OSAS SCHOLARSHIP RECOMMENDATION LIST\nBatch: ${viewBatch}\n\nThis list has been verified and recommended by OSAS for approval by the VPAA, DAD, and President.\n\nRecommended Scholars:\n`
-         + scholarshipApps.filter(s => s.batchId === viewBatch && s.status === "Recommended").map(s => `- ${s.studentName} (${s.recommendationLevel} Scholar)`).join("\n");
-      const encodedUri = encodeURI("data:text/plain;charset=utf-8," + content);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Batch_${viewBatch}_Recommendation_List.txt`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const batchApps = scholarshipApps.filter(s => s.batchId === viewBatch && s.status === "Recommended");
+      if (batchApps.length === 0) {
+         alert("No recommended students found in this batch to generate a report.");
+         return;
+      }
+      generateBatchRecommendationReport(viewBatch, batchApps);
    };
 
    return (
@@ -364,7 +400,7 @@ export default function ScholarshipsClient() {
                               />
 
                               {/* AI MATCHMAKER ENGINE */}
-                              <div style={{ marginBottom: "3rem", padding: "2rem", background: "rgba(0, 229, 255, 0.03)", border: "1px solid var(--primary)", position: "relative", overflow: "hidden" }}>
+                              <div data-tour="ai-matchmaker" style={{ marginBottom: "3rem", padding: "2rem", background: "rgba(0, 229, 255, 0.03)", border: "1px solid var(--primary)", position: "relative", overflow: "hidden" }}>
                                  <div style={{ position: "absolute", right: "-20px", top: "-20px", opacity: 0.1 }}>
                                     <Cpu size={150} color="var(--primary)" />
                                  </div>
@@ -467,7 +503,7 @@ export default function ScholarshipsClient() {
                                        <div>
                                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem" }}>
                                              <label style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DOCUMENT STATUS</label>
-                                             <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>VERIFIED FROM YOUR VAULT</p>
+                                             <p data-tour="vault-info" style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>VERIFIED FROM YOUR VAULT</p>
                                           </div>
                                           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--border-dim)" }}>
                                              {Object.entries(vaultMapping).map(([key, label]) => (
@@ -490,28 +526,28 @@ export default function ScholarshipsClient() {
                      </div>
                   )}
 
-                  {activeTab === "OSAS" && (
-                     <div key="osas">
+               {activeTab === "OSAS" && (
+                  <div key="osas">
 
-                        {/* OSAS SUB NAV */}
-                        <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", borderBottom: "1px solid var(--border-dim)" }}>
-                           {[
-                              { id: "Applications", label: "REVIEW APPLICATIONS" },
-                              { id: "Programs", label: "MANAGE PROGRAMS" },
-                              { id: "Batches", label: "MANAGE BATCHES" }
-                           ].map(v => (
-                              <button
-                                 key={v.id}
-                                 onClick={() => setOsasView(v.id as any)}
-                                 style={{ padding: "1rem 0", background: "none", border: "none", borderBottom: osasView === v.id ? "2px solid var(--primary)" : "2px solid transparent", color: osasView === v.id ? "var(--primary)" : "var(--text-dim)", fontSize: "0.75rem", fontWeight: "900", cursor: "pointer", transition: "all 0.2s" }}
-                              >
-                                 {v.label}
-                              </button>
-                           ))}
-                        </div>
+                     {/* OSAS SUB NAV */}
+                     <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", borderBottom: "1px solid var(--border-dim)" }}>
+                        {[
+                           { id: "Applications", label: "REVIEW APPLICATIONS" },
+                           { id: "Programs", label: "MANAGE PROGRAMS" },
+                           { id: "Batches", label: "MANAGE BATCHES" }
+                        ].map(v => (
+                           <button
+                              key={v.id}
+                              onClick={() => setOsasView(v.id as any)}
+                              style={{ padding: "1rem 0", background: "none", border: "none", borderBottom: osasView === v.id ? "2px solid var(--primary)" : "2px solid transparent", color: osasView === v.id ? "var(--primary)" : "var(--text-dim)", fontSize: "0.75rem", fontWeight: "900", cursor: "pointer", transition: "all 0.2s" }}
+                           >
+                              {v.label}
+                           </button>
+                        ))}
+                     </div>
 
-                        {osasView === "Applications" && (
-                           <div style={{ width: "100%" }}>
+                     {osasView === "Applications" && (
+                        <div style={{ width: "100%" }}>
                               {/* TIMELINE_PROTOCOL */}
                               <div className="sapphire-card" style={{ marginBottom: "3rem", borderLeft: "4px solid var(--primary)" }}>
                                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2.5rem" }}>
@@ -529,27 +565,38 @@ export default function ScholarshipsClient() {
                                  </div>
                               </div>
 
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "3rem", alignItems: "start" }}>
+                           <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "3rem", alignItems: "start" }}>
 
-                                 {/* APPLICATION QUEUE */}
-                                 <div>
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+                              {/* APPLICATION QUEUE */}
+                              <div>
+                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
                                        <h2 style={{ fontSize: "0.85rem", fontWeight: "900" }}>APPLICATIONS TO REVIEW</h2>
-                                       <div style={{ display: "flex", gap: "1rem" }}>
-                                          <select value={viewBatch} onChange={e => setViewBatch(Number(e.target.value))} style={{ padding: "0.5rem", fontSize: "0.65rem", fontWeight: "900", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
-                                             {batchConfigs.map(b => (
-                                                <option key={b.id} value={b.id}>BATCH {b.id}</option>
-                                             ))}
-                                          </select>
-                                       </div>
+                                       {selectedApps.length > 0 && (
+                                          <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "0.5rem 1rem", background: "var(--primary)", color: "var(--bg-deep)", borderRadius: "4px", fontSize: "0.65rem", fontWeight: "900" }}>
+                                             {selectedApps.length} SELECTED
+                                             <button onClick={() => setSelectedApps([])} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", fontWeight: "900" }}>✕</button>
+                                          </div>
+                                       )}
                                     </div>
+                                    <div style={{ display: "flex", gap: "1rem" }}>
+                                       <select value={viewBatch} onChange={e => setViewBatch(Number(e.target.value))} style={{ padding: "0.5rem", fontSize: "0.65rem", fontWeight: "900", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
+                                          {batchConfigs.map(b => (
+                                             <option key={b.id} value={b.id}>BATCH {b.id}</option>
+                                          ))}
+                                       </select>
+                                    </div>
+                                 </div>
 
                                     <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
                                        {scholarshipApps.filter(s => s.batchId === viewBatch).map(app => (
                                           <div
                                              key={app.id}
-                                             onClick={() => setSelectedApp(app.id)}
                                              style={{
+                                                display: "grid",
+                                                gridTemplateColumns: "auto 1fr",
+                                                alignItems: "center",
+                                                gap: "1.5rem",
                                                 padding: "1.5rem 2rem",
                                                 background: selectedApp === app.id ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)",
                                                 cursor: "pointer",
@@ -557,15 +604,26 @@ export default function ScholarshipsClient() {
                                                 transition: "all 0.2s"
                                              }}
                                           >
-                                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                <div>
-                                                   <h4 style={{ fontWeight: "900", fontSize: "0.9rem", color: "var(--text-main)" }}>{app.studentName.toUpperCase()}</h4>
-                                                   <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginTop: "0.25rem" }}>STAMPED: {app.dateApplied}</p>
-                                                </div>
-                                                <div style={{ textAlign: "right" }}>
-                                                   <span style={{ fontSize: "0.6rem", fontWeight: "900", padding: "0.4rem 1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: app.status === "Recommended" ? "#10b981" : "#f59e0b" }}>
-                                                      {app.status.toUpperCase()}
-                                                   </span>
+                                             <input
+                                                type="checkbox"
+                                                checked={selectedApps.includes(app.id)}
+                                                onChange={(e) => {
+                                                   e.stopPropagation();
+                                                   setSelectedApps(prev => e.target.checked ? [...prev, app.id] : prev.filter(id => id !== app.id));
+                                                }}
+                                                style={{ width: "16px", height: "16px", cursor: "pointer" }}
+                                             />
+                                             <div onClick={() => setSelectedApp(app.id)}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                   <div>
+                                                      <h4 style={{ fontWeight: "900", fontSize: "0.9rem", color: "var(--text-main)" }}>{app.studentName.toUpperCase()}</h4>
+                                                      <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginTop: "0.25rem" }}>STAMPED: {app.dateApplied}</p>
+                                                   </div>
+                                                   <div style={{ textAlign: "right" }}>
+                                                      <span style={{ fontSize: "0.6rem", fontWeight: "900", padding: "0.4rem 1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: app.status === "Recommended" ? "#10b981" : "#f59e0b" }}>
+                                                         {app.status.toUpperCase()}
+                                                      </span>
+                                                   </div>
                                                 </div>
                                              </div>
                                           </div>
@@ -633,6 +691,30 @@ export default function ScholarshipsClient() {
                                           <p style={{ fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.1em" }}>SELECT A STUDENT TO REVIEW</p>
                                        </div>
                                     )}
+
+                                    {selectedApps.length > 0 && (
+                                       <div style={{ marginTop: "2rem" }}>
+                                          <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)", background: "rgba(0, 229, 255, 0.02)" }}>
+                                             <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>BATCH COMMAND CENTER</h3>
+                                             <div style={{ display: "grid", gap: "1rem" }}>
+                                                <div style={{ display: "flex", gap: "1rem" }}>
+                                                   <select
+                                                      value={recommendationLevel}
+                                                      onChange={e => setRecommendationLevel(e.target.value as any)}
+                                                      style={{ flex: 1, padding: "0.75rem", fontSize: "0.65rem", fontWeight: "900", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}
+                                                   >
+                                                      <option value="Partial">PARTIAL SCHOLAR</option>
+                                                      <option value="Half">HALF SCHOLAR</option>
+                                                      <option value="Full">FULL SCHOLAR</option>
+                                                   </select>
+                                                   <button onClick={handleBulkRecommend} className="btn-cyan" style={{ flex: 1.5, padding: "0.75rem", fontSize: "0.65rem" }}>RECOMMEND SELECTED</button>
+                                                </div>
+                                                <button onClick={handleBulkApprove} style={{ width: "100%", padding: "1rem", background: "#10b981", color: "white", border: "none", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>FINAL APPROVAL FOR SELECTED</button>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    )}
+
                                     <div style={{ marginTop: "2rem" }}>
                                        <div className="sapphire-card">
                                           <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem" }}>BATCH OPTIONS</h3>
@@ -642,6 +724,30 @@ export default function ScholarshipsClient() {
                                           <button style={{ width: "100%", padding: "1rem", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer" }}>
                                              <Settings size={14} color="var(--primary)" /> EDIT DATES
                                           </button>
+                                       </div>
+                                    </div>
+
+                                    <div style={{ marginTop: "2rem" }}>
+                                       <div className="sapphire-card">
+                                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+                                             <h3 style={{ fontSize: "0.75rem", fontWeight: "900" }}>SCHOLARSHIP AUDIT LOG</h3>
+                                             <Activity size={14} color="var(--primary)" />
+                                          </div>
+                                          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxHeight: "300px", overflowY: "auto", paddingRight: "0.5rem" }}>
+                                             {auditLogs.filter(l => l.action.includes("SCHOLARSHIP")).map(log => (
+                                                <div key={log.id} style={{ padding: "1rem", background: "var(--bg-accent)", borderLeft: `2px solid ${log.severity === "HIGH" ? "#ef4444" : "var(--primary)"}` }}>
+                                                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                                                      <span style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>{log.action}</span>
+                                                      <span style={{ fontSize: "0.5rem", color: "var(--text-dim)" }}>{log.timestamp}</span>
+                                                   </div>
+                                                   <p style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-main)" }}>{log.details}</p>
+                                                   <p style={{ fontSize: "0.5rem", color: "var(--text-dim)", marginTop: "0.4rem" }}>ADMIN: {log.user} ({log.role})</p>
+                                                </div>
+                                             ))}
+                                             {auditLogs.filter(l => l.action.includes("SCHOLARSHIP")).length === 0 && (
+                                                <p style={{ fontSize: "0.6rem", color: "var(--text-dim)", textAlign: "center", padding: "2rem" }}>NO RECENT ACTIONS RECORDED</p>
+                                             )}
+                                          </div>
                                        </div>
                                     </div>
                                  </div>
@@ -801,18 +907,18 @@ export default function ScholarshipsClient() {
                                  </form>
                               </div>
                            </div>
-                        )}
                      </div>
                   )}
                </div>
-               <ConfirmModal
-                  isOpen={confirmConfig.isOpen}
-                  onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
-                  onConfirm={confirmConfig.onConfirm}
-                  title={confirmConfig.title}
-                  message={confirmConfig.message}
-                  type={confirmConfig.type as any}
-               />
+            )}
+            <ConfirmModal
+               isOpen={confirmConfig.isOpen}
+               onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+               onConfirm={confirmConfig.onConfirm}
+               title={confirmConfig.title}
+               message={confirmConfig.message}
+               type={confirmConfig.type as any}
+            />
 
                {/* Digital Vault Previewer Modal */}
                {previewDoc && (
