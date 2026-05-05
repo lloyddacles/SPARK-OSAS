@@ -206,7 +206,7 @@ type GlobalStateContextType = {
   verdictReferral: (id: string, status: "Sanctioned" | "Dismissed", notes: string) => void;
   
   scholarshipApps: ScholarshipApp[];
-  submitScholarshipApp: (studentName: string, reqs: ScholarshipApp["requirements"]) => void;
+  submitScholarshipApp: (scholarshipId: string, studentName: string, reqs: ScholarshipApp["requirements"]) => void;
   recommendScholarship: (id: string, level: "Partial" | "Half" | "Full", batchId: number) => void;
   approveBatch: (batchId: number) => void;
 
@@ -613,13 +613,10 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     addNotification("OSAS Verdict", `Verdict reached for Referral ${id}: ${status}.`);
   };
 
-  const submitScholarshipApp = async (studentName: string, reqs: ScholarshipApp["requirements"]) => {
-    // Note: Assuming student is applying for the first active scholarship in demo
-    const activeProg = scholarshipPrograms[0];
-    if (!activeProg) return;
-
-    const app = await dbSubmitApp({ studentName, scholarshipId: activeProg.id, requirements: reqs });
+  const submitScholarshipApp = async (scholarshipId: string, studentName: string, reqs: ScholarshipApp["requirements"]) => {
+    const app = await dbSubmitApp({ studentName, scholarshipId, requirements: reqs });
     setScholarshipApps([{ ...app, studentName, requirements: reqs } as any, ...scholarshipApps]);
+    logAudit("SCHOLARSHIP_APPLIED", `Student ${studentName} applied for Program ${scholarshipId}`, "LOW");
   };
 
   const recommendScholarship = async (appId: string, level: string, batchId: number) => {

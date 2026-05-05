@@ -251,7 +251,7 @@ export default function ScholarshipsClient() {
        return;
     }
 
-    submitScholarshipApp(studentName || currentUser?.name || "Current Student", effectiveReqs);
+    submitScholarshipApp(applyingTo.id, studentName || currentUser?.name || "Current Student", effectiveReqs);
     setIsSuccess(true);
     setTimeout(() => {
        setIsSuccess(false);
@@ -267,7 +267,9 @@ export default function ScholarshipsClient() {
     setIsVerifyingIdentity(false);
     
     // Automatically proceed with application
-    submitScholarshipApp(`${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`, effectiveReqs);
+    if (applyingTo) {
+      submitScholarshipApp(applyingTo.id, `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`, effectiveReqs);
+    }
     setIsSuccess(true);
     setTimeout(() => {
        setIsSuccess(false);
@@ -311,26 +313,31 @@ export default function ScholarshipsClient() {
 
   return (
     <div style={{ width: "100%" }}>
-      
-      {/* Sapphire Header */}
-      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-        <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>SCHOLARSHIP PORTAL</p>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-            SCHOLAR <span style={{ color: "var(--primary)" }}>SHIPS</span>
-          </h1>
+      {!isHydrated ? (
+        <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+           <Activity size={48} className="status-pulse" color="var(--primary)" />
         </div>
-        <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
-          <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Student" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Student" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Student" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-            STUDENT PORTAL
-          </button>
-          {isStaff && (
-            <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "OSAS" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "OSAS" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "OSAS" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-              OSAS ADMIN
-            </button>
-          )}
-        </div>
-      </div>
+      ) : (
+        <>
+          {/* Sapphire Header */}
+          <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+            <div>
+              <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>SCHOLARSHIP PORTAL</p>
+              <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
+                SCHOLAR <span style={{ color: "var(--primary)" }}>SHIPS</span>
+              </h1>
+            </div>
+            <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
+              <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Student" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Student" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Student" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
+                STUDENT PORTAL
+              </button>
+              {isStaff && (
+                <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "OSAS" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "OSAS" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "OSAS" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
+                  OSAS ADMIN
+                </button>
+              )}
+            </div>
+          </div>
 
       <AnimatePresence mode="wait">
         {activeTab === "Student" && (
@@ -960,6 +967,7 @@ export default function ScholarshipsClient() {
            </motion.div>
         )}
       </AnimatePresence>
+      </>)}
     </div>
   );
 }
