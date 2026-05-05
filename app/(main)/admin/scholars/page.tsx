@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { getScholarInventory, addScholarToInventory, updateScholarInInventory, deleteScholarFromInventory, getAllUsers } from "@/lib/actions/adminActions";
+import { generateScholarReport } from "@/lib/utils/reportGenerator";
 import ConfirmModal from "@/components/ConfirmModal";
 
 export default function ScholarInventoryPage() {
@@ -191,6 +192,13 @@ export default function ScholarInventoryPage() {
             </h1>
          </div>
          <div style={{ display: "flex", gap: "1rem" }}>
+            <button 
+              onClick={() => generateScholarReport(scholars, total)}
+              disabled={scholars.length === 0}
+              style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--border-active)", color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.15em", cursor: "pointer", opacity: scholars.length === 0 ? 0.3 : 1 }}
+            >
+               <Download size={18} /> EXPORT OFFICIAL REPORT
+            </button>
             <button 
               onClick={() => { resetForm(); setIsAddModalOpen(true); }}
               className="btn-cyan" 
