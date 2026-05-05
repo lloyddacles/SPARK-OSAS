@@ -279,16 +279,16 @@ export default function ScholarInventoryPage() {
                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em", textAlign: "right" }}>ACTIONS</th>
                   </tr>
                </thead>
-               <tbody>
-                  <AnimatePresence mode="popLayout">
-                     {scholars.map((scholar, i) => (
-                        <motion.tr 
-                          key={scholar.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.05 }}
-                          style={{ borderBottom: "1px solid var(--border-dim)", background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)" }}
-                        >
+                  <tbody>
+                    {scholars.map((scholar, i) => (
+                      <tr 
+                        key={scholar.id} 
+                        style={{ 
+                          borderBottom: "1px solid var(--border-dim)", 
+                          background: i % 2 === 0 ? "transparent" : "rgba(0, 229, 255, 0.01)",
+                          transition: "background 0.2s"
+                        }}
+                      >
                            <td style={{ padding: "1.5rem 2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>{scholar.studentId}</td>
                            <td style={{ padding: "1.5rem 2rem" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -332,9 +332,8 @@ export default function ScholarInventoryPage() {
                                  </button>
                               </div>
                            </td>
-                        </motion.tr>
+                        </tr>
                      ))}
-                  </AnimatePresence>
                   {scholars.length === 0 && !isLoading && (
                      <tr>
                         <td colSpan={7} style={{ padding: "5rem", textAlign: "center" }}>
