@@ -359,6 +359,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(initialAuditLogs);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const [telemetryTier, setTelemetryTier] = useState<0 | 1 | 2>(0);
   const [theme, setTheme] = useState<string>("light");
 
   const toggleTheme = () => {
@@ -372,68 +374,73 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  // Hydrate Data & Session from Database
+  // TIERED HYDRATION ENGINE
+  const refreshState = async (priorityOnly = false) => {
+    setIsSyncing(true);
+    try {
+      // TIER 1: CRITICAL CORE (Session & Identity)
+      const session = await dbGetSession();
+      if (session) setCurrentUser(session);
+      
+      const savedTheme = localStorage.getItem("spark_theme") as any;
+      if (savedTheme) setTheme(savedTheme);
+      
+      setTelemetryTier(1);
+      setIsLoading(false); // UI is now interactive
+
+      if (priorityOnly) return;
+
+      // TIER 2: INSTITUTIONAL BACKGROUND (Bulk Data)
+      const [dbOrgs, dbAnns, dbRefs, dbProgs, dbApps, dbBatches, dbRequests, dbAppts, dbUsers, dbNotifs, dbLogs, dbTypes, dbGM, dbCerts] = await Promise.all([
+        dbGetOrgs().catch(() => []),
+        dbGetAnns().catch(() => []),
+        dbGetRefs().catch(() => []),
+        dbGetProgs().catch(() => []),
+        dbGetApps().catch(() => []),
+        dbGetBatches().catch(() => []),
+        dbGetRequests().catch(() => []),
+        dbGetAppts().catch(() => []),
+        dbGetAllUsers().catch(() => []),
+        dbGetNotifs(session?.id).catch(() => []), 
+        dbGetAuditLogs().catch(() => []),
+        dbGetServiceTypes().catch(() => []),
+        dbGetGMConfig().catch(() => null),
+        dbGetIssuedCerts().catch(() => [])
+      ]);
+
+      // Atomic UI Updates
+      if (dbOrgs?.length) setOrganizations(dbOrgs as any);
+      const dbActivities = await dbGetActivities().catch(() => []);
+      if (dbActivities?.length) setActivities(dbActivities as any);
+      if (dbAnns?.length) setAnnouncements(dbAnns as any);
+      if (dbRefs?.length) setReferrals(dbRefs as any);
+      if (dbProgs?.length) setScholarshipPrograms(dbProgs as any);
+      if (dbApps?.length) setScholarshipApps(dbApps as any);
+      if (dbBatches?.length) setBatchConfigs(dbBatches as any);
+      if (dbRequests?.length) setRequests(dbRequests as any);
+      if (dbAppts?.length) setAppointments(dbAppts as any);
+      if (dbUsers?.length) setUsers(dbUsers as any);
+      if (dbNotifs?.length) setNotifications(dbNotifs.map((n: any) => ({ ...n, time: new Date(n.createdAt).toLocaleTimeString() })));
+      if (dbLogs?.length) setAuditLogs(dbLogs.map((l: any) => ({ ...l, timestamp: new Date(l.timestamp).toLocaleString() })));
+      if (dbTypes?.length) setServiceTypes(dbTypes as any);
+      if (dbGM) setGoodMoralConfig(dbGM as any);
+      if (dbCerts) setIssuedCertificates(dbCerts as any);
+
+      setTelemetryTier(2);
+    } catch (error) {
+      console.error("Liquid Hydration Interrupted:", error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
-    const hydrate = async () => {
-      try {
-        // 1. LOAD SESSION FIRST (DB-Independent)
-        const session = await dbGetSession();
-        if (session) {
-          setCurrentUser(session);
-        }
-
-        // 2. Load Theme
-        const savedTheme = localStorage.getItem("spark_theme") as any;
-        if (savedTheme) setTheme(savedTheme);
-
-        // 3. Hydrate DB Data in the background
-        const [dbOrgs, dbAnns, dbRefs, dbProgs, dbApps, dbBatches, dbRequests, dbAppts, dbUsers, dbNotifs, dbLogs, dbTypes, dbGM, dbCerts] = await Promise.all([
-          dbGetOrgs().catch(() => []),
-          dbGetAnns().catch(() => []),
-          dbGetRefs().catch(() => []),
-          dbGetProgs().catch(() => []),
-          dbGetApps().catch(() => []),
-          dbGetBatches().catch(() => []),
-          dbGetRequests().catch(() => []),
-          dbGetAppts().catch(() => []),
-          dbGetAllUsers().catch(() => []),
-          dbGetNotifs(session?.id).catch(() => []), 
-          dbGetAuditLogs().catch(() => []),
-          dbGetServiceTypes().catch(() => []),
-          dbGetGMConfig().catch(() => null),
-          dbGetIssuedCerts().catch(() => [])
-        ]);
-
-        if (dbOrgs && dbOrgs.length > 0) setOrganizations(dbOrgs as any);
-        const dbActivities = await dbGetActivities().catch(() => []);
-        if (dbActivities && dbActivities.length > 0) setActivities(dbActivities as any);
-        if (dbAnns && dbAnns.length > 0) setAnnouncements(dbAnns as any);
-        if (dbRefs && dbRefs.length > 0) setReferrals(dbRefs as any);
-        if (dbProgs && dbProgs.length > 0) setScholarshipPrograms(dbProgs as any);
-        if (dbApps && dbApps.length > 0) setScholarshipApps(dbApps as any);
-        if (dbBatches && dbBatches.length > 0) setBatchConfigs(dbBatches as any);
-        if (dbRequests && dbRequests.length > 0) setRequests(dbRequests as any);
-        if (dbAppts && dbAppts.length > 0) setAppointments(dbAppts as any);
-        if (dbUsers && dbUsers.length > 0) setUsers(dbUsers as any);
-        if (dbNotifs && dbNotifs.length > 0) setNotifications(dbNotifs.map((n: any) => ({ ...n, time: new Date(n.createdAt).toLocaleTimeString() })));
-        if (dbLogs && dbLogs.length > 0) setAuditLogs(dbLogs.map((l: any) => ({ ...l, timestamp: new Date(l.timestamp).toLocaleString() })));
-        if (dbTypes && dbTypes.length > 0) setServiceTypes(dbTypes as any);
-        if (dbGM) setGoodMoralConfig(dbGM as any);
-        if (dbCerts) setIssuedCertificates(dbCerts as any);
-
-      } catch (error) {
-        console.error("Hydration failed:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    hydrate();
+    refreshState();
     
     // Near Real-Time Sync: Poll every 30 seconds
-    const interval = setInterval(hydrate, 30000);
+    const interval = setInterval(() => refreshState(), 30000);
     return () => clearInterval(interval);
-  }, []); // Only run on mount to prevent hook drift during session updates
+  }, []);
 
   const login = async (username: string, password: string) => {
     const res = await dbLogin(username, password);

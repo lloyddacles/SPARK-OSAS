@@ -24,6 +24,7 @@ export default function AuditCenterPage() {
   const { auditLogs, currentUser } = useGlobalState();
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState<string>("ALL");
+  const [isExporting, setIsExporting] = useState(false);
 
   const isAuth = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
 
@@ -58,33 +59,75 @@ export default function AuditCenterPage() {
 
   const handleExportPDF = async () => {
     if (filteredLogs.length === 0) return;
-    await generateInstitutionalPDF({
-      title: "System Accountability Ledger",
-      subtitle: "Official Institutional Audit Stream",
-      filename: "SYSTEM_AUDIT_REPORT",
-      orientation: "l",
-      sections: [
-        {
-          title: "AUTHORITATIVE AUDIT LOGS",
-          data: [
-            ["Timestamp", "Action Node", "Details", "Authorized User", "Role", "Severity"],
-            ...filteredLogs.map(log => [
-              log.timestamp,
-              log.action,
-              log.details,
-              log.user,
-              log.role,
-              log.severity
-            ])
+    setIsExporting(true);
+    
+    // Defer to next tick to allow UI to update
+    setTimeout(async () => {
+      try {
+        await generateInstitutionalPDF({
+          title: "System Accountability Ledger",
+          subtitle: "Official Institutional Audit Stream",
+          filename: "SYSTEM_AUDIT_REPORT",
+          orientation: "l",
+          sections: [
+            {
+              title: "AUTHORITATIVE AUDIT LOGS",
+              data: [
+                ["Timestamp", "Action Node", "Details", "Authorized User", "Role", "Severity"],
+                ...filteredLogs.map(log => [
+                  log.timestamp,
+                  log.action,
+                  log.details,
+                  log.user,
+                  log.role,
+                  log.severity
+                ])
+              ]
+            }
           ]
-        }
-      ]
-    });
+        });
+      } finally {
+        setIsExporting(false);
+      }
+    }, 500);
   };
 
   return (
-    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto" }}>
+    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto", position: "relative" }}>
       
+      {/* EXPORT OVERLAY */}
+      <AnimatePresence>
+        {isExporting && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 999,
+              background: "rgba(10, 15, 25, 0.9)",
+              backdropFilter: "blur(20px)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "2rem"
+            }}
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+              style={{ width: "64px", height: "64px", border: "2px solid var(--primary)", borderTopColor: "transparent", borderRadius: "50%" }}
+            />
+            <div style={{ textAlign: "center" }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>GENERATING_LEDGER</h2>
+              <p style={{ color: "var(--primary)", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem" }}>PROCESSING {filteredLogs.length} INSTITUTIONAL NODES...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Institutional Header */}
       <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>

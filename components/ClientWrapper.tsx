@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import LoginPage from "@/app/page";
 import { motion, AnimatePresence } from "framer-motion";
 import OnboardingTour from "@/components/OnboardingTour";
+import CommandPalette from "@/components/CommandPalette";
+import LivePulse from "@/components/LivePulse";
 
 /**
  * CLIENT WRAPPER - THE SESSION-AWARE ARCHITECT
@@ -44,6 +46,8 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
       <OnboardingTour />
       {/* SESSION-BASED GUARD: If no user is logged in, no navigation is rendered. */}
       {!isLoginPage && !showLoginGate && <Sidebar />}
+      <CommandPalette />
+      <LivePulse />
       
       <div style={{ 
         flex: 1, 
