@@ -287,7 +287,7 @@ export default function StudentPassportPage() {
                         </div>
                      </div>
                   </div>
-               </framerMotion.div>
+               </motion.div>
 
                <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }}>
