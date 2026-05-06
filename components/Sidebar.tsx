@@ -173,7 +173,6 @@ export default function Sidebar() {
                       key={item.href} 
                       href={item.href} 
                       style={{ textDecoration: "none" }}
-                      {...(item.href === "/settings" ? { "data-tour": "profile-link" } : {})}
                     >
                       <motion.div 
                         whileHover={{ x: 4 }}

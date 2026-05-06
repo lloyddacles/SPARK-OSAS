@@ -229,6 +229,17 @@ export type AuditLog = {
   severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 };
 
+// CONTEXT DEFINITION - HOISTED
+const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
+
+export const useGlobalState = () => {
+  const context = useContext(GlobalStateContext);
+  if (context === undefined) {
+    throw new Error("useGlobalState must be used within a GlobalStateProvider");
+  }
+  return context;
+};
+
 // Initial Data - Start Empty for SQL Hydration
 const initialRequests: ServiceRequest[] = [];
 const initialServiceTypes: ServiceType[] = [];
@@ -328,7 +339,7 @@ type GlobalStateContextType = {
   toggleMobileSidebar: () => void;
 };
 
-const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
+
 
 
 export function GlobalStateProvider({ children }: { children: ReactNode }) {
@@ -849,10 +860,3 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export const useGlobalState = () => {
-  const context = useContext(GlobalStateContext);
-  if (context === undefined) {
-    throw new Error("useGlobalState must be used within a GlobalStateProvider");
-  }
-  return context;
-};

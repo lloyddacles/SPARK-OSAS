@@ -1,6 +1,5 @@
 "use server";
 
-import { prisma as globalPrisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
 /**
