@@ -49,13 +49,13 @@ export async function toggleUserArchive(userId: string) {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
 
-    const user = await db.user.findUnique({ where: { id: userId } });
+    const user = await db.user.findUnique({ where: { id: userId } }) as any;
     if (!user) throw new Error("USER_NOT_FOUND");
 
     const newStatus = user.status === "Archived" ? "Active" : "Archived";
     const updated = await db.user.update({
       where: { id: userId },
-      data: { status: newStatus }
+      data: { status: newStatus } as any
     });
     revalidatePath("/admin");
     return updated;
@@ -209,13 +209,13 @@ export async function getScholarInventory(page: number = 1, pageSize: number = 2
     if (filters.type) where.AND.push({ type: filters.type });
 
     const [scholars, total] = await Promise.all([
-      db.scholarInventory.findMany({
+      (db as any).scholarInventory.findMany({
         where: where.AND.length > 0 ? where : {},
         skip,
         take: pageSize,
         orderBy: { updatedAt: 'desc' }
       }),
-      db.scholarInventory.count({ where: where.AND.length > 0 ? where : {} })
+      (db as any).scholarInventory.count({ where: where.AND.length > 0 ? where : {} })
     ]);
 
     return { scholars, total };
@@ -230,7 +230,7 @@ export async function bulkUpdateScholarStatus(ids: string[], status: string) {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
 
-    await db.scholarInventory.updateMany({
+    await (db as any).scholarInventory.updateMany({
       where: { id: { in: ids } },
       data: { status }
     });
@@ -248,7 +248,7 @@ export async function addScholarToInventory(data: any) {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
 
-    const newScholar = await db.scholarInventory.create({
+    const newScholar = await (db as any).scholarInventory.create({
       data: {
         studentId: data.studentId,
         studentName: data.studentName,
@@ -275,7 +275,7 @@ export async function updateScholarInInventory(id: string, updates: any) {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
 
-    const updated = await db.scholarInventory.update({
+    const updated = await (db as any).scholarInventory.update({
       where: { id },
       data: {
         ...updates,
@@ -296,7 +296,7 @@ export async function deleteScholarFromInventory(id: string) {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
 
-    await db.scholarInventory.delete({
+    await (db as any).scholarInventory.delete({
       where: { id }
     });
 
