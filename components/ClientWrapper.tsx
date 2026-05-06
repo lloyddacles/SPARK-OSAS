@@ -31,6 +31,19 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
     }
   }, [currentUser, isLoading, pathname, router]);
 
+  // PWA REGISTRATION
+  useEffect(() => {
+    if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+          console.log('SW_NODE: SECURE_SYNC_ACTIVE', registration.scope);
+        }).catch((err) => {
+          console.error('SW_NODE: SYNC_FAIL', err);
+        });
+      });
+    }
+  }, []);
+
   const isLoginPage = pathname === "/" || pathname === "/login";
   const showLoginGate = !isLoading && !currentUser;
 

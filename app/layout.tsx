@@ -5,8 +5,16 @@ import { ClientWrapper } from "@/components/ClientWrapper";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SPARK | OSAS Management System",
-  description: "Student Platform for Assistance, Resources, and Knowledge - OSAS Integrated System",
+  title: "SPARK | OSAS Institutional Hub",
+  description: "Elite Institutional Governance & Intelligence Portal",
+  manifest: "/manifest.json",
+  themeColor: "#0a0f19",
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SPARK OSAS",
+  },
 };
 
 export default function RootLayout({

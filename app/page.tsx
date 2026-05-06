@@ -3,32 +3,20 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { 
-  Sparkles, 
   User, 
-  ShieldCheck, 
-  Building2, 
   ArrowRight, 
-  ChevronLeft,
-  Terminal,
-  Activity,
   Zap,
   Fingerprint,
   Sun,
   Moon,
-  ShieldAlert,
   Eye,
-  EyeOff
+  EyeOff,
+  Activity,
+  ShieldCheck,
+  Globe
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
-
-const BACKGROUNDS = [
-  "https://images.unsplash.com/photo-1541339907198-e08756ebafe3?q=80&w=2070&auto=format&fit=crop", // Campus
-  "https://images.unsplash.com/photo-1523050853064-dbad32c970a2?q=80&w=2038&auto=format&fit=crop", // Graduation
-  "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=2070&auto=format&fit=crop", // Studying
-  "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop", // Meeting
-  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=2070&auto=format&fit=crop"  // Library
-];
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -36,17 +24,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [bgIndex, setBgIndex] = useState(0);
   const { login, theme, toggleTheme } = useGlobalState();
   const router = useRouter();
-
-  // Background Carousel Logic
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % BACKGROUNDS.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,11 +37,11 @@ export default function LoginPage() {
       if (res && res.success) {
         router.push("/dashboard");
       } else {
-        setError(`AUTHENTICATION FAILED: ${res?.message || "INVALID CREDENTIALS"}`);
+        setError(`AUTHENTICATION_FAILURE: ${res?.message || "INVALID_CREDENTIALS"}`);
         setIsLoading(false);
       }
     } catch (err) {
-      setError("AUTHENTICATION FAILED: SYSTEM OFFLINE");
+      setError("SYSTEM_OFFLINE: UNABLE_TO_REACH_AUTH_NODE");
       setIsLoading(false);
     }
   };
@@ -76,165 +55,178 @@ export default function LoginPage() {
       background: "var(--bg-deep)",
       padding: "2rem",
       position: "relative",
-      overflow: "hidden",
-      transition: "background 0.5s ease"
+      overflow: "hidden"
     }}>
       
-      {/* Dynamic Background Carousel */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={bgIndex}
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 2.5, ease: "easeInOut" }}
-            style={{ 
-              position: "absolute", 
-              inset: 0, 
-              backgroundImage: `url(${BACKGROUNDS[bgIndex]})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              filter: theme === "dark" ? "brightness(0.3) saturate(0.8) blur(8px)" : "brightness(0.9) saturate(0.9) contrast(0.9) blur(8px)",
-              transition: "filter 1s ease"
-            }}
-          />
-        </AnimatePresence>
+      {/* LIQUID MESH BACKDROP */}
+      <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, 90, 0]
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: "absolute",
+            top: "-50%",
+            left: "-50%",
+            width: "200%",
+            height: "200%",
+            background: theme === "dark" 
+              ? "radial-gradient(circle at center, rgba(0, 229, 255, 0.05) 0%, transparent 50%)"
+              : "radial-gradient(circle at center, rgba(0, 229, 255, 0.1) 0%, transparent 50%)",
+            filter: "blur(100px)",
+            opacity: 0.5
+          }}
+        />
         
-        {/* Technical Overlays */}
-        <div style={{ 
-          position: "absolute", 
-          inset: 0, 
-          background: theme === "dark" 
-            ? "linear-gradient(to bottom, rgba(5, 7, 10, 0.4), rgba(5, 7, 10, 0.9))"
-            : "linear-gradient(to bottom, rgba(248, 250, 252, 0.3), rgba(248, 250, 252, 0.8))",
-          zIndex: 1,
-          transition: "background 1s ease"
-        }} />
-        
+        {/* Technical Data Stream Overlay */}
         <div style={{ 
           position: "absolute", 
           inset: 0, 
           backgroundImage: `linear-gradient(var(--border-dim) 1px, transparent 1px), linear-gradient(90deg, var(--border-dim) 1px, transparent 1px)`,
-          backgroundSize: "80px 80px",
-          opacity: theme === "dark" ? 0.15 : 0.4,
-          zIndex: 2,
-          transition: "opacity 1s ease"
+          backgroundSize: "60px 60px",
+          opacity: theme === "dark" ? 0.05 : 0.1,
+          zIndex: 1
         }} />
+
+        {/* Dynamic Scan Line */}
+        <motion.div 
+          animate={{ y: ["0%", "100%", "0%"] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            height: "2px",
+            background: "linear-gradient(90deg, transparent, var(--primary), transparent)",
+            opacity: 0.1,
+            zIndex: 2
+          }}
+        />
       </div>
 
-      {/* Theme Toggle Node */}
-      <button 
-        onClick={toggleTheme}
-        style={{ 
-          position: "fixed", 
-          top: "2rem", 
-          right: "2rem", 
-          width: "48px", 
-          height: "48px", 
-          background: "var(--bg-surface)", 
-          border: "1px solid var(--border-dim)",
-          color: "var(--primary)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 100,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-          backdropFilter: "blur(10px)"
-        }}
-      >
-        {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
-
-      <div style={{ width: "100%", maxWidth: "480px", position: "relative", zIndex: 10 }}>
+      {/* INSTITUTIONAL HEADER NODES */}
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, padding: "2rem 4rem", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 100 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          <div style={{ width: "32px", height: "32px", background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px" }}>
+            <Zap size={18} fill="var(--bg-deep)" />
+          </div>
+          <span style={{ fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.4em", color: "var(--text-main)" }}>SPARK // GOVERNANCE_HUB</span>
+        </div>
         
-        {/* Institutional Identity Node */}
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          <motion.div 
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
+        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", opacity: 0.4 }}>
+            <Globe size={14} />
+            <span style={{ fontSize: "0.6rem", fontWeight: "800", letterSpacing: "0.1em" }}>SERVER_STATUS: 🟢_ONLINE</span>
+          </div>
+          <button 
+            onClick={toggleTheme}
             style={{ 
-              width: "100px", 
-              height: "100px", 
-              margin: "0 auto 2rem",
+              width: "40px", 
+              height: "40px", 
+              background: "rgba(255,255,255,0.05)", 
+              border: "1px solid var(--border-dim)",
+              color: "var(--primary)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              position: "relative"
+              borderRadius: "4px",
+              cursor: "pointer",
+              transition: "all 0.2s"
             }}
           >
-            {/* The Digital Spark Icon (Large Version) */}
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              style={{ 
-                position: "absolute", 
-                inset: 0, 
-                border: "2px dashed var(--primary)", 
-                opacity: 0.3, 
-                borderRadius: "50%" 
-              }} 
-            />
-            <div style={{ 
-              width: "70px", 
-              height: "70px", 
-              background: "var(--primary)", 
-              display: "flex", 
-              alignItems: "center", 
-              justifyContent: "center", 
-              color: "var(--bg-deep)", 
-              borderRadius: "4px",
-              boxShadow: "0 0 50px var(--primary-glow)",
-              zIndex: 2
-            }}>
-              <Zap size={36} fill="currentColor" />
+            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
+      </div>
+
+      {/* CENTRAL PORTAL UNIT */}
+      <div style={{ width: "100%", maxWidth: "1000px", display: "grid", gridTemplateColumns: "1fr 440px", gap: "6rem", alignItems: "center", position: "relative", zIndex: 10 }}>
+        
+        {/* Left Aspect: Institutional Motto & Visuals */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <p style={{ color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.5em", marginBottom: "1.5rem" }}>EST. 2026</p>
+            <h1 style={{ fontSize: "4.5rem", fontWeight: "900", lineHeight: "1", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
+              GOVERNANCE <br /> 
+              <span style={{ color: "var(--primary)" }}>REDEFINED.</span>
+            </h1>
+            <p style={{ fontSize: "1rem", color: "var(--text-dim)", fontWeight: "600", marginTop: "2rem", maxWidth: "400px", lineHeight: "1.6" }}>
+              Experience the next evolution of institutional management. Hyper-efficient, secure, and hyper-responsive.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            style={{ display: "flex", gap: "3rem", marginTop: "2rem" }}
+          >
+            <div>
+              <p style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>100%</p>
+              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>UPTIME_SLA</p>
+            </div>
+            <div style={{ width: "1px", height: "40px", background: "var(--border-dim)" }} />
+            <div>
+              <p style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>{`< 50ms`}</p>
+              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>LATENCY_NODE</p>
+            </div>
+            <div style={{ width: "1px", height: "40px", background: "var(--border-dim)" }} />
+            <div>
+              <p style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>AES-256</p>
+              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>ENCRYPTION</p>
             </div>
           </motion.div>
-          <motion.h1 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            style={{ fontSize: "2.8rem", fontWeight: "900", letterSpacing: "0.25em", color: "var(--text-main)", marginBottom: "0.5rem" }}
-          >
-            SPARK <span style={{ color: "var(--primary)" }}>OSAS</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.5em" }}
-          >
-            INSTITUTIONAL GATEWAY
-          </motion.p>
         </div>
 
+        {/* Right Aspect: The Login Module */}
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
           className="sapphire-card"
-          style={{ padding: "3rem" }}
+          style={{ padding: "3.5rem", position: "relative", overflow: "hidden" }}
         >
+          {/* Animated Glow Border */}
+          <motion.div 
+            animate={{ opacity: [0.1, 0.3, 0.1] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            style={{ position: "absolute", inset: 0, border: "1px solid var(--primary)", pointerEvents: "none" }} 
+          />
+
+          <div style={{ marginBottom: "3rem" }}>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>SECURE_ENTRY</h2>
+            <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>AUTHENTICATION_REQUIRED</p>
+          </div>
+
           {error && (
-            <div style={{ 
-              background: "rgba(239, 68, 68, 0.1)", 
-              border: "1px solid rgba(239, 68, 68, 0.2)", 
-              color: "#ef4444", 
-              padding: "1rem", 
-              marginBottom: "2rem", 
-              fontSize: "0.65rem", 
-              fontWeight: "900", 
-              textAlign: "center",
-              letterSpacing: "0.1em"
-            }}>
+            <motion.div 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              style={{ 
+                background: "rgba(239, 68, 68, 0.1)", 
+                border: "1px solid rgba(239, 68, 68, 0.2)", 
+                color: "#ef4444", 
+                padding: "1rem", 
+                marginBottom: "2rem", 
+                fontSize: "0.65rem", 
+                fontWeight: "900", 
+                textAlign: "center"
+              }}
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           <form onSubmit={handleLogin} style={{ display: "grid", gap: "2rem" }}>
             <div>
-              <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
-                USERNAME / ID NUMBER
+              <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1rem" }}>
+                IDENTIFIER_TOKEN
               </label>
               <div style={{ position: "relative" }}>
                 <User size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
@@ -243,7 +235,7 @@ export default function LoginPage() {
                   type="text" 
                   value={username}
                   onChange={e => setUsername(e.target.value)}
-                  placeholder="ENTER YOUR IDENTIFIER"
+                  placeholder="USERNAME / ID NUMBER"
                   style={{ 
                     width: "100%", 
                     padding: "1.25rem 1.25rem 1.25rem 3.5rem", 
@@ -251,15 +243,16 @@ export default function LoginPage() {
                     fontWeight: "700",
                     background: "rgba(255,255,255,0.02)",
                     border: "1px solid var(--border-dim)",
-                    color: "var(--text-main)"
+                    color: "var(--text-main)",
+                    outline: "none"
                   }} 
                 />
               </div>
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>
-                SECURE PASSWORD
+              <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1rem" }}>
+                ACCESS_PHRASE
               </label>
               <div style={{ position: "relative" }}>
                 <Fingerprint size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
@@ -276,7 +269,8 @@ export default function LoginPage() {
                     fontWeight: "700",
                     background: "rgba(255,255,255,0.02)",
                     border: "1px solid var(--border-dim)",
-                    color: "var(--text-main)"
+                    color: "var(--text-main)",
+                    outline: "none"
                   }} 
                 />
                 <button
@@ -302,59 +296,50 @@ export default function LoginPage() {
             <button 
               disabled={isLoading}
               className="btn-cyan" 
-              style={{ width: "100%", padding: "1.25rem", marginTop: "1rem" }}
+              style={{ width: "100%", padding: "1.5rem", marginTop: "1rem" }}
             >
               {isLoading ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                   <Activity size={18} className="animate-pulse" /> VERIFYING IDENTITY...
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
+                   <Activity size={18} className="animate-pulse" /> VERIFYING_CLEARANCE...
                 </div>
               ) : (
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                   ACCESS SYSTEM <ArrowRight size={18} />
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
+                   INITIALIZE_SESSION <ArrowRight size={18} />
                 </div>
               )}
             </button>
           </form>
 
-          <div style={{ marginTop: "2.5rem", textAlign: "center", display: "grid", gap: "1rem" }}>
+          <div style={{ marginTop: "2.5rem", textAlign: "center", display: "flex", justifyContent: "space-between" }}>
             <p 
               onClick={() => router.push("/register")}
-              style={{ fontSize: "0.55rem", color: "var(--primary)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer" }}
+              style={{ fontSize: "0.55rem", color: "var(--primary)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer", textDecoration: "underline" }}
             >
-              NEW STUDENT? <span style={{ textDecoration: "underline" }}>CREATE ACCOUNT</span>
+              NEW_REGISTRATION
             </p>
             <p 
               onClick={() => router.push("/forgot-password")}
               style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer" }}
             >
-              FORGOT YOUR CREDENTIALS? <span style={{ color: "var(--primary)" }}>OSAS HELP DESK</span>
+              FORGOT_ACCESS?
             </p>
           </div>
         </motion.div>
+      </div>
 
-        <p style={{ textAlign: "center", marginTop: "3rem", fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "800", letterSpacing: "0.2em" }}>
+      {/* FOOTER METRICS */}
+      <div style={{ position: "fixed", bottom: "2rem", left: "4rem", right: "4rem", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 100 }}>
+        <p style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "800", letterSpacing: "0.2em" }}>
           © 2026 UNIVERSITY OF THE PHILIPPINES • SPARK CORE v2.5
         </p>
+        <div style={{ display: "flex", gap: "2rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <ShieldCheck size={12} color="var(--primary)" />
+            <span style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>ENCRYPTION: AES-256_ACTIVE</span>
+          </div>
+        </div>
       </div>
     </div>
-  );
-}
-
-function ChevronRight({ size, color, style }: { size: number, color: string, style?: any }) {
-  return (
-    <svg 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke={color} 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-      style={style}
-    >
-      <path d="m9 18 6-6-6-6"/>
-    </svg>
   );
 }
 

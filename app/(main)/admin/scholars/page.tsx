@@ -20,7 +20,11 @@ import {
   ChevronLeft, 
   ChevronRight,
   ShieldCheck,
-  X
+  X,
+  Zap,
+  Cpu,
+  Loader2,
+  ShieldAlert
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { 
@@ -55,6 +59,11 @@ export default function ScholarInventoryPage() {
     type: ""
   });
   
+  // Bulk Operation State
+  const [isProcessingBatch, setIsProcessingBatch] = useState(false);
+  const [batchProgress, setBatchProgress] = useState(0);
+  const [batchStatus, setBatchStatus] = useState("");
+
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -91,16 +100,46 @@ export default function ScholarInventoryPage() {
     setScholars(result.scholars);
     setTotal(result.total);
     setIsLoading(false);
-    setSelectedIds([]); // Clear selection on fetch
+    setSelectedIds([]); 
   };
 
   const handleBulkStatusUpdate = async (status: string) => {
     if (selectedIds.length === 0) return;
+    
+    setIsProcessingBatch(true);
+    setBatchStatus("INITIALIZING_SECURITY_SCAN...");
+    setBatchProgress(10);
+    
+    // Artificial High-Fidelity Sequence
+    await new Promise(r => setTimeout(r, 800));
+    setBatchStatus("VERIFYING_REGISTRY_NODES...");
+    setBatchProgress(30);
+    
+    await new Promise(r => setTimeout(r, 1000));
+    setBatchStatus(`EXECUTING_BATCH_UPDATE: ${status.toUpperCase()}...`);
+    setBatchProgress(60);
+
     const res = await bulkUpdateScholarStatus(selectedIds, status);
+    
     if (res.success) {
+      setBatchProgress(90);
+      setBatchStatus("SYNCHRONIZING_TELEMETRY...");
+      await new Promise(r => setTimeout(r, 600));
+      
       logAudit("BULK_STATUS_UPDATE", `Updated status to ${status} for ${selectedIds.length} scholars.`, "MEDIUM");
       fetchScholars();
+      
+      setBatchProgress(100);
+      setBatchStatus("BATCH_SUCCESSFUL");
+      await new Promise(r => setTimeout(r, 1000));
+    } else {
+      setBatchStatus("BATCH_REJECTED: SYSTEM_INTEGRITY_FAIL");
+      await new Promise(r => setTimeout(r, 2000));
     }
+    
+    setIsProcessingBatch(false);
+    setBatchProgress(0);
+    setBatchStatus("");
   };
 
   const toggleSelectAll = () => {
@@ -215,7 +254,58 @@ export default function ScholarInventoryPage() {
   if (!isHydrated) return null;
 
   return (
-    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto" }}>
+    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto", position: "relative" }}>
+      
+      {/* BATCH PROGRESS OVERLAY */}
+      <AnimatePresence>
+        {isProcessingBatch && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 2000,
+              background: "rgba(10, 15, 25, 0.9)",
+              backdropFilter: "blur(40px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "2rem"
+            }}
+          >
+            <div style={{ width: "100%", maxWidth: "600px", textAlign: "center" }}>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                style={{ width: "80px", height: "80px", margin: "0 auto 3rem", position: "relative" }}
+              >
+                <div style={{ position: "absolute", inset: 0, border: "2px dashed var(--primary)", borderRadius: "50%", opacity: 0.3 }} />
+                <div style={{ position: "absolute", inset: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Cpu size={32} color="var(--primary)" />
+                </div>
+              </motion.div>
+
+              <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em", marginBottom: "1rem" }}>{batchStatus}</h2>
+              <p style={{ color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.1em", marginBottom: "3rem" }}>AFFECTING_{selectedIds.length}_REGISTRY_NODES</p>
+              
+              <div style={{ height: "4px", width: "100%", background: "var(--bg-accent)", borderRadius: "2px", overflow: "hidden", marginBottom: "1rem" }}>
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${batchProgress}%` }}
+                  style={{ height: "100%", background: "var(--primary)", boxShadow: "0 0 20px var(--primary-glow)" }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>
+                <span>PROGRESS_STREAM</span>
+                <span>{batchProgress}%</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {isLoading && scholars.length === 0 ? (
         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
            <Activity size={48} className="status-pulse" color="var(--primary)" />
@@ -234,24 +324,24 @@ export default function ScholarInventoryPage() {
        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem" }}>
           <div>
              <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>UNIT: OSAS_SCHOLARSHIP_DIVISION</p>
-             <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-               SCHOLAR <span style={{ color: "var(--primary)" }}>INVENTORY</span>
+             <h1 style={{ fontSize: "3.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
+               SCHOLAR <span style={{ color: "var(--primary)" }}>INVENTORY.</span>
              </h1>
           </div>
           <div style={{ display: "flex", gap: "1rem" }}>
              <button 
                onClick={handleExportPDF}
                disabled={scholars.length === 0}
-               style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--border-active)", color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.15em", cursor: "pointer", opacity: scholars.length === 0 ? 0.3 : 1 }}
+               style={{ padding: "1.25rem 2.5rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--border-active)", color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.15em", cursor: "pointer", opacity: scholars.length === 0 ? 0.3 : 1 }}
              >
-                <Download size={18} /> EXPORT OFFICIAL ROSTER
+                <Download size={18} /> EXPORT_OFFICIAL_ROSTER
              </button>
              <button 
                onClick={() => { resetForm(); setIsAddModalOpen(true); }}
                className="btn-cyan" 
-               style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1rem" }}
+               style={{ padding: "1.25rem 2.5rem", display: "flex", alignItems: "center", gap: "1rem" }}
              >
-                <Plus size={18} /> PROVISION NEW RECORD
+                <Plus size={18} /> PROVISION_NEW_RECORD
              </button>
           </div>
        </div>
@@ -267,47 +357,47 @@ export default function ScholarInventoryPage() {
        />
 
        {/* TELEMETRY NODES */}
-       <div className="card-grid" style={{ marginBottom: "3rem" }}>
-          <div className="sapphire-card">
-             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em", marginBottom: "1rem" }}>TOTAL ACTIVE SCHOLARS</p>
-             <h2 style={{ fontSize: "2rem", fontWeight: "900" }}>{total}</h2>
-             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem" }}>
-                <Activity size={12} color="var(--primary)" />
-                <span style={{ fontSize: "0.55rem", fontWeight: "800", color: "var(--primary)" }}>REAL-TIME REGISTRY SYNC</span>
+       <div className="card-grid" style={{ marginBottom: "4rem" }}>
+          <div className="sapphire-card" style={{ borderLeft: "4px solid var(--primary)" }}>
+             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>TOTAL_ACTIVE_SCHOLARS</p>
+             <h2 style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--text-main)" }}>{total}</h2>
+             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "1.5rem" }}>
+                <Activity size={14} color="var(--primary)" className="animate-pulse" />
+                <span style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.05em" }}>LIVE_REGISTRY_SYNC</span>
              </div>
           </div>
           <div className="sapphire-card">
-             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em", marginBottom: "1rem" }}>BATCH DISTRIBUTION</p>
-             <h2 style={{ fontSize: "2rem", fontWeight: "900" }}>{scholars.length > 0 ? scholars[0].batch : "N/A"}</h2>
-             <p style={{ fontSize: "0.55rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "1rem" }}>PRIMARY COHORT</p>
+             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>PRIMARY_COHORT_BATCH</p>
+             <h2 style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--text-main)" }}>{scholars.length > 0 ? scholars[0].batch : "N/A"}</h2>
+             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem" }}>ACTIVE_INSTITUTIONAL_BATCH</p>
           </div>
-          <div className="sapphire-card">
-             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em", marginBottom: "1rem" }}>SYSTEM HEALTH</p>
-             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                <ShieldCheck size={24} color="#10b981" />
-                <span style={{ fontSize: "0.8rem", fontWeight: "900", color: "#10b981" }}>ENCRYPTED</span>
+          <div className="sapphire-card" style={{ background: "rgba(0, 229, 255, 0.02)", border: "1px solid var(--primary)" }}>
+             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>SECURITY_STATE</p>
+             <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                <ShieldCheck size={28} color="#10b981" />
+                <span style={{ fontSize: "1rem", fontWeight: "900", color: "#10b981" }}>ENCRYPTED</span>
              </div>
-             <p style={{ fontSize: "0.55rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "1rem" }}>DATA INTEGRITY VERIFIED</p>
+             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem" }}>DATA_FIDELITY_VERIFIED</p>
           </div>
        </div>
 
        {/* CONTROLS & FILTERING */}
-       <div className="sapphire-card" style={{ marginBottom: "2rem", padding: "1.5rem" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: "1.5rem", alignItems: "center" }}>
+       <div className="sapphire-card" style={{ marginBottom: "3rem", padding: "2rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: "2rem", alignItems: "center" }}>
              <div style={{ position: "relative" }}>
-                <Search size={16} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-dim)" }} />
+                <Search size={18} style={{ position: "absolute", left: "1.5rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
                 <input 
                   type="text" 
-                  placeholder="SEARCH NAME OR ID..." 
+                  placeholder="SEARCH_BY_NAME_OR_IDENTIFIER..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{ 
                     width: "100%", 
-                    padding: "0.85rem 0.85rem 0.85rem 3rem", 
-                    background: "var(--bg-accent)", 
+                    padding: "1rem 1rem 1rem 3.5rem", 
+                    background: "rgba(255,255,255,0.02)", 
                     border: "1px solid var(--border-dim)", 
                     color: "var(--text-main)",
-                    fontSize: "0.75rem",
+                    fontSize: "0.85rem",
                     fontWeight: "700"
                   }}
                 />
@@ -316,9 +406,9 @@ export default function ScholarInventoryPage() {
              <select 
                value={filters.program}
                onChange={(e) => setFilters({...filters, program: e.target.value})}
-               style={{ padding: "0.85rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.7rem", fontWeight: "800" }}
+               style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "900" }}
              >
-                <option value="">ALL PROGRAMS</option>
+                <option value="">ALL_PROGRAMS</option>
                 {Array.from(new Set(scholars.map(s => s.programName))).map(p => (
                   <option key={p} value={p}>{p.toUpperCase()}</option>
                 ))}
@@ -327,9 +417,9 @@ export default function ScholarInventoryPage() {
              <select 
                value={filters.batch}
                onChange={(e) => setFilters({...filters, batch: e.target.value})}
-               style={{ padding: "0.85rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.7rem", fontWeight: "800" }}
+               style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "900" }}
              >
-                <option value="">ALL BATCHES</option>
+                <option value="">ALL_BATCHES</option>
                 {Array.from(new Set(scholars.map(s => s.batch))).map(b => (
                   <option key={b} value={b}>{b}</option>
                 ))}
@@ -338,9 +428,9 @@ export default function ScholarInventoryPage() {
              <select 
                value={filters.status}
                onChange={(e) => setFilters({...filters, status: e.target.value})}
-               style={{ padding: "0.85rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.7rem", fontWeight: "800" }}
+               style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "900" }}
              >
-                <option value="">ALL STATUSES</option>
+                <option value="">ALL_STATUSES</option>
                 <option value="Active">ACTIVE</option>
                 <option value="Graduated">GRADUATED</option>
                 <option value="Terminated">TERMINATED</option>
@@ -352,22 +442,34 @@ export default function ScholarInventoryPage() {
        <AnimatePresence>
           {selectedIds.length > 0 && (
              <motion.div 
-               initial={{ opacity: 0, y: 10 }}
+               initial={{ opacity: 0, y: 15 }}
                animate={{ opacity: 1, y: 0 }}
-               exit={{ opacity: 0, y: 10 }}
+               exit={{ opacity: 0, y: 15 }}
                className="sapphire-card" 
-               style={{ marginBottom: "2rem", padding: "1.25rem 2rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+               style={{ 
+                 marginBottom: "3rem", 
+                 padding: "1.5rem 2.5rem", 
+                 background: "rgba(0, 229, 255, 0.05)", 
+                 border: "1px solid var(--primary)", 
+                 display: "flex", 
+                 justifyContent: "space-between", 
+                 alignItems: "center",
+                 boxShadow: "0 10px 30px rgba(0, 229, 255, 0.1)"
+               }}
              >
-                <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                   <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)" }}>{selectedIds.length} SCHOLARS SELECTED</p>
-                   <div style={{ width: "1px", height: "20px", background: "var(--border-dim)" }} />
-                   <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>EXECUTE BATCH ACTION:</p>
+                <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
+                   <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                     <Zap size={20} color="var(--primary)" />
+                     <p style={{ fontSize: "0.85rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.05em" }}>{selectedIds.length} SCHOLARS_SELECTED</p>
+                   </div>
+                   <div style={{ width: "1px", height: "30px", background: "var(--border-dim)" }} />
+                   <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>EXECUTE_BATCH_GOVERNANCE:</p>
                 </div>
-                <div style={{ display: "flex", gap: "0.75rem" }}>
-                   <button onClick={() => handleBulkStatusUpdate("Active")} className="btn-cyan" style={{ padding: "0.5rem 1rem", fontSize: "0.6rem" }}>ACTIVATE</button>
-                   <button onClick={() => handleBulkStatusUpdate("Graduated")} style={{ padding: "0.5rem 1rem", background: "#10b981", color: "white", fontSize: "0.6rem", fontWeight: "900", border: "none", cursor: "pointer" }}>GRADUATE</button>
-                   <button onClick={() => handleBulkStatusUpdate("Terminated")} style={{ padding: "0.5rem 1rem", background: "#ef4444", color: "white", fontSize: "0.6rem", fontWeight: "900", border: "none", cursor: "pointer" }}>TERMINATE</button>
-                   <button onClick={() => setSelectedIds([])} style={{ padding: "0.5rem 1rem", background: "transparent", border: "1px solid var(--border-dim)", color: "var(--text-dim)", fontSize: "0.6rem", fontWeight: "900", cursor: "pointer" }}>CANCEL</button>
+                <div style={{ display: "flex", gap: "1rem" }}>
+                   <button onClick={() => handleBulkStatusUpdate("Active")} className="btn-cyan" style={{ padding: "0.75rem 2rem", fontSize: "0.7rem", fontWeight: "900" }}>ACTIVATE</button>
+                   <button onClick={() => handleBulkStatusUpdate("Graduated")} style={{ padding: "0.75rem 2rem", background: "#10b981", color: "white", fontSize: "0.7rem", fontWeight: "900", border: "none", cursor: "pointer", borderRadius: "4px" }}>GRADUATE</button>
+                   <button onClick={() => handleBulkStatusUpdate("Terminated")} style={{ padding: "0.75rem 2rem", background: "#ef4444", color: "white", fontSize: "0.7rem", fontWeight: "900", border: "none", cursor: "pointer", borderRadius: "4px" }}>TERMINATE</button>
+                   <button onClick={() => setSelectedIds([])} style={{ padding: "0.75rem 2rem", background: "transparent", border: "1px solid var(--border-dim)", color: "var(--text-dim)", fontSize: "0.7rem", fontWeight: "900", cursor: "pointer", borderRadius: "4px" }}>CANCEL</button>
                 </div>
              </motion.div>
           )}
@@ -379,89 +481,95 @@ export default function ScholarInventoryPage() {
              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
                 <thead>
                    <tr style={{ background: "rgba(0, 229, 255, 0.02)", borderBottom: "1px solid var(--border-dim)" }}>
-                      <th style={{ padding: "1.5rem 2rem", width: "50px" }}>
+                      <th style={{ padding: "2rem", width: "80px" }}>
                          <input 
                            type="checkbox" 
                            checked={scholars.length > 0 && selectedIds.length === scholars.length}
                            onChange={toggleSelectAll}
                          />
                       </th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>IDENTIFIER</th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>SCHOLAR NAME</th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>PROGRAM</th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>BATCH</th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>CATEGORY</th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>STATUS</th>
-                      <th style={{ padding: "1.5rem 2rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em", textAlign: "right" }}>ACTIONS</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>IDENTIFIER</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>SCHOLAR_NAME</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>PROGRAM</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>BATCH</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>CATEGORY</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>STATUS</th>
+                      <th style={{ padding: "2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", textAlign: "right" }}>ACTIONS</th>
                    </tr>
                 </thead>
                    <tbody>
-                     {scholars.map((scholar, i) => (
-                       <tr 
-                         key={scholar.id} 
-                         style={{ 
-                           borderBottom: "1px solid var(--border-dim)", 
-                           background: selectedIds.includes(scholar.id) ? "rgba(0, 229, 255, 0.05)" : (i % 2 === 0 ? "transparent" : "rgba(0, 229, 255, 0.01)"),
-                           transition: "background 0.2s"
-                         }}
-                       >
-                            <td style={{ padding: "1.5rem 2rem" }}>
-                               <input 
-                                 type="checkbox" 
-                                 checked={selectedIds.includes(scholar.id)}
-                                 onChange={() => toggleSelectOne(scholar.id)}
-                               />
-                            </td>
-                            <td style={{ padding: "1.5rem 2rem", fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>{scholar.studentId}</td>
-                            <td style={{ padding: "1.5rem 2rem" }}>
-                               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                                  <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "var(--bg-accent)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-dim)" }}>
-                                     <User size={14} color="var(--primary)" />
-                                  </div>
-                                  <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "white" }}>{scholar.studentName.toUpperCase()}</span>
-                               </div>
-                            </td>
-                            <td style={{ padding: "1.5rem 2rem" }}>
-                               <p style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-main)" }}>{scholar.programName}</p>
-                               <p style={{ fontSize: "0.55rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "0.2rem" }}>TYPE: {scholar.type.toUpperCase()}</p>
-                            </td>
-                            <td style={{ padding: "1.5rem 2rem", fontSize: "0.75rem", fontWeight: "800" }}>{scholar.batch}</td>
-                            <td style={{ padding: "1.5rem 2rem" }}>
-                               <span style={{ 
-                                 padding: "0.4rem 0.8rem", 
-                                 borderRadius: "4px", 
-                                 fontSize: "0.55rem", 
-                                 fontWeight: "900", 
-                                 background: scholar.category === "New" ? "rgba(59, 130, 246, 0.1)" : "rgba(16, 185, 129, 0.1)",
-                                 color: scholar.category === "New" ? "#3b82f6" : "#10b981",
-                                 border: `1px solid ${scholar.category === "New" ? "rgba(59, 130, 246, 0.2)" : "rgba(16, 185, 129, 0.2)"}`
-                               }}>
-                                 {scholar.category.toUpperCase()}
-                               </span>
-                            </td>
-                            <td style={{ padding: "1.5rem 2rem" }}>
-                               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: scholar.status === "Active" ? "#10b981" : "#ef4444" }} />
-                                  <span style={{ fontSize: "0.65rem", fontWeight: "900", color: scholar.status === "Active" ? "#10b981" : "#ef4444" }}>{scholar.status.toUpperCase()}</span>
-                               </div>
-                            </td>
-                            <td style={{ padding: "1.5rem 2rem", textAlign: "right" }}>
-                               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem" }}>
-                                  <button onClick={() => startEdit(scholar)} style={{ padding: "0.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", borderRadius: "4px", cursor: "pointer" }}>
-                                     <Edit2 size={14} />
-                                  </button>
-                                  <button onClick={() => handleDeleteScholar(scholar.id, scholar.studentName)} style={{ padding: "0.5rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.2)", color: "#ef4444", borderRadius: "4px", cursor: "pointer" }}>
-                                     <Trash2 size={14} />
-                                  </button>
-                               </div>
-                            </td>
-                         </tr>
-                      ))}
+                     <AnimatePresence mode="popLayout">
+                       {scholars.map((scholar, i) => (
+                         <motion.tr 
+                           key={scholar.id} 
+                           initial={{ opacity: 0, x: -10 }}
+                           animate={{ opacity: 1, x: 0 }}
+                           transition={{ delay: i * 0.03 }}
+                           style={{ 
+                             borderBottom: "1px solid var(--border-dim)", 
+                             background: selectedIds.includes(scholar.id) ? "rgba(0, 229, 255, 0.05)" : (i % 2 === 0 ? "transparent" : "rgba(0, 229, 255, 0.01)"),
+                             transition: "background 0.2s"
+                           }}
+                         >
+                              <td style={{ padding: "2rem" }}>
+                                 <input 
+                                   type="checkbox" 
+                                   checked={selectedIds.includes(scholar.id)}
+                                   onChange={() => toggleSelectOne(scholar.id)}
+                                 />
+                              </td>
+                              <td style={{ padding: "2rem", fontSize: "0.8rem", fontWeight: "900", color: "var(--text-dim)" }}>{scholar.studentId}</td>
+                              <td style={{ padding: "2rem" }}>
+                                 <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: "var(--bg-accent)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-dim)" }}>
+                                       <User size={16} color="var(--primary)" />
+                                    </div>
+                                    <span style={{ fontSize: "0.9rem", fontWeight: "800", color: "white" }}>{scholar.studentName.toUpperCase()}</span>
+                                 </div>
+                              </td>
+                              <td style={{ padding: "2rem" }}>
+                                 <p style={{ fontSize: "0.85rem", fontWeight: "900", color: "var(--text-main)" }}>{scholar.programName}</p>
+                                 <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.4rem", letterSpacing: "0.1em" }}>TYPE: {scholar.type.toUpperCase()}</p>
+                              </td>
+                              <td style={{ padding: "2rem", fontSize: "0.9rem", fontWeight: "800", color: "var(--text-main)" }}>{scholar.batch}</td>
+                              <td style={{ padding: "2rem" }}>
+                                 <span style={{ 
+                                   padding: "0.5rem 1rem", 
+                                   borderRadius: "4px", 
+                                   fontSize: "0.6rem", 
+                                   fontWeight: "900", 
+                                   background: scholar.category === "New" ? "rgba(59, 130, 246, 0.1)" : "rgba(16, 185, 129, 0.1)",
+                                   color: scholar.category === "New" ? "#3b82f6" : "#10b981",
+                                   border: `1px solid ${scholar.category === "New" ? "rgba(59, 130, 246, 0.2)" : "rgba(16, 185, 129, 0.2)"}`,
+                                   letterSpacing: "0.1em"
+                                 }}>
+                                   {scholar.category.toUpperCase()}
+                                 </span>
+                              </td>
+                              <td style={{ padding: "2rem" }}>
+                                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                    <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: scholar.status === "Active" ? "#10b981" : "#ef4444", boxShadow: scholar.status === "Active" ? "0 0 10px rgba(16, 185, 129, 0.4)" : "none" }} />
+                                    <span style={{ fontSize: "0.75rem", fontWeight: "900", color: scholar.status === "Active" ? "#10b981" : "#ef4444" }}>{scholar.status.toUpperCase()}</span>
+                                 </div>
+                              </td>
+                              <td style={{ padding: "2rem", textAlign: "right" }}>
+                                 <div style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}>
+                                    <button onClick={() => startEdit(scholar)} style={{ padding: "0.75rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", borderRadius: "4px", cursor: "pointer" }}>
+                                       <Edit2 size={16} />
+                                    </button>
+                                    <button onClick={() => handleDeleteScholar(scholar.id, scholar.studentName)} style={{ padding: "0.75rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.2)", color: "#ef4444", borderRadius: "4px", cursor: "pointer" }}>
+                                       <Trash2 size={16} />
+                                    </button>
+                                 </div>
+                              </td>
+                         </motion.tr>
+                       ))}
+                     </AnimatePresence>
                    {scholars.length === 0 && !isLoading && (
                       <tr>
-                         <td colSpan={8} style={{ padding: "5rem", textAlign: "center" }}>
-                            <Layers size={48} color="var(--text-dim)" style={{ marginBottom: "1.5rem", opacity: 0.2 }} />
-                            <p style={{ fontSize: "0.85rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>NO SCHOLAR RECORDS FOUND IN THE CURRENT ARCHIVE</p>
+                         <td colSpan={8} style={{ padding: "10rem", textAlign: "center" }}>
+                            <Layers size={64} color="var(--text-dim)" style={{ marginBottom: "2rem", opacity: 0.1 }} />
+                            <p style={{ fontSize: "1rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>NO_RECORDS_DETECTED_IN_ARCHIVE</p>
                          </td>
                       </tr>
                    )}
@@ -470,30 +578,31 @@ export default function ScholarInventoryPage() {
           </div>
 
           {/* PAGINATION FOOTER */}
-          <div style={{ padding: "1.5rem 2rem", background: "rgba(0, 229, 255, 0.02)", borderTop: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>
-                SHOWING <span style={{ color: "var(--text-main)" }}>{(page - 1) * pageSize + 1}</span> TO <span style={{ color: "var(--text-main)" }}>{Math.min(page * pageSize, total)}</span> OF <span style={{ color: "var(--text-main)" }}>{total}</span> SCHOLARS
+          <div style={{ padding: "2rem 3rem", background: "rgba(255, 255, 255, 0.01)", borderTop: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+             <p style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.05em" }}>
+                SHOWING_METRICS: <span style={{ color: "var(--text-main)" }}>{(page - 1) * pageSize + 1}—{Math.min(page * pageSize, total)}</span> // TOTAL_NODES: <span style={{ color: "var(--primary)" }}>{total}</span>
              </p>
-             <div style={{ display: "flex", gap: "0.5rem" }}>
+             <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button 
                   disabled={page === 1}
                   onClick={() => setPage(p => Math.max(1, p - 1))}
-                  style={{ padding: "0.5rem 1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.6rem", fontWeight: "900", opacity: page === 1 ? 0.3 : 1, cursor: page === 1 ? "not-allowed" : "pointer" }}
+                  style={{ padding: "0.75rem 1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.7rem", fontWeight: "900", opacity: page === 1 ? 0.3 : 1, cursor: page === 1 ? "not-allowed" : "pointer", borderRadius: "4px" }}
                 >
-                   <ChevronLeft size={14} />
+                   <ChevronLeft size={16} />
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                   <button 
                     key={p}
                     onClick={() => setPage(p)}
                     style={{ 
-                      padding: "0.5rem 1rem", 
+                      padding: "0.75rem 1.5rem", 
                       background: page === p ? "var(--primary)" : "var(--bg-accent)", 
                       border: "1px solid var(--border-dim)", 
-                      color: page === p ? "var(--text-dark)" : "white", 
-                      fontSize: "0.6rem", 
+                      color: page === p ? "var(--bg-deep)" : "white", 
+                      fontSize: "0.7rem", 
                       fontWeight: "900",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      borderRadius: "4px"
                     }}
                   >
                     {p}
@@ -502,9 +611,9 @@ export default function ScholarInventoryPage() {
                 <button 
                   disabled={page === totalPages || totalPages === 0}
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                  style={{ padding: "0.5rem 1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.6rem", fontWeight: "900", opacity: page === totalPages || totalPages === 0 ? 0.3 : 1, cursor: page === totalPages || totalPages === 0 ? "not-allowed" : "pointer" }}
+                  style={{ padding: "0.75rem 1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.7rem", fontWeight: "900", opacity: page === totalPages || totalPages === 0 ? 0.3 : 1, cursor: page === totalPages || totalPages === 0 ? "not-allowed" : "pointer", borderRadius: "4px" }}
                 >
-                   <ChevronRight size={14} />
+                   <ChevronRight size={16} />
                 </button>
              </div>
           </div>
@@ -517,99 +626,80 @@ export default function ScholarInventoryPage() {
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
-               style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(10px)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
+               style={{ position: "fixed", inset: 0, background: "rgba(5, 7, 10, 0.9)", backdropFilter: "blur(20px)", zIndex: 1500, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
              >
                 <motion.div 
-                  initial={{ scale: 0.9, y: 20 }}
+                  initial={{ scale: 0.95, y: 20 }}
                   animate={{ scale: 1, y: 0 }}
-                  style={{ width: "100%", maxWidth: "700px", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", padding: "3rem" }}
+                  style={{ width: "100%", maxWidth: "800px", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", padding: "4rem", position: "relative", overflow: "hidden" }}
                 >
-                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3rem" }}>
+                   {/* Technical Overlay */}
+                   <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: "var(--primary)" }} />
+
+                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4rem" }}>
                       <div>
-                         <h2 style={{ fontSize: "1.25rem", fontWeight: "900", color: "var(--text-main)" }}>{isAddModalOpen ? "PROVISION NEW SCHOLAR" : "MODIFY SCHOLAR RECORD"}</h2>
-                         <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", marginTop: "0.25rem" }}>INSTITUTIONAL REGISTRY NODE</p>
+                         <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>{isAddModalOpen ? "PROVISION_NEW_SCHOLAR" : "MODIFY_SCHOLAR_RECORD"}</h2>
+                         <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", marginTop: "0.5rem", letterSpacing: "0.2em" }}>INSTITUTIONAL_REGISTRY_NODE</p>
                       </div>
-                      <button onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer" }}>
-                         <X size={24} />
+                      <button onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-dim)", color: "var(--text-dim)", cursor: "pointer", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px" }}>
+                         <X size={20} />
                       </button>
                    </div>
 
-                   <form onSubmit={isAddModalOpen ? handleAddScholar : handleUpdateScholar} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                   <form onSubmit={isAddModalOpen ? handleAddScholar : handleUpdateScholar} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }}>
                       <div style={{ gridColumn: "span 2" }}>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>STUDENT FULL NAME</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>SUBJECT_FULL_NAME</label>
                          <input 
                            required
                            value={formData.studentName}
                            onChange={e => setFormData({...formData, studentName: e.target.value})}
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
+                           style={{ width: "100%", padding: "1.25rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.95rem", fontWeight: "800" }}
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>INSTITUTIONAL ID</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>IDENTIFIER_TOKEN</label>
                          <input 
                            required
                            value={formData.studentId}
                            onChange={e => setFormData({...formData, studentId: e.target.value})}
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
+                           style={{ width: "100%", padding: "1.25rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.95rem", fontWeight: "800" }}
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>BATCH YEAR</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>BATCH_COHORT</label>
                          <input 
                            required
                            value={formData.batch}
                            onChange={e => setFormData({...formData, batch: e.target.value})}
                            placeholder="e.g. 2023-2024"
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
+                           style={{ width: "100%", padding: "1.25rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.95rem", fontWeight: "800" }}
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>SCHOLARSHIP PROGRAM</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>SCHOLARSHIP_PROTOCOL</label>
                          <input 
                            required
                            value={formData.programName}
                            onChange={e => setFormData({...formData, programName: e.target.value})}
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
+                           style={{ width: "100%", padding: "1.25rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.95rem", fontWeight: "800" }}
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>PROVIDER TYPE</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>PROVIDER_CLASS</label>
                          <select 
                            value={formData.type}
                            onChange={e => setFormData({...formData, type: e.target.value})}
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
+                           style={{ width: "100%", padding: "1.25rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.95rem", fontWeight: "800" }}
                          >
-                            <option value="Institutional">Institutional</option>
-                            <option value="Government">Government</option>
-                            <option value="Private">Private</option>
+                            <option value="Institutional">INSTITUTIONAL</option>
+                            <option value="Government">GOVERNMENT</option>
+                            <option value="Private">PRIVATE</option>
                          </select>
                       </div>
-                      <div>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>SCHOLAR CATEGORY</label>
-                         <select 
-                           value={formData.category}
-                           onChange={e => setFormData({...formData, category: e.target.value})}
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
-                         >
-                            <option value="New">New Scholar</option>
-                            <option value="Continuing">Continuing Scholar</option>
-                         </select>
-                      </div>
-                      <div>
-                         <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>SYSTEM STATUS</label>
-                         <select 
-                           value={formData.status}
-                           onChange={e => setFormData({...formData, status: e.target.value})}
-                           style={{ width: "100%", padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.8rem", fontWeight: "800" }}
-                         >
-                            <option value="Active">Active</option>
-                            <option value="Graduated">Graduated</option>
-                            <option value="Terminated">Terminated</option>
-                         </select>
-                      </div>
-                      <div style={{ gridColumn: "span 2", marginTop: "2rem" }}>
-                         <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.25rem", fontSize: "0.75rem", fontWeight: "900" }}>
-                            {isAddModalOpen ? "AUTHORIZE NEW SCHOLAR RECORD" : "SAVE INSTITUTIONAL UPDATES"}
+                      <div style={{ gridColumn: "span 2", marginTop: "3rem" }}>
+                         <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.5rem", fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1.25rem", justifyContent: "center" }}>
+                            <ShieldCheck size={20} />
+                            {isAddModalOpen ? "AUTHORIZE_PROVISIONING" : "SAVE_GOVERNANCE_UPDATES"}
                          </button>
                       </div>
                    </form>

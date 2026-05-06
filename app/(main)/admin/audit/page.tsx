@@ -19,12 +19,15 @@ import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useState } from "react";
 import ProcessGuide from "@/components/ProcessGuide";
 import { generateInstitutionalPDF } from "@/lib/utils/pdfGenerator";
+import { summarizeAuditLogs } from "@/lib/actions/aiActions";
 
 export default function AuditCenterPage() {
   const { auditLogs, currentUser } = useGlobalState();
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState<string>("ALL");
   const [isExporting, setIsExporting] = useState(false);
+  const [aiAnalysis, setAiAnalysis] = useState<any>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const isAuth = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
 
@@ -56,6 +59,16 @@ export default function AuditCenterPage() {
     const matchesSeverity = severityFilter === "ALL" || log.severity === severityFilter;
     return matchesSearch && matchesSeverity;
   });
+
+  const handleAIAnalysis = async () => {
+    setIsAnalyzing(true);
+    try {
+      const analysis = await summarizeAuditLogs(auditLogs);
+      setAiAnalysis(analysis);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleExportPDF = async () => {
     if (filteredLogs.length === 0) return;
@@ -138,6 +151,15 @@ export default function AuditCenterPage() {
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button 
+            onClick={handleAIAnalysis}
+            disabled={isAnalyzing}
+            className="btn-cyan" 
+            style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)", color: "var(--primary)" }}
+          >
+            {isAnalyzing ? <Activity className="animate-pulse" size={18} /> : <Zap size={18} />} 
+            {isAnalyzing ? "ANALYZING..." : "AI SENTINEL ANALYSIS"}
+          </button>
+          <button 
             onClick={handleExportPDF}
             className="btn-cyan" 
             style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--border-active)", color: "var(--primary)", opacity: filteredLogs.length === 0 ? 0.3 : 1 }}
@@ -171,6 +193,36 @@ export default function AuditCenterPage() {
               <span style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>{filteredLogs.length} NODES DETECTED</span>
             </div>
           </div>
+
+          <AnimatePresence>
+            {aiAnalysis && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="sapphire-card"
+                style={{ padding: "2.5rem", marginBottom: "3rem", border: "1px solid var(--primary)", position: "relative", overflow: "hidden" }}
+              >
+                <div style={{ position: "absolute", top: 0, right: 0, padding: "0.75rem 1.25rem", background: "var(--primary)", color: "var(--bg-deep)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>
+                  AI_SENTINEL_SUMMARY
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 250px", gap: "3rem" }}>
+                  <div>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "1rem" }}>Administrative Intelligence Briefing</h3>
+                    <p style={{ fontSize: "0.9rem", color: "var(--text-dim)", lineHeight: "1.6", fontWeight: "600" }}>{aiAnalysis.summary}</p>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>ANOMALY_FLAGS</p>
+                    {aiAnalysis.anomalies.map((a: string, i: number) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.7rem", color: a.includes("NO") ? "var(--text-dim)" : "#ef4444", fontWeight: "700" }}>
+                        <ShieldAlert size={14} /> {a}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
             {filteredLogs.length === 0 ? (
