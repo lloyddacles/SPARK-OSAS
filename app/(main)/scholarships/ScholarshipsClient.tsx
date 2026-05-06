@@ -549,6 +549,17 @@ export default function ScholarshipsClient() {
                   ))}
                </div>
 
+               <ProcessGuide
+                  title="OSAS Scholarship Administration Protocol"
+                  steps={[
+                     { title: "Configure Batches", desc: "Define the scholarship cycle timeline (Start/End dates) in 'MANAGE BATCHES' to enable student applications.", icon: <Calendar size={14} color="var(--text-main)" /> },
+                     { title: "Manage Programs", desc: "Update scholarship providers and specific program requirements in 'MANAGE PROGRAMS'.", icon: <Database size={14} color="var(--text-main)" /> },
+                     { title: "Review & Recommend", desc: "Filter applications by batch and issue recommendations based on student vault verification.", icon: <FileCheck size={14} color="var(--text-main)" /> },
+                     { title: "Final Management Approval", desc: "Review the recommended list and execute a bulk approval to finalize the scholarship awarding.", icon: <ShieldCheck size={14} color="var(--text-main)" /> }
+                  ]}
+                  themeColor="var(--primary)"
+               />
+
                {osasView === "Applications" && (
                   <div style={{ width: "100%" }}>
                      {/* TIMELINE_PROTOCOL */}
