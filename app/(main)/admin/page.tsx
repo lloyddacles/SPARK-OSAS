@@ -72,9 +72,7 @@ export default function AdminCenterPage() {
 
   useEffect(() => {
     setIsHydrated(true);
-    if (isAuth) {
-      fetchData();
-    }
+    fetchData();
   }, [currentUser]);
 
   const isAuth = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
@@ -341,7 +339,10 @@ export default function AdminCenterPage() {
                     </thead>
                     <tbody style={{ fontSize: "0.75rem" }}>
                       {(() => {
-                        const filtered = (users || []).filter(u => (u.name || "").toLowerCase().includes(searchTerm.toLowerCase()));
+                        const filtered = (users || []).filter(u => {
+                          const searchStr = (u.name || "").toLowerCase() + (u.username || "").toLowerCase();
+                          return searchStr.includes(searchTerm.toLowerCase());
+                        });
                         if (filtered.length === 0) {
                           return (
                             <tr>
@@ -431,6 +432,47 @@ export default function AdminCenterPage() {
               </motion.div>
             )}
 
+            {activeTab === "Health" && (
+              <motion.div key="health" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
+                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                    <div className="sapphire-card">
+                       <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+                          <Cpu size={18} color="var(--primary)" /> COMPUTE HEALTH
+                       </h3>
+                       <div style={{ display: "grid", gap: "1.5rem" }}>
+                          {[
+                            { label: "MEMORY_USAGE", value: "342MB", status: "STABLE" },
+                            { label: "API_LATENCY", value: "24ms", status: "OPTIMAL" },
+                            { label: "DATABASE_IO", value: "89%", status: "NOMINAL" }
+                          ].map(s => (
+                            <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                               <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>{s.label}</span>
+                               <span style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-main)" }}>{s.value} <span style={{ color: "#10b981", fontSize: "0.5rem", marginLeft: "0.5rem" }}>[{s.status}]</span></span>
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+                    <div className="sapphire-card">
+                       <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+                          <Lock size={18} color="var(--primary)" /> SECURITY STATUS
+                       </h3>
+                       <div style={{ display: "grid", gap: "1.5rem" }}>
+                          {[
+                            { label: "ENCRYPTION", value: "AES-256", status: "ACTIVE" },
+                            { label: "AUTH_PROTOCOL", value: "CRED_HARDENED", status: "ENABLED" },
+                            { label: "IDENTITY_AUDIT", value: "LIVE_LEDGER", status: "SYNCED" }
+                          ].map(s => (
+                            <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                               <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>{s.label}</span>
+                               <span style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-main)" }}>{s.value} <span style={{ color: "var(--primary)", fontSize: "0.5rem", marginLeft: "0.5rem" }}>[{s.status}]</span></span>
+                            </div>
+                          ))}
+                       </div>
+                    </div>
+                 </div>
+              </motion.div>
+            )}
+
             {activeTab === "Audit" && (
               <motion.div key="audit" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
                  <div className="sapphire-card" style={{ padding: "0" }}>
@@ -479,47 +521,6 @@ export default function AdminCenterPage() {
                           ))}
                         </tbody>
                       </table>
-                    </div>
-                 </div>
-              </motion.div>
-            )}
-
-            {activeTab === "Health" && (
-              <motion.div key="health" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }}>
-                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-                    <div className="sapphire-card">
-                       <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                          <Cpu size={18} color="var(--primary)" /> COMPUTE HEALTH
-                       </h3>
-                       <div style={{ display: "grid", gap: "1.5rem" }}>
-                          {[
-                            { label: "MEMORY_USAGE", value: "342MB", status: "STABLE" },
-                            { label: "API_LATENCY", value: "24ms", status: "OPTIMAL" },
-                            { label: "DATABASE_IO", value: "89%", status: "NOMINAL" }
-                          ].map(s => (
-                            <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                               <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>{s.label}</span>
-                               <span style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-main)" }}>{s.value} <span style={{ color: "#10b981", fontSize: "0.5rem", marginLeft: "0.5rem" }}>[{s.status}]</span></span>
-                            </div>
-                          ))}
-                       </div>
-                    </div>
-                    <div className="sapphire-card">
-                       <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                          <Lock size={18} color="var(--primary)" /> SECURITY STATUS
-                       </h3>
-                       <div style={{ display: "grid", gap: "1.5rem" }}>
-                          {[
-                            { label: "ENCRYPTION", value: "AES-256", status: "ACTIVE" },
-                            { label: "AUTH_PROTOCOL", value: "CRED_HARDENED", status: "ENABLED" },
-                            { label: "IDENTITY_AUDIT", value: "LIVE_LEDGER", status: "SYNCED" }
-                          ].map(s => (
-                            <div key={s.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                               <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>{s.label}</span>
-                               <span style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-main)" }}>{s.value} <span style={{ color: "var(--primary)", fontSize: "0.5rem", marginLeft: "0.5rem" }}>[{s.status}]</span></span>
-                            </div>
-                          ))}
-                       </div>
                     </div>
                  </div>
               </motion.div>
