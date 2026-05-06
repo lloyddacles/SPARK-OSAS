@@ -191,14 +191,21 @@ export default function ScholarInventoryPage() {
       subtitle: "Official Institutional Scholar Inventory",
       filename: "SCHOLAR_REGISTRY_ROSTER",
       orientation: "l",
-      data: scholars,
-      columns: [
-        { header: "ID", dataKey: "studentId" },
-        { header: "Student Name", dataKey: "studentName" },
-        { header: "Academic Program", dataKey: "programName" },
-        { header: "Batch", dataKey: "batch" },
-        { header: "Type", dataKey: "type" },
-        { header: "Status", dataKey: "status" }
+      sections: [
+        {
+          title: "AUTHORITATIVE SCHOLAR REGISTRY",
+          data: [
+            ["ID", "Student Name", "Academic Program", "Batch", "Type", "Status"],
+            ...scholars.map(s => [
+              s.studentId,
+              s.studentName,
+              s.programName,
+              s.batch,
+              s.type,
+              s.status
+            ])
+          ]
+        }
       ]
     });
   };

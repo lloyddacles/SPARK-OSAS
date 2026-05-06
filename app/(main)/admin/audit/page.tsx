@@ -63,14 +63,21 @@ export default function AuditCenterPage() {
       subtitle: "Official Institutional Audit Stream",
       filename: "SYSTEM_AUDIT_REPORT",
       orientation: "l",
-      data: filteredLogs,
-      columns: [
-        { header: "Timestamp", dataKey: "timestamp" },
-        { header: "Action Node", dataKey: "action" },
-        { header: "Details", dataKey: "details" },
-        { header: "Authorized User", dataKey: "user" },
-        { header: "Role", dataKey: "role" },
-        { header: "Severity", dataKey: "severity" }
+      sections: [
+        {
+          title: "AUTHORITATIVE AUDIT LOGS",
+          data: [
+            ["Timestamp", "Action Node", "Details", "Authorized User", "Role", "Severity"],
+            ...filteredLogs.map(log => [
+              log.timestamp,
+              log.action,
+              log.details,
+              log.user,
+              log.role,
+              log.severity
+            ])
+          ]
+        }
       ]
     });
   };
