@@ -1,6 +1,75 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+
+import { 
+  addOrganization as dbAddOrg, 
+  updateOrganization as dbUpdateOrg, 
+  deleteOrganization as dbDeleteOrg,
+  proposeActivity as dbProposeAct,
+  updateActivityStatus as dbUpdateActStatus,
+  getOrganizations as dbGetOrgs,
+  getActivities as dbGetActivities
+} from "@/lib/actions/orgActions";
+import { 
+  addAnnouncement as dbAddAnn,
+  deleteAnnouncement as dbDelAnn,
+  getAnnouncements as dbGetAnns,
+  addReferral as dbAddRef,
+  getReferrals as dbGetRefs,
+  updateReferralStatus as dbUpdateRef
+} from "@/lib/actions/systemActions";
+import {
+  getScholarshipPrograms as dbGetProgs,
+  addScholarshipProgram as dbAddProg,
+  updateScholarshipProgram as dbUpdateProg,
+  deleteScholarshipProgram as dbDelProg,
+  getScholarshipApps as dbGetApps,
+  submitScholarshipApp as dbSubmitApp,
+  updateAppStatus as dbUpdateApp,
+  getBatchConfigs as dbGetBatches,
+  updateBatchTimeline as dbUpdateBatch,
+  addBatchConfig as dbAddBatch,
+  deleteBatchConfig as dbDelBatch
+} from "@/lib/actions/scholarshipActions";
+import {
+  getServiceRequests as dbGetRequests,
+  addServiceRequest as dbAddRequest,
+  updateServiceRequestStatus as dbUpdateReqStatus,
+  getServiceTypes as dbGetServiceTypes,
+  addServiceType as dbAddServiceType,
+  updateServiceType as dbUpdateServiceType,
+  deleteServiceType as dbDelServiceType,
+  getGoodMoralConfig as dbGetGMConfig,
+  updateGoodMoralConfig as dbUpdateGMConfig,
+  getIssuedCertificates as dbGetIssuedCerts,
+  issueCertificate as dbIssueCert
+} from "@/lib/actions/requestActions";
+import { 
+  login as dbLogin, 
+  register as dbRegister,
+  logout as dbLogout, 
+  getSession as dbGetSession,
+  updateProfile as dbUpdateProfile 
+} from "@/lib/actions/authActions";
+import { 
+  uploadToVault as dbUploadVault, 
+  verifyDocument as dbVerifyDoc,
+  getAllStudentVaults as dbGetStudentVaults 
+} from "@/lib/actions/vaultActions";
+import {
+  getAppointments as dbGetAppts,
+  bookAppointment as dbBookApp,
+  updateAppointmentStatus as dbUpdateAppStatus
+} from "@/lib/actions/appointmentActions";
+import { 
+  getNotifications as dbGetNotifs,
+  addNotification as dbAddNotif,
+  markNotificationsRead as dbMarkRead,
+  getAuditLogs as dbGetAuditLogs,
+  addAuditLog as dbAddAudit
+} from "@/lib/actions/notificationActions";
+import { getAllUsers as dbGetAllUsers } from "@/lib/actions/adminActions";
 
 // Types
 export type User = {
@@ -261,75 +330,6 @@ type GlobalStateContextType = {
 
 const GlobalStateContext = createContext<GlobalStateContextType | undefined>(undefined);
 
-import { 
-  addOrganization as dbAddOrg, 
-  updateOrganization as dbUpdateOrg, 
-  deleteOrganization as dbDeleteOrg,
-  proposeActivity as dbProposeAct,
-  updateActivityStatus as dbUpdateActStatus,
-  getOrganizations as dbGetOrgs,
-  getActivities as dbGetActivities
-} from "@/lib/actions/orgActions";
-import { 
-  addAnnouncement as dbAddAnn,
-  deleteAnnouncement as dbDelAnn,
-  getAnnouncements as dbGetAnns,
-  addReferral as dbAddRef,
-  getReferrals as dbGetRefs,
-  updateReferralStatus as dbUpdateRef
-} from "@/lib/actions/systemActions";
-import {
-  getScholarshipPrograms as dbGetProgs,
-  addScholarshipProgram as dbAddProg,
-  updateScholarshipProgram as dbUpdateProg,
-  deleteScholarshipProgram as dbDelProg,
-  getScholarshipApps as dbGetApps,
-  submitScholarshipApp as dbSubmitApp,
-  updateAppStatus as dbUpdateApp,
-  getBatchConfigs as dbGetBatches,
-  updateBatchTimeline as dbUpdateBatch,
-  addBatchConfig as dbAddBatch,
-  deleteBatchConfig as dbDelBatch
-} from "@/lib/actions/scholarshipActions";
-import {
-  getServiceRequests as dbGetRequests,
-  addServiceRequest as dbAddRequest,
-  updateServiceRequestStatus as dbUpdateReqStatus,
-  getServiceTypes as dbGetServiceTypes,
-  addServiceType as dbAddServiceType,
-  updateServiceType as dbUpdateServiceType,
-  deleteServiceType as dbDelServiceType,
-  getGoodMoralConfig as dbGetGMConfig,
-  updateGoodMoralConfig as dbUpdateGMConfig,
-  getIssuedCertificates as dbGetIssuedCerts,
-  issueCertificate as dbIssueCert
-} from "@/lib/actions/requestActions";
-import { 
-  login as dbLogin, 
-  register as dbRegister,
-  logout as dbLogout, 
-  getSession as dbGetSession,
-  updateProfile as dbUpdateProfile 
-} from "@/lib/actions/authActions";
-import { 
-  uploadToVault as dbUploadVault, 
-  verifyDocument as dbVerifyDoc,
-  getAllStudentVaults as dbGetStudentVaults 
-} from "@/lib/actions/vaultActions";
-import {
-  getAppointments as dbGetAppts,
-  bookAppointment as dbBookApp,
-  updateAppointmentStatus as dbUpdateAppStatus
-} from "@/lib/actions/appointmentActions";
-import { 
-  getNotifications as dbGetNotifs,
-  addNotification as dbAddNotif,
-  markNotificationsRead as dbMarkRead,
-  getAuditLogs as dbGetAuditLogs,
-  addAuditLog as dbAddAudit
-} from "@/lib/actions/notificationActions";
-import { getAllUsers as dbGetAllUsers } from "@/lib/actions/adminActions";
-import { useEffect } from "react";
 
 export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const [requests, setRequests] = useState<ServiceRequest[]>(initialRequests);

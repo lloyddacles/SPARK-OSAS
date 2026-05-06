@@ -56,7 +56,8 @@ export default function ScholarshipsClient() {
       bulkRecommendScholarships,
       bulkApproveScholarships,
       auditLogs,
-      logAudit
+      logAudit,
+      updateProfile
    } = useGlobalState();
    const [activeTab, setActiveTab] = useState<"Student" | "OSAS">("Student");
    const [isHydrated, setIsHydrated] = useState(false);
@@ -77,7 +78,6 @@ export default function ScholarshipsClient() {
    const [aiMatch, setAiMatch] = useState<ScholarshipProgram | null>(null);
    const [matchScore, setMatchScore] = useState(0);
 
-   const { updateProfile } = useGlobalState();
 
    const [reqs, setReqs] = useState({ pic1x1: false, letter: false, sketch: false, cor: false, grades: false, picHouse: false });
    const [isSuccess, setIsSuccess] = useState(false);
