@@ -27,6 +27,7 @@ import { useGlobalState } from "@/lib/GlobalStateContext";
 import { getScholarInventory, addScholarToInventory, updateScholarInInventory, deleteScholarFromInventory, getAllUsers } from "@/lib/actions/adminActions";
 import { generateScholarReport } from "@/lib/utils/reportGenerator";
 import ConfirmModal from "@/components/ConfirmModal";
+import ProcessGuide from "@/components/ProcessGuide";
 
 export default function ScholarInventoryPage() {
   const { currentUser, logAudit } = useGlobalState();
@@ -200,6 +201,16 @@ export default function ScholarInventoryPage() {
                <Plus size={18} /> PROVISION NEW RECORD
             </button>
          </div>
+
+       <ProcessGuide 
+          title="Scholarship Registry Audit Protocol"
+          steps={[
+             { title: "Monitor Registry", desc: "Review the official institutional list of active, continuing, and graduated scholars.", icon: <Search size={14} /> },
+             { title: "Provision Records", desc: "Execute a new scholar registration by defining their program, type, and batch year.", icon: <Plus size={14} /> },
+             { title: "Audit Status", desc: "Monitor student academic standing and update their system status (Active, Graduated, Terminated).", icon: <User size={14} /> },
+             { title: "Export Compliance", desc: "Generate official scholarship reports for university management and financial audits.", icon: <Download size={14} /> }
+          ]}
+       />
       </div>
 
       {/* TELEMETRY NODES */}

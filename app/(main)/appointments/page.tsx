@@ -22,6 +22,7 @@ import {
   X
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
+import ProcessGuide from "@/components/ProcessGuide";
 
 export default function AppointmentsPage() {
   const { appointments, bookAppointment, updateApptStatus, currentUser } = useGlobalState();
@@ -153,6 +154,17 @@ export default function AppointmentsPage() {
           </motion.div>
         ) : (
           <motion.div key="appt-list" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {isAdmin && (
+               <ProcessGuide 
+                  title="Scheduling Master Protocol"
+                  steps={[
+                     { title: "Configure Availability", desc: "Define operational hours and consultation slots for the academic term.", icon: <Clock size={14} /> },
+                     { title: "Monitor Queue", desc: "Review incoming session requests and student identity details in real-time.", icon: <Search size={14} /> },
+                     { title: "Execute Validation", desc: "Approve or cancel appointments based on priority and personnel availability.", icon: <CalendarCheck size={14} /> },
+                     { title: "Initialize Session", desc: "Execute the consultation and log the completion node in the institutional ledger.", icon: <Activity size={14} /> }
+                  ]}
+               />
+            )}
             
             {/* TELEMETRY ROW */}
             <div className="card-grid" style={{ marginBottom: "3rem" }}>

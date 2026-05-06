@@ -27,6 +27,7 @@ import {
 import { useState, useEffect } from "react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
+import ProcessGuide from "@/components/ProcessGuide";
 
 export default function GuidancePortal() {
   const router = useRouter();
@@ -140,28 +141,15 @@ export default function GuidancePortal() {
         {activeTab === "Overview" && (
           <motion.div key="overview" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
             
-            {/* SAPPHIRE SOP PROTOCOL */}
-            <div className="sapphire-card" style={{ marginBottom: "3rem", borderLeft: "4px solid var(--primary)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2.5rem" }}>
-                <Activity size={20} color="var(--primary)" />
-                <h3 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>GUIDANCE OPERATIONAL PROTOCOL</h3>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1px", background: "var(--border-dim)" }}>
-                {[
-                  { step: "01", title: "INTAKE ASSESSMENT", desc: "Review referral or walk-in records." },
-                  { step: "02", title: "COUNSELING SESSION", desc: "Conduct one-on-one professional support." },
-                  { step: "03", title: "FINDINGS LOG", desc: "Document behavioral recommendations." },
-                  { step: "04", title: "OSAS ENDORSEMENT", desc: "Forward disciplinary nodes to the Director." },
-                  { step: "05", title: "CLEARANCE ISSUE", desc: "Verify conduct and sign Good Moral certs." }
-                ].map((s) => (
-                  <div key={s.step} style={{ background: "var(--bg-surface)", padding: "1.5rem" }}>
-                    <div style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.75rem" }}>PHASE {s.step}</div>
-                    <p style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "0.5rem" }}>{s.title}</p>
-                    <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.4" }}>{s.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ProcessGuide 
+                title="Counseling Management Protocol"
+                steps={[
+                   { title: "Intake Assessment", desc: "Review student referral records or walk-in consultation requests in the pipeline queue.", icon: <ClipboardList size={14} /> },
+                   { title: "Counseling Session", desc: "Conduct one-on-one professional support and student wellness evaluation sessions.", icon: <HeartHandshake size={14} /> },
+                   { title: "Document Findings", desc: "Log behavioral recommendations and clinical observations in the secure institutional vault.", icon: <FileText size={14} /> },
+                   { title: "Endorsement & Finalization", desc: "Forward nodes to OSAS and verify conduct for the issuance of Good Moral certificates.", icon: <ShieldCheck size={14} /> }
+                ]}
+             />
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                {/* GOOD MORAL QUEUE */}

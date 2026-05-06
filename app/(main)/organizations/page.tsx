@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { useGlobalState, StudentOrg } from "@/lib/GlobalStateContext";
 import ConfirmModal from "@/components/ConfirmModal";
+import ProcessGuide from "@/components/ProcessGuide";
 
 export default function OrganizationsPage() {
   const { 
@@ -208,6 +209,15 @@ export default function OrganizationsPage() {
       <AnimatePresence mode="wait">
         {activeTab === "Student" && (
           <motion.div key="student" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
+             <ProcessGuide 
+                title="Guild Leadership Roadmap"
+                steps={[
+                   { title: "Select Guild", desc: "Access your recognized organization's command station to manage operations.", icon: <Building2 size={14} /> },
+                   { title: "Draft Proposal", desc: "Define project objectives, budget, and timeline for your upcoming activity.", icon: <FileText size={14} /> },
+                   { title: "Faculty Endorsement", desc: "Transmit your proposal for review and endorsement by your faculty adviser.", icon: <ShieldCheck size={14} /> },
+                   { title: "OSAS Finalization", desc: "Monitor your activity registry until official OSAS Executive approval is granted.", icon: <CheckCircle2 size={14} /> }
+                ]}
+             />
              {!userOrg ? (
                <div className="sapphire-card" style={{ padding: "4rem", textAlign: "center" }}>
                   <Building2 size={48} style={{ margin: "0 auto 2rem", opacity: 0.1 }} />
@@ -319,6 +329,16 @@ export default function OrganizationsPage() {
                 <button onClick={() => setOsasSubTab("Activities")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Activities" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Activities" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>ACTIVITY REVIEW</button>
                 <button onClick={() => setOsasSubTab("Manage")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Manage" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Manage" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>GUILD DIRECTORY</button>
              </div>
+
+             <ProcessGuide 
+                title="OSAS Organization Protocol"
+                steps={[
+                   { title: "Monitor Queue", desc: "Review pending activity proposals and RSO registration requests in real-time.", icon: <History size={14} /> },
+                   { title: "Audit Details", desc: "Verify budget alignment, venue availability, and faculty adviser endorsements.", icon: <Search size={14} /> },
+                   { title: "Execute Verdict", desc: "Approve, request revision, or reject proposals with detailed executive remarks.", icon: <FileSignature size={14} /> },
+                   { title: "Registry Management", desc: "Maintain the official University RSO Directory and status definitions.", icon: <Database size={14} /> }
+                ]}
+             />
 
              <AnimatePresence mode="wait">
                {osasSubTab === "Activities" ? (

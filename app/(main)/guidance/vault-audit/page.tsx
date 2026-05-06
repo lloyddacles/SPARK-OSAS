@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { getAllStudentVaults, VaultStatus } from "@/lib/actions/vaultActions";
+import ProcessGuide from "@/components/ProcessGuide";
 
 export default function VaultAuditPage() {
   const { verifyDocument, currentUser } = useGlobalState();
@@ -94,6 +95,16 @@ export default function VaultAuditPage() {
           </h1>
         </div>
       </div>
+
+      <ProcessGuide 
+         title="Digital Vault Verification Protocol"
+         steps={[
+            { title: "Select Identity", desc: "Locate the student node within the vault repository to access their document index.", icon: <User size={14} /> },
+            { title: "Audit Node", desc: "Select a specific file to enter the secure audit viewport for live verification.", icon: <Eye size={14} /> },
+            { title: "Review Payload", desc: "Analyze the document content for accuracy, clarity, and institutional compliance.", icon: <FileText size={14} /> },
+            { title: "Issue Verdict", desc: "Log institutional remarks and update the verification status in the ledger.", icon: <ShieldCheck size={14} /> }
+         ]}
+      />
 
       <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "2rem", alignItems: "start" }}>
         

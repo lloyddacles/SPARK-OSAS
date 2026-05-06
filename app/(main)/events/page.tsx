@@ -21,6 +21,7 @@ import {
   X
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
+import ProcessGuide from "@/components/ProcessGuide";
 
 export default function EventsPage() {
   const { announcements, addAnnouncement, deleteAnnouncement, currentUser } = useGlobalState();
@@ -166,6 +167,15 @@ export default function EventsPage() {
           </motion.div>
         ) : (
           <motion.div key="admin" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}>
+            <ProcessGuide 
+                title="Institutional Broadcasting Protocol"
+                steps={[
+                   { title: "Select Category", desc: "Define the broadcast type (Urgent, News, Academic) to set the priority level and visual signature.", icon: <Filter size={14} /> },
+                   { title: "Draft Headline", desc: "Create a high-clarity title that immediately informs the campus community.", icon: <Megaphone size={14} /> },
+                   { title: "Compose Payload", desc: "Provide detailed information, links, or instructions within the transmission body.", icon: <Info size={14} /> },
+                   { title: "Execute Broadcast", desc: "Transmit the announcement to the central stream for immediate institutional visibility.", icon: <Radio size={14} /> }
+                ]}
+             />
             <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "3rem", alignItems: "start" }}>
               {/* COMPOSER */}
               <div className="sapphire-card" style={{ padding: "4rem" }}>
