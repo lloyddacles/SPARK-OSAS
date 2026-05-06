@@ -89,11 +89,11 @@ export default function StudentPassportPage() {
       }
     ];
 
-    generateInstitutionalPDF(
-      `DIGITAL_PASSPORT_${studentName.replace(/\s+/g, '_')}`,
-      "STUDENT IDENTITY PASSPORT",
-      sections
-    );
+    generateInstitutionalPDF({
+      filename: `DIGITAL_PASSPORT_${studentName.replace(/\s+/g, '_')}`,
+      title: "STUDENT IDENTITY PASSPORT",
+      sections: sections
+    });
     logAudit("PASSPORT_EXPORT", `Digital Passport exported for ${studentName}`, "MEDIUM");
   };
 
