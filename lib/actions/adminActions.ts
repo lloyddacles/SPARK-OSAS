@@ -324,7 +324,7 @@ export async function getStudentPassport(identifier: string) {
             { name: { contains: identifier, mode: 'insensitive' } as any },
             { username: identifier }
           ]
-        }
+        } as any
       }),
       (db as any).scholarInventory.findMany({
         where: {
