@@ -31,7 +31,7 @@ export async function updateUser(userId: string, updates: any) {
   try {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
-    
+
     const updated = await (db as any).user.update({
       where: { id: userId },
       data: updates
@@ -69,8 +69,8 @@ export async function createUser(formData: any) {
   const db = await getDB();
   if (!db) {
     const lastError = (globalThis as any).PRISMA_LAST_ERROR;
-    return { 
-      success: false, 
+    return {
+      success: false,
       message: lastError ? `DATABASE_ERROR: ${lastError}` : (process.env.DATABASE_URL ? "DATABASE_OFFLINE_OR_BUSY" : "CRITICAL_CONFIG_ERROR: DATABASE_URL_MISSING")
     };
   }
@@ -188,10 +188,10 @@ export async function getScholarInventory(page: number = 1, pageSize: number = 2
     }
 
     const skip = (page - 1) * pageSize;
-    
+
     // Build Complex Filter Object
     const where: any = { AND: [] };
-    
+
     if (searchTerm) {
       where.AND.push({
         OR: [
@@ -305,5 +305,68 @@ export async function deleteScholarFromInventory(id: string) {
   } catch (e: any) {
     console.error("DELETE_SCHOLAR_FAIL", e);
     return { success: false, message: e.message || "DELETE_FAILED" };
+  }
+}
+/**
+ * DIGITAL STUDENT PASSPORT - IDENTITY AGGREGATION
+ */
+export async function getStudentPassport(identifier: string) {
+  try {
+    const db = await getDB();
+    if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+    // Identifier can be StudentId or Name
+    const [user, scholarRecords, applications, requests, referrals, appointments] = await Promise.all([
+      db.user.findFirst({
+        where: {
+          OR: [
+            { studentId: identifier },
+            { name: { contains: identifier, mode: 'insensitive' } },
+            { username: identifier }
+          ]
+        }
+      }),
+      (db as any).scholarInventory.findMany({
+        where: {
+          OR: [
+            { studentId: identifier },
+            { studentName: { contains: identifier, mode: 'insensitive' } }
+          ]
+        }
+      }),
+      (db as any).scholarshipApp.findMany({
+        where: {
+          studentName: { contains: identifier, mode: 'insensitive' }
+        }
+      }),
+      (db as any).serviceRequest.findMany({
+        where: {
+          studentName: { contains: identifier, mode: 'insensitive' }
+        }
+      }),
+      (db as any).referral.findMany({
+        where: {
+          studentName: { contains: identifier, mode: 'insensitive' }
+        }
+      }),
+      (db as any).appointment.findMany({
+        where: {
+          studentName: { contains: identifier, mode: 'insensitive' }
+        }
+      })
+    ]);
+
+    return {
+      identity: user,
+      scholarships: scholarRecords,
+      applicationHistory: applications,
+      serviceRequests: requests,
+      referralHistory: referrals,
+      appointmentHistory: appointments,
+      lastAudit: new Date().toISOString()
+    };
+  } catch (e) {
+    console.error("GET_PASSPORT_FAIL", e);
+    return null;
   }
 }
