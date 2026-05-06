@@ -321,7 +321,7 @@ export async function getStudentPassport(identifier: string) {
         where: {
           OR: [
             { studentId: identifier },
-            { name: { contains: identifier, mode: 'insensitive' } },
+            { name: { contains: identifier, mode: 'insensitive' } as any },
             { username: identifier }
           ]
         }
@@ -330,28 +330,28 @@ export async function getStudentPassport(identifier: string) {
         where: {
           OR: [
             { studentId: identifier },
-            { studentName: { contains: identifier, mode: 'insensitive' } }
+            { studentName: { contains: identifier, mode: 'insensitive' } as any }
           ]
         }
       }),
       (db as any).scholarshipApp.findMany({
         where: {
-          studentName: { contains: identifier, mode: 'insensitive' }
+          studentName: { contains: identifier, mode: 'insensitive' } as any
         }
       }),
       (db as any).serviceRequest.findMany({
         where: {
-          studentName: { contains: identifier, mode: 'insensitive' }
+          studentName: { contains: identifier, mode: 'insensitive' } as any
         }
       }),
       (db as any).referral.findMany({
         where: {
-          studentName: { contains: identifier, mode: 'insensitive' }
+          studentName: { contains: identifier, mode: 'insensitive' } as any
         }
       }),
       (db as any).appointment.findMany({
         where: {
-          studentName: { contains: identifier, mode: 'insensitive' }
+          studentName: { contains: identifier, mode: 'insensitive' } as any
         }
       })
     ]);
