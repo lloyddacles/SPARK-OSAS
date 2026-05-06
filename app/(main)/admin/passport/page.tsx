@@ -1,7 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "react-transition-group";
-import { motion as framerMotion, AnimatePresence as FramerAnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { 
   Fingerprint, 
@@ -106,9 +105,9 @@ export default function StudentPassportPage() {
     <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto", position: "relative" }}>
       
       {/* SCANNING OVERLAY */}
-      <FramerAnimatePresence>
+      <AnimatePresence>
         {isSearching && (
-          <framerMotion.div
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -125,7 +124,7 @@ export default function StudentPassportPage() {
               gap: "2rem"
             }}
           >
-            <framerMotion.div
+            <motion.div
               animate={{ 
                 scale: [1, 1.2, 1],
                 rotate: [0, 180, 360]
@@ -134,21 +133,21 @@ export default function StudentPassportPage() {
               style={{ width: "100px", height: "100px", border: "2px dashed var(--primary)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}
             >
               <Fingerprint size={48} color="var(--primary)" />
-            </framerMotion.div>
+            </motion.div>
             <div style={{ textAlign: "center" }}>
               <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>BIOMETRIC_DATA_SCAN</h2>
               <p style={{ color: "var(--primary)", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem", letterSpacing: "0.1em" }}>RECOGNIZING_SUBJECT_IDENTIFIER: {identifier.toUpperCase()}</p>
             </div>
             
             {/* Dynamic Scan Line */}
-            <framerMotion.div 
+            <motion.div 
               animate={{ y: ["-100%", "100%", "-100%"] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
               style={{ position: "absolute", left: 0, right: 0, height: "100px", background: "linear-gradient(to bottom, transparent, rgba(0, 229, 255, 0.2), transparent)", pointerEvents: "none" }}
             />
-          </framerMotion.div>
+          </motion.div>
         )}
-      </FramerAnimatePresence>
+      </AnimatePresence>
 
       {/* Sapphire Header */}
       <div style={{ marginBottom: "5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
@@ -169,7 +168,7 @@ export default function StudentPassportPage() {
       </div>
 
       {/* Search Command */}
-      <framerMotion.div 
+      <motion.div 
         layout
         className="sapphire-card" 
         style={{ marginBottom: "5rem", padding: "3rem", borderLeft: "4px solid var(--primary)", position: "relative", overflow: "hidden" }}
@@ -202,15 +201,15 @@ export default function StudentPassportPage() {
             </button>
          </form>
          {error && (
-           <framerMotion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} style={{ marginTop: "2rem", color: "#ef4444", fontSize: "0.75rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
+           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} style={{ marginTop: "2rem", color: "#ef4444", fontSize: "0.75rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
               <AlertTriangle size={16} /> {error}
-           </framerMotion.div>
+           </motion.div>
          )}
-      </framerMotion.div>
+      </motion.div>
 
-      <FramerAnimatePresence mode="wait">
+      <AnimatePresence mode="wait">
         {passport ? (
-          <framerMotion.div 
+          <motion.div 
             key="passport-result" 
             initial={{ opacity: 0, y: 30 }} 
             animate={{ opacity: 1, y: 0 }} 
@@ -220,7 +219,7 @@ export default function StudentPassportPage() {
             
             {/* TOP BAR: HOLOGRAPHIC IDENTITY BLOCK */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "4rem", marginBottom: "4rem" }}>
-               <framerMotion.div 
+               <motion.div 
                  whileHover={{ scale: 1.02 }}
                  className="sapphire-card" 
                  style={{ 
@@ -238,14 +237,14 @@ export default function StudentPassportPage() {
                   </div>
 
                   <div style={{ position: "relative", width: "160px", height: "160px", margin: "0 auto 2.5rem" }}>
-                    <framerMotion.div 
+                    <motion.div 
                       animate={{ rotate: 360 }}
                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                       style={{ position: "absolute", inset: -10, border: "2px dashed var(--primary)", borderRadius: "50%", opacity: 0.3 }}
                     />
                     <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "var(--bg-accent)", display: "flex", alignItems: "center", justifyContent: "center", border: "4px solid var(--primary)", boxShadow: "0 0 30px var(--primary-glow)", position: "relative", overflow: "hidden" }}>
                        <User size={80} color="var(--primary)" />
-                       <framerMotion.div 
+                       <motion.div 
                          animate={{ x: ["-100%", "200%"] }}
                          transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                          style={{ position: "absolute", top: 0, bottom: 0, width: "20px", background: "rgba(255,255,255,0.1)", skewX: "-20deg" }}
@@ -329,7 +328,7 @@ export default function StudentPassportPage() {
                        </div>
                        <div style={{ textAlign: "center", padding: "1rem" }}>
                           <div style={{ position: "relative", display: "inline-block" }}>
-                            <framerMotion.div 
+                            <motion.div 
                               animate={{ scale: [1, 1.1, 1] }}
                               transition={{ repeat: Infinity, duration: 2 }}
                               style={{ position: "absolute", inset: -10, borderRadius: "50%", border: "2px solid rgba(245, 158, 11, 0.2)" }} 
@@ -340,7 +339,7 @@ export default function StudentPassportPage() {
                           </div>
                           <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem", letterSpacing: "0.2em" }}>OPEN_REFERRAL_CASES</p>
                           <div style={{ marginTop: "2.5rem", height: "6px", background: "var(--bg-accent)", borderRadius: "3px", overflow: "hidden" }}>
-                             <framerMotion.div 
+                             <motion.div 
                                initial={{ width: 0 }}
                                animate={{ width: passport.referralHistory.length > 0 ? "40%" : "100%" }}
                                style={{ height: "100%", background: passport.referralHistory.length > 0 ? "#f59e0b" : "#10b981" }} 
@@ -397,7 +396,7 @@ export default function StudentPassportPage() {
                      </div>
                      <div style={{ display: "grid", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
                         {passport.serviceRequests.map((req: any, i: number) => (
-                           <framerMotion.div 
+                           <motion.div 
                              key={req.id} 
                              initial={{ opacity: 0, x: -10 }}
                              animate={{ opacity: 1, x: 0 }}
@@ -415,7 +414,7 @@ export default function StudentPassportPage() {
                                 <span style={{ fontSize: "0.65rem", fontWeight: "900", color: req.status === "Completed" ? "#10b981" : "var(--primary)", display: "block", marginBottom: "0.25rem" }}>{req.status.toUpperCase()}</span>
                                 <div style={{ height: "2px", width: "40px", background: req.status === "Completed" ? "#10b981" : "var(--primary)", marginLeft: "auto", opacity: 0.3 }} />
                               </div>
-                           </framerMotion.div>
+                           </motion.div>
                         ))}
                         {passport.serviceRequests.length === 0 && (
                           <div style={{ padding: "5rem", textAlign: "center", background: "var(--bg-surface)" }}>
@@ -435,7 +434,7 @@ export default function StudentPassportPage() {
                      </div>
                      <div style={{ display: "grid", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
                         {passport.appointmentHistory.map((appt: any, i: number) => (
-                           <framerMotion.div 
+                           <motion.div 
                              key={appt.id} 
                              initial={{ opacity: 0, x: 10 }}
                              animate={{ opacity: 1, x: 0 }}
@@ -453,7 +452,7 @@ export default function StudentPassportPage() {
                                 <span style={{ fontSize: "0.65rem", fontWeight: "900", color: appt.status === "COMPLETED" ? "#10b981" : "#f59e0b", display: "block", marginBottom: "0.25rem" }}>{appt.status}</span>
                                 <div style={{ height: "2px", width: "40px", background: appt.status === "COMPLETED" ? "#10b981" : "#f59e0b", marginLeft: "auto", opacity: 0.3 }} />
                               </div>
-                           </framerMotion.div>
+                           </motion.div>
                         ))}
                         {passport.appointmentHistory.length === 0 && (
                           <div style={{ padding: "5rem", textAlign: "center", background: "var(--bg-surface)" }}>
@@ -466,9 +465,9 @@ export default function StudentPassportPage() {
                </div>
             </div>
 
-          </framerMotion.div>
+          </motion.div>
         ) : (
-          <framerMotion.div 
+          <motion.div 
             key="passport-idle" 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 0.4 }} 
@@ -476,7 +475,7 @@ export default function StudentPassportPage() {
             style={{ textAlign: "center", padding: "12rem 2rem" }}
           >
              <div style={{ position: "relative", width: "120px", height: "120px", margin: "0 auto 3rem" }}>
-               <framerMotion.div 
+               <motion.div 
                  animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.5, 0.2] }}
                  transition={{ repeat: Infinity, duration: 4 }}
                  style={{ position: "absolute", inset: 0, border: "2px solid var(--primary)", borderRadius: "50%" }}
@@ -487,9 +486,9 @@ export default function StudentPassportPage() {
              </div>
              <h3 style={{ fontSize: "1.25rem", fontWeight: "900", letterSpacing: "0.4em", color: "var(--text-main)" }}>AWAITING_IDENTITY_SCAN</h3>
              <p style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "1.5rem", color: "var(--text-dim)", letterSpacing: "0.1em" }}>ENTER A VALID STUDENT IDENTIFIER TO ACTIVATE THE IDENTITY TERMINAL.</p>
-          </framerMotion.div>
+          </motion.div>
         )}
-      </FramerAnimatePresence>
+      </AnimatePresence>
 
     </div>
   );
