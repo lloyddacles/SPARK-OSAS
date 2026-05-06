@@ -55,7 +55,8 @@ export default function ScholarshipsClient() {
       verifyDocument,
       bulkRecommendScholarships,
       bulkApproveScholarships,
-      auditLogs
+      auditLogs,
+      logAudit
    } = useGlobalState();
    const [activeTab, setActiveTab] = useState<"Student" | "OSAS">("Student");
    const [isHydrated, setIsHydrated] = useState(false);
@@ -271,6 +272,7 @@ export default function ScholarshipsClient() {
       if (!firstName || !lastName) return;
 
       await updateProfile({ firstName, middleName, lastName });
+      await logAudit("IDENTITY_VERIFIED", `Applicant: ${firstName} ${lastName} | Protocol: Digital Signature`, "LOW");
       setIsVerifyingIdentity(false);
 
       // Automatically proceed with application
@@ -498,12 +500,22 @@ export default function ScholarshipsClient() {
                                     <p data-tour="vault-info" style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>VERIFIED FROM YOUR VAULT</p>
                                  </div>
                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--border-dim)" }}>
-                                    {Object.entries(vaultMapping).map(([key, label]) => (
-                                       <div key={key} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "var(--bg-surface)" }}>
-                                          {(effectiveReqs as any)[key] ? <CheckCircle2 size={16} color="#10b981" /> : <div style={{ width: "16px", height: "16px", border: "1px solid var(--border-dim)" }} />}
-                                          <span style={{ fontWeight: "700", fontSize: "0.75rem", color: (effectiveReqs as any)[key] ? "var(--text-main)" : "var(--text-dim)" }}>{label.toUpperCase()}</span>
-                                       </div>
-                                    ))}
+                                    {Object.entries(vaultMapping).map(([key, label]) => {
+                                       const isVerified = (effectiveReqs as any)[key];
+                                       return (
+                                          <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem", background: "var(--bg-surface)" }}>
+                                             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                                                {isVerified ? <CheckCircle2 size={16} color="#10b981" /> : <div style={{ width: "16px", height: "16px", border: "1px solid var(--border-dim)" }} />}
+                                                <span style={{ fontWeight: "700", fontSize: "0.75rem", color: isVerified ? "var(--text-main)" : "var(--text-dim)" }}>{label.toUpperCase()}</span>
+                                             </div>
+                                             {isVerified && (
+                                                <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", fontSize: "0.5rem", fontWeight: "900", padding: "0.25rem 0.5rem", borderRadius: "2px" }}>
+                                                   VAULT SYNCED
+                                                </div>
+                                             )}
+                                          </div>
+                                       );
+                                    })}
                                  </div>
                               </div>
 
@@ -816,7 +828,56 @@ export default function ScholarshipsClient() {
                {osasView === "Batches" && (
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem" }}>
                      <div>
-                        <h2 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>SCHEDULING BATCHES</h2>
+                        <div style={{ marginBottom: "3rem" }}>
+                           <h2 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>SCHEDULING BATCHES</h2>
+                           
+                           {/* BATCH TIMELINE VISUALIZER */}
+                           <div className="sapphire-card" style={{ padding: "2rem", background: "rgba(0, 229, 255, 0.02)", marginBottom: "3rem" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
+                                 <Layers size={16} color="var(--primary)" />
+                                 <h4 style={{ fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.2em" }}>CYCLE TIMELINE</h4>
+                              </div>
+                              
+                              <div style={{ position: "relative", padding: "2rem 0", minHeight: "150px" }}>
+                                 {/* Timeline Axis */}
+                                 <div style={{ position: "absolute", top: "50%", left: 0, width: "100%", height: "1px", background: "var(--border-dim)", zIndex: 0 }} />
+                                 
+                                 <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
+                                    {batchConfigs.length === 0 ? (
+                                       <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", textAlign: "center", width: "100%" }}>NO ACTIVE BATCH CYCLES DEFINED</p>
+                                    ) : (
+                                       batchConfigs.map((batch, index) => {
+                                          const isActive = batch.status === "Active";
+                                          return (
+                                             <div key={batch.id} style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                                <div style={{ 
+                                                   width: "12px", 
+                                                   height: "12px", 
+                                                   borderRadius: "50%", 
+                                                   background: isActive ? "var(--primary)" : "var(--bg-accent)", 
+                                                   border: "2px solid var(--border-dim)",
+                                                   boxShadow: isActive ? "0 0 15px var(--primary)" : "none",
+                                                   marginBottom: "1rem"
+                                                }} />
+                                                <div style={{ 
+                                                   padding: "0.75rem", 
+                                                   background: isActive ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", 
+                                                   border: "1px solid var(--border-dim)",
+                                                   borderTop: isActive ? "2px solid var(--primary)" : "1px solid var(--border-dim)",
+                                                   textAlign: "center",
+                                                   minWidth: "120px"
+                                                }}>
+                                                   <p style={{ fontSize: "0.5rem", fontWeight: "900", color: isActive ? "var(--primary)" : "var(--text-dim)" }}>{batch.name.toUpperCase()}</p>
+                                                   <p style={{ fontSize: "0.6rem", fontWeight: "700", marginTop: "0.25rem" }}>{batch.startDate?.split('-').slice(1).join('/') || "TBD"}</p>
+                                                </div>
+                                             </div>
+                                          );
+                                       })
+                                    )}
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
                         <div style={{ display: "grid", gap: "1.5rem" }}>
                            {batchConfigs.map(batch => (
                               <div key={batch.id} className="sapphire-card" style={{ borderLeft: batch.status === "Archived" ? "4px solid var(--text-dim)" : "4px solid var(--primary)" }}>

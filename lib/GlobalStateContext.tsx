@@ -639,18 +639,21 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     const batch = await dbAddBatch({ name, startDate, endDate });
     setBatchConfigs([...batchConfigs, batch as any]);
     addNotification("New Batch Created", `${name} is now available for scheduling.`);
+    await logAudit("BATCH_CONFIG_CREATED", `Name: ${name} | Period: ${startDate} to ${endDate}`, "MEDIUM");
   };
 
   const updateBatchConfig = async (id: number, updates: Partial<BatchConfig>) => {
     await dbUpdateBatch(id, updates);
     setBatchConfigs(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b));
     addNotification("Batch Updated", `Batch settings modified.`);
+    await logAudit("BATCH_CONFIG_UPDATED", `BatchID: ${id} | Updates: ${JSON.stringify(updates)}`, "MEDIUM");
   };
 
   const deleteBatchConfig = async (id: number) => {
     await dbDelBatch(id);
     setBatchConfigs(prev => prev.filter(b => b.id !== id));
     addNotification("Batch Removed", `Batch deleted from system.`);
+    await logAudit("BATCH_CONFIG_DELETED", `BatchID: ${id}`, "HIGH");
   };
 
   const approveBatch = async (batchId: number) => {
@@ -681,12 +684,14 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     await dbUpdateProg(id, updates);
     setScholarshipPrograms(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
     addNotification("Program Updated", `Scholarship program details modified.`);
+    await logAudit("SCHOLARSHIP_PROGRAM_UPDATED", `ProgID: ${id} | Changes: ${JSON.stringify(updates)}`, "MEDIUM");
   };
 
   const deleteScholarshipProgram = async (id: string) => {
     await dbDelProg(id);
     setScholarshipPrograms(prev => prev.filter(p => p.id !== id));
     addNotification("Program Removed", `Scholarship program deleted from system.`);
+    await logAudit("SCHOLARSHIP_PROGRAM_DELETED", `ProgID: ${id}`, "HIGH");
   };
 
   const proposeActivity = async (orgId: string, details: { title: string, description: string, date: string, budget: string, venue: string, participants: string }) => {
