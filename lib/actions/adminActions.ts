@@ -32,7 +32,7 @@ export async function updateUser(userId: string, updates: any) {
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
     
-    const updated = await db.user.update({
+    const updated = await (db as any).user.update({
       where: { id: userId },
       data: updates
     });
@@ -117,10 +117,10 @@ export async function getSystemHealth() {
     if (!db) return { userCount: 0, appCount: 0, orgCount: 0, reqCount: 0, status: "OFFLINE" };
 
     const [userCount, appCount, orgCount, reqCount] = await Promise.all([
-      db.user.count(),
-      db.scholarshipApp.count(),
-      db.studentOrg.count(),
-      db.serviceRequest.count()
+      (db as any).user.count(),
+      (db as any).scholarshipApp.count(),
+      (db as any).studentOrg.count(),
+      (db as any).serviceRequest.count()
     ]);
 
     return {
@@ -143,7 +143,7 @@ export async function clearAllAppointments() {
   try {
     const db = await getDB();
     if (!db) return;
-    await db.appointment.deleteMany();
+    await (db as any).appointment.deleteMany();
     revalidatePath("/admin");
   } catch (e) {
     console.error("WIPE_DATA_FAIL", e);
@@ -156,10 +156,10 @@ export async function performAnnualArchive() {
     if (!db) return { archivedRequests: 0, archivedAppointments: 0, archivedScholarships: 0, archivedReferrals: 0 };
 
     const results = await Promise.all([
-      db.serviceRequest.deleteMany({ where: { status: { in: ["Completed", "Rejected"] } } }),
-      db.appointment.deleteMany({ where: { status: { in: ["COMPLETED", "CANCELLED"] } } }),
-      db.scholarshipApp.deleteMany({ where: { status: { in: ["Approved", "Rejected"] } } }),
-      db.referral.deleteMany({ where: { status: { in: ["Sanctioned", "Dismissed"] } } })
+      (db as any).serviceRequest.deleteMany({ where: { status: { in: ["Completed", "Rejected"] } } }),
+      (db as any).appointment.deleteMany({ where: { status: { in: ["COMPLETED", "CANCELLED"] } } }),
+      (db as any).scholarshipApp.deleteMany({ where: { status: { in: ["Approved", "Rejected"] } } }),
+      (db as any).referral.deleteMany({ where: { status: { in: ["Sanctioned", "Dismissed"] } } })
     ]);
 
     revalidatePath("/admin");
