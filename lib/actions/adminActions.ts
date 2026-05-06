@@ -177,12 +177,11 @@ export async function performAnnualArchive() {
 /**
  * SCHOLAR INVENTORY MANAGEMENT
  */
-export async function getScholarInventory(page: number = 1, pageSize: number = 20, searchTerm: string = "") {
+export async function getScholarInventory(page: number = 1, pageSize: number = 20, searchTerm: string = "", filters: any = {}) {
   try {
     const db = await getDB();
     if (!db) return { scholars: [], total: 0 };
 
-    // Safety check for missing model (if db push was not run)
     if (!(db as any).scholarInventory) {
       console.warn("SCHOLAR_INVENTORY_MODEL_MISSING: Registry sync pending.");
       return { scholars: [], total: 0 };
@@ -190,30 +189,57 @@ export async function getScholarInventory(page: number = 1, pageSize: number = 2
 
     const skip = (page - 1) * pageSize;
     
-    // Convert searchTerm to Prisma query
-    const where: any = searchTerm ? {
-      OR: [
-        { studentName: { contains: searchTerm, mode: 'insensitive' } },
-        { programName: { contains: searchTerm, mode: 'insensitive' } },
-        { batch: { contains: searchTerm, mode: 'insensitive' } },
-        { studentId: { contains: searchTerm, mode: 'insensitive' } }
-      ]
-    } : {};
+    // Build Complex Filter Object
+    const where: any = { AND: [] };
+    
+    if (searchTerm) {
+      where.AND.push({
+        OR: [
+          { studentName: { contains: searchTerm, mode: 'insensitive' } },
+          { programName: { contains: searchTerm, mode: 'insensitive' } },
+          { batch: { contains: searchTerm, mode: 'insensitive' } },
+          { studentId: { contains: searchTerm, mode: 'insensitive' } }
+        ]
+      });
+    }
+
+    if (filters.program) where.AND.push({ programName: filters.program });
+    if (filters.batch) where.AND.push({ batch: filters.batch });
+    if (filters.status) where.AND.push({ status: filters.status });
+    if (filters.type) where.AND.push({ type: filters.type });
 
     const [scholars, total] = await Promise.all([
       db.scholarInventory.findMany({
-        where,
+        where: where.AND.length > 0 ? where : {},
         skip,
         take: pageSize,
         orderBy: { updatedAt: 'desc' }
       }),
-      db.scholarInventory.count({ where })
+      db.scholarInventory.count({ where: where.AND.length > 0 ? where : {} })
     ]);
 
     return { scholars, total };
   } catch (e) {
     console.error("GET_SCHOLAR_INVENTORY_FAIL", e);
     return { scholars: [], total: 0 };
+  }
+}
+
+export async function bulkUpdateScholarStatus(ids: string[], status: string) {
+  try {
+    const db = await getDB();
+    if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+    await db.scholarInventory.updateMany({
+      where: { id: { in: ids } },
+      data: { status }
+    });
+
+    revalidatePath("/admin/scholars");
+    return { success: true };
+  } catch (e: any) {
+    console.error("BULK_UPDATE_FAIL", e);
+    return { success: false, message: e.message || "BULK_UPDATE_FAILED" };
   }
 }
 
