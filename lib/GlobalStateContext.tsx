@@ -334,6 +334,8 @@ type GlobalStateContextType = {
   theme: string;
   toggleTheme: () => void;
   isLoading: boolean;
+  isSyncing: boolean;
+  telemetryTier: 0 | 1 | 2;
   updateProfile: (data: Partial<User>) => Promise<void>;
   isMobileSidebarOpen: boolean;
   toggleMobileSidebar: () => void;
@@ -812,7 +814,6 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       issueCertificate,
       notifications,
       markNotificationsRead,
-      addNotification,
       stats,
       referrals,
       addReferral,
@@ -833,14 +834,15 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       updateBatchConfig,
       deleteBatchConfig,
       currentUser,
+      users,
       login,
       register,
       logout,
-      users,
       uploadToVault,
       announcements,
       addAnnouncement,
       deleteAnnouncement,
+      addNotification,
       organizations,
       activities,
       addOrganization,
@@ -858,6 +860,8 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       theme,
       toggleTheme,
       isLoading,
+      isSyncing,
+      telemetryTier,
       updateProfile,
       isMobileSidebarOpen,
       toggleMobileSidebar
@@ -866,4 +870,3 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     </GlobalStateContext.Provider>
   );
 }
-
