@@ -201,8 +201,9 @@ export default function ScholarInventoryPage() {
                <Plus size={18} /> PROVISION NEW RECORD
             </button>
          </div>
+      </div>
 
-       <ProcessGuide 
+      <ProcessGuide 
           title="Scholarship Registry Audit Protocol"
           steps={[
              { title: "Monitor Registry", desc: "Review the official institutional list of active, continuing, and graduated scholars.", icon: <Search size={14} /> },
@@ -210,8 +211,7 @@ export default function ScholarInventoryPage() {
              { title: "Audit Status", desc: "Monitor student academic standing and update their system status (Active, Graduated, Terminated).", icon: <User size={14} /> },
              { title: "Export Compliance", desc: "Generate official scholarship reports for university management and financial audits.", icon: <Download size={14} /> }
           ]}
-       />
-      </div>
+      />
 
       {/* TELEMETRY NODES */}
       <div className="card-grid" style={{ marginBottom: "3rem" }}>
