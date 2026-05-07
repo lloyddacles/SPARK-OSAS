@@ -22,10 +22,11 @@ import {
   History,
   LayoutDashboard,
   BrainCircuit,
-  Pulse,
+  Waves,
   LineChart,
   BarChart3,
-  Network
+  Network,
+  GraduationCap
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { summarizeAuditLogs } from "@/lib/actions/aiActions";
@@ -194,7 +195,7 @@ export default function DashboardPage() {
                    <BrainCircuit size={28} color="var(--primary)" /> NEURAL_PREDICTIVE_INSIGHTS
                 </h3>
                 <div style={{ display: "flex", alignItems: "center", gap: "1rem", color: "var(--primary)" }}>
-                   <Pulse size={16} className="animate-pulse" />
+                   <Waves size={16} className="animate-pulse" />
                    <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em" }}>ANALYSIS_STREAM_LIVE</span>
                 </div>
              </div>
