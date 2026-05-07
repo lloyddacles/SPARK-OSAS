@@ -268,7 +268,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
             style={{ 
-              padding: "4rem", 
+              padding: "clamp(1.5rem, 5vw, 4rem)", 
               background: "rgba(255,255,255,0.01)",
               backdropFilter: "blur(30px)",
               borderRadius: "32px",
@@ -285,9 +285,18 @@ export default function DashboardPage() {
              </div>
 
              <div style={{ position: "relative", zIndex: 10 }}>
-               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", marginBottom: "5rem", gap: "2rem" }}>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "2rem", letterSpacing: "0.15em" }}>
-                     <BrainCircuit size={32} color="var(--primary)" /> NEURAL_PREDICTIVE_INSIGHTS
+               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", marginBottom: "4rem", gap: "2rem" }}>
+                  <h3 style={{ 
+                    fontSize: "clamp(1.1rem, 3vw, 1.5rem)", 
+                    fontWeight: "900", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    gap: "1.5rem", 
+                    letterSpacing: "0.15em",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word"
+                  }}>
+                     <BrainCircuit size={28} color="var(--primary)" style={{ flexShrink: 0 }} /> NEURAL_PREDICTIVE_INSIGHTS
                   </h3>
                   <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", padding: "0.5rem 1.5rem", background: "rgba(0, 229, 255, 0.05)", borderRadius: "100px", border: "1px solid rgba(0, 229, 255, 0.1)" }}>
                      <Waves size={18} className="animate-pulse" color="var(--primary)" />
@@ -295,11 +304,11 @@ export default function DashboardPage() {
                   </div>
                </div>
 
-               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "6rem", alignItems: "start" }}>
+               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "clamp(2rem, 8vw, 6rem)", alignItems: "start" }}>
                   <div>
                      <div style={{ marginBottom: "4rem" }}>
                         <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.3em", marginBottom: "1.5rem" }}>SENTIMENT_INTEGRITY</p>
-                        <h4 style={{ fontSize: "4.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.06em", lineHeight: "1" }}>98.4<span style={{ fontSize: "1.5rem", color: "var(--primary)" }}>%</span></h4>
+                        <h4 style={{ fontSize: "clamp(3rem, 10vw, 4.5rem)", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.06em", lineHeight: "1" }}>98.4<span style={{ fontSize: "1.5rem", color: "var(--primary)" }}>%</span></h4>
                         <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1rem" }}>
                            <ArrowUpRight size={16} color="#10b981" />
                            <p style={{ fontSize: "0.75rem", fontWeight: "800", color: "#10b981" }}>+2.1% FROM LAST CYCLE</p>
@@ -307,11 +316,11 @@ export default function DashboardPage() {
                      </div>
                      <div style={{ display: "grid", gap: "2rem" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-                           <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 15px var(--primary)" }} />
+                           <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 15px var(--primary)", flexShrink: 0 }} />
                            <p style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.05em" }}>NO_SECURITY_BURSTS_DETECTED</p>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-                           <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 15px #10b981" }} />
+                           <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 15px #10b981", flexShrink: 0 }} />
                            <p style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.05em" }}>RESOURCE_ALLOCATION_OPTIMAL</p>
                         </div>
                      </div>
@@ -321,14 +330,15 @@ export default function DashboardPage() {
                     background: "rgba(255,255,255,0.02)", 
                     border: "1px solid rgba(255,255,255,0.05)", 
                     borderRadius: "24px", 
-                    padding: "3.5rem", 
+                    padding: "clamp(1.5rem, 5vw, 3.5rem)", 
                     backdropFilter: "blur(20px)", 
                     position: "relative", 
                     zIndex: 20,
-                    boxShadow: "0 30px 60px rgba(0,0,0,0.1)"
+                    boxShadow: "0 30px 60px rgba(0,0,0,0.1)",
+                    overflow: "hidden"
                   }}>
                      <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.3em", marginBottom: "2rem", textTransform: "uppercase" }}>AI_SENTINEL_SUMMARY</p>
-                     <p style={{ fontSize: "1.1rem", color: "var(--text-dim)", lineHeight: "2", fontWeight: "600" }}>
+                     <p style={{ fontSize: "clamp(0.9rem, 2vw, 1.1rem)", color: "var(--text-dim)", lineHeight: "1.9", fontWeight: "600", overflowWrap: "anywhere" }}>
                        {aiInsight?.summary || "ANALYZING_TELEMETRY_NODES_FOR_PREDICTIVE_TRENDS..."}
                      </p>
                      <div style={{ marginTop: "3rem", display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
