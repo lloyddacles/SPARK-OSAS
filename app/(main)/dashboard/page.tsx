@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import * as React from "react";
 import { 
   Activity,
   Cpu,
@@ -48,10 +48,10 @@ export default function DashboardPage() {
     serviceTypes,
     auditLogs
   } = useGlobalState();
-  const [mounted, setMounted] = useState(false);
-  const [aiInsight, setAiInsight] = useState<any>(null);
+  const [mounted, setMounted] = React.useState(false);
+  const [aiInsight, setAiInsight] = React.useState<any>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     setMounted(true);
     if (auditLogs && auditLogs.length > 0) {
       summarizeAuditLogs(auditLogs).then(res => setAiInsight(res));
@@ -190,52 +190,54 @@ export default function DashboardPage() {
             }}
           >
              {/* Background Tech Art */}
-             <div style={{ position: "absolute", top: "-20%", right: "-10%", opacity: 0.03 }}>
-                <BrainCircuit size={400} />
+             <div style={{ position: "absolute", top: "-10%", right: "-5%", opacity: 0.03, zIndex: 0 }}>
+                <BrainCircuit size={450} />
              </div>
 
-             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4rem" }}>
-                <h3 style={{ fontSize: "1.25rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1.5rem", letterSpacing: "0.1em" }}>
-                   <BrainCircuit size={28} color="var(--primary)" /> NEURAL_PREDICTIVE_INSIGHTS
-                </h3>
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem", color: "var(--primary)" }}>
-                   <Waves size={16} className="animate-pulse" />
-                   <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em" }}>ANALYSIS_STREAM_LIVE</span>
-                </div>
-             </div>
+             <div style={{ position: "relative", zIndex: 10 }}>
+               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", marginBottom: "4rem", gap: "2rem" }}>
+                  <h3 style={{ fontSize: "1.25rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1.5rem", letterSpacing: "0.1em" }}>
+                     <BrainCircuit size={28} color="var(--primary)" /> NEURAL_PREDICTIVE_INSIGHTS
+                  </h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", color: "var(--primary)" }}>
+                     <Waves size={16} className="animate-pulse" />
+                     <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em" }}>ANALYSIS_STREAM_LIVE</span>
+                  </div>
+               </div>
 
-             <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "4rem" }}>
-                <div>
-                   <div style={{ marginBottom: "2.5rem" }}>
-                      <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "1rem" }}>SENTIMENT_INTEGRITY</p>
-                      <h4 style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--primary)" }}>98.4<span style={{ fontSize: "1rem" }}>%</span></h4>
-                      <p style={{ fontSize: "0.65rem", fontWeight: "700", color: "#10b981", marginTop: "0.5rem" }}>+2.1% FROM LAST CYCLE</p>
-                   </div>
-                   <div style={{ display: "grid", gap: "1.5rem" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                         <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--primary)" }} />
-                         <p style={{ fontSize: "0.7rem", fontWeight: "800", color: "var(--text-main)" }}>NO_SECURITY_BURSTS_DETECTED</p>
-                      </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
-                         <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981" }} />
-                         <p style={{ fontSize: "0.7rem", fontWeight: "800", color: "var(--text-main)" }}>RESOURCE_ALLOCATION_OPTIMAL</p>
-                      </div>
-                   </div>
-                </div>
-
-                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)", borderRadius: "12px", padding: "2.5rem" }}>
-                   <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>AI_SENTINEL_SUMMARY</p>
-                   <p style={{ fontSize: "0.9rem", color: "var(--text-dim)", lineHeight: "1.8", fontWeight: "600" }}>
-                     {aiInsight?.summary || "ANALYZING_TELEMETRY_NODES_FOR_PREDICTIVE_TRENDS..."}
-                   </p>
-                   <div style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}>
-                      {aiInsight?.anomalies.slice(0, 2).map((a: string, i: number) => (
-                        <div key={i} style={{ fontSize: "0.55rem", fontWeight: "900", padding: "0.5rem 1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)", color: "var(--primary)" }}>
-                          {a.toUpperCase()}
+               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "5rem", alignItems: "start" }}>
+                  <div style={{ position: "relative", zIndex: 10 }}>
+                     <div style={{ marginBottom: "3rem" }}>
+                        <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "1rem" }}>SENTIMENT_INTEGRITY</p>
+                        <h4 style={{ fontSize: "3rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "-0.04em" }}>98.4<span style={{ fontSize: "1.25rem" }}>%</span></h4>
+                        <p style={{ fontSize: "0.65rem", fontWeight: "700", color: "#10b981", marginTop: "0.5rem" }}>+2.1% FROM LAST CYCLE</p>
+                     </div>
+                     <div style={{ display: "grid", gap: "1.5rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                           <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 8px var(--primary)" }} />
+                           <p style={{ fontSize: "0.7rem", fontWeight: "800", color: "var(--text-main)" }}>NO_SECURITY_BURSTS_DETECTED</p>
                         </div>
-                      ))}
-                   </div>
-                </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                           <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 8px #10b981" }} />
+                           <p style={{ fontSize: "0.7rem", fontWeight: "800", color: "var(--text-main)" }}>RESOURCE_ALLOCATION_OPTIMAL</p>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)", borderRadius: "16px", padding: "3rem", backdropFilter: "blur(10px)", position: "relative", zIndex: 20 }}>
+                     <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>AI_SENTINEL_SUMMARY</p>
+                     <p style={{ fontSize: "0.95rem", color: "var(--text-dim)", lineHeight: "1.9", fontWeight: "600" }}>
+                       {aiInsight?.summary || "ANALYZING_TELEMETRY_NODES_FOR_PREDICTIVE_TRENDS..."}
+                     </p>
+                     <div style={{ marginTop: "2.5rem", display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+                        {(aiInsight?.anomalies || ["NO_ANOMALIES_DETECTED"]).slice(0, 2).map((a: string, i: number) => (
+                          <div key={i} style={{ fontSize: "0.55rem", fontWeight: "900", padding: "0.6rem 1.25rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)", color: "var(--primary)", borderRadius: "4px" }}>
+                            {a.toUpperCase()}
+                          </div>
+                        ))}
+                     </div>
+                  </div>
+               </div>
              </div>
           </motion.div>
 
