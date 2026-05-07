@@ -1,3 +1,7 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import { 
   Activity,
   Cpu,
@@ -91,7 +95,7 @@ export default function DashboardPage() {
     { label: "SCHOLARSHIPS", value: scholarshipApps?.length || 0, meta: `${scholarshipStats.pending} PENDING REVIEW`, color: "var(--primary)", icon: <GraduationCap size={18} /> },
     { label: "CLUBS & ORGS", value: organizations?.length || 0, meta: `${(organizations || []).filter(o => o.status === "Recognized").length} RECOGNIZED`, color: "#6366f1", icon: <Users size={18} /> },
     { label: "SERVICE REQS", value: (serviceRequests || []).length, meta: `${(serviceRequests || []).filter(r => r.status === "Pending").length} IN QUEUE`, color: "#ec4899", icon: <Zap size={18} /> },
-    { label: "APPOINTMENTS", value: (appointments || []).length, meta: "SCHEDULED MEETINGS", color: "#10b981", icon: <Clock size={18} /> },
+    { label: "APPOINTMENTS", value: (appointments || []).filter(a => a.status === "APPROVED").length, meta: "SCHEDULED MEETINGS", color: "#10b981", icon: <Clock size={18} /> },
   ];
 
   return (
@@ -241,7 +245,7 @@ export default function DashboardPage() {
               <Radio size={24} color="var(--primary)" /> SYSTEM_BROADCAST_HUB
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "3.5rem" }}>
-              {activeAnnouncements.map((ann, i) => (
+              {(activeAnnouncements || []).map((ann, i) => (
                 <motion.div 
                   key={ann.id}
                   initial={{ opacity: 0, x: -20 }}
