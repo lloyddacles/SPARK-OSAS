@@ -24,6 +24,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [authPhase, setAuthPhase] = useState<"credentials" | "biometric" | "success">("credentials");
+  const [biometricProgress, setBiometricProgress] = useState(0);
   const { login, theme, toggleTheme } = useGlobalState();
   const router = useRouter();
 
@@ -32,10 +34,12 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
     
+    // Step 1: Credential Validation
     try {
       const res = await login(username, password);
       if (res && res.success) {
-        router.push("/dashboard");
+        setAuthPhase("biometric");
+        startBiometricSequence();
       } else {
         setError(`AUTHENTICATION_FAILURE: ${res?.message || "INVALID_CREDENTIALS"}`);
         setIsLoading(false);
@@ -44,6 +48,21 @@ export default function LoginPage() {
       setError("SYSTEM_OFFLINE: UNABLE_TO_REACH_AUTH_NODE");
       setIsLoading(false);
     }
+  };
+
+  const startBiometricSequence = () => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 5;
+      setBiometricProgress(progress);
+      if (progress >= 100) {
+        clearInterval(interval);
+        setAuthPhase("success");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1000);
+      }
+    }, 150);
   };
 
   return (
@@ -185,146 +204,185 @@ export default function LoginPage() {
         </div>
 
         {/* Right Aspect: The Login Module */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="sapphire-card"
-          style={{ padding: "3.5rem", position: "relative", overflow: "hidden" }}
-        >
-          {/* Animated Glow Border */}
-          <motion.div 
-            animate={{ opacity: [0.1, 0.3, 0.1] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            style={{ position: "absolute", inset: 0, border: "1px solid var(--primary)", pointerEvents: "none" }} 
-          />
-
-          <div style={{ marginBottom: "3rem" }}>
-            <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>SECURE_ENTRY</h2>
-            <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>AUTHENTICATION_REQUIRED</p>
-          </div>
-
-          {error && (
+        <AnimatePresence mode="wait">
+          {authPhase === "credentials" ? (
             <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              style={{ 
-                background: "rgba(239, 68, 68, 0.1)", 
-                border: "1px solid rgba(239, 68, 68, 0.2)", 
-                color: "#ef4444", 
-                padding: "1rem", 
-                marginBottom: "2rem", 
-                fontSize: "0.65rem", 
-                fontWeight: "900", 
-                textAlign: "center"
-              }}
+              key="login-credentials"
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 1.1, x: -20 }}
+              transition={{ duration: 0.4 }}
+              className="sapphire-card"
+              style={{ padding: "3.5rem", position: "relative", overflow: "hidden" }}
             >
-              {error}
-            </motion.div>
-          )}
-
-          <form onSubmit={handleLogin} style={{ display: "grid", gap: "2rem" }}>
-            <div>
-              <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1rem" }}>
-                IDENTIFIER_TOKEN
-              </label>
-              <div style={{ position: "relative" }}>
-                <User size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
-                <input 
-                  required
-                  type="text" 
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
-                  placeholder="USERNAME / ID NUMBER"
-                  style={{ 
-                    width: "100%", 
-                    padding: "1.25rem 1.25rem 1.25rem 3.5rem", 
-                    fontSize: "0.85rem", 
-                    fontWeight: "700",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid var(--border-dim)",
-                    color: "var(--text-main)",
-                    outline: "none"
-                  }} 
-                />
+              <div style={{ marginBottom: "3rem" }}>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.05em", marginBottom: "0.5rem" }}>SECURE_ENTRY</h2>
+                <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>AUTHENTICATION_REQUIRED</p>
               </div>
-            </div>
 
-            <div>
-              <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1rem" }}>
-                ACCESS_PHRASE
-              </label>
-              <div style={{ position: "relative" }}>
-                <Fingerprint size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
-                <input 
-                  required
-                  type={showPassword ? "text" : "password"} 
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
+              {error && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
                   style={{ 
-                    width: "100%", 
-                    padding: "1.25rem 1.25rem 1.25rem 3.5rem", 
-                    fontSize: "0.85rem", 
-                    fontWeight: "700",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid var(--border-dim)",
-                    color: "var(--text-main)",
-                    outline: "none"
-                  }} 
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "1.25rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    color: "var(--primary)",
-                    cursor: "pointer",
-                    opacity: 0.7
+                    background: "rgba(239, 68, 68, 0.1)", 
+                    border: "1px solid rgba(239, 68, 68, 0.2)", 
+                    color: "#ef4444", 
+                    padding: "1rem", 
+                    marginBottom: "2rem", 
+                    fontSize: "0.65rem", 
+                    fontWeight: "900", 
+                    textAlign: "center"
                   }}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <button 
-              disabled={isLoading}
-              className="btn-cyan" 
-              style={{ width: "100%", padding: "1.5rem", marginTop: "1rem" }}
-            >
-              {isLoading ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
-                   <Activity size={18} className="animate-pulse" /> VERIFYING_CLEARANCE...
-                </div>
-              ) : (
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
-                   INITIALIZE_SESSION <ArrowRight size={18} />
-                </div>
+                  {error}
+                </motion.div>
               )}
-            </button>
-          </form>
 
-          <div style={{ marginTop: "2.5rem", textAlign: "center", display: "flex", justifyContent: "space-between" }}>
-            <p 
-              onClick={() => router.push("/register")}
-              style={{ fontSize: "0.55rem", color: "var(--primary)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer", textDecoration: "underline" }}
+              <form onSubmit={handleLogin} style={{ display: "grid", gap: "2rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1rem" }}>
+                    IDENTIFIER_TOKEN
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <User size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
+                    <input 
+                      required
+                      type="text" 
+                      value={username}
+                      onChange={e => setUsername(e.target.value)}
+                      placeholder="USERNAME / ID NUMBER"
+                      style={{ 
+                        width: "100%", 
+                        padding: "1.25rem 1.25rem 1.25rem 3.5rem", 
+                        fontSize: "0.85rem", 
+                        fontWeight: "700",
+                        background: "rgba(255,255,255,0.02)",
+                        border: "1px solid var(--border-dim)",
+                        color: "var(--text-main)",
+                        outline: "none"
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1rem" }}>
+                    ACCESS_PHRASE
+                  </label>
+                  <div style={{ position: "relative" }}>
+                    <Fingerprint size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
+                    <input 
+                      required
+                      type={showPassword ? "text" : "password"} 
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="••••••••••••"
+                      style={{ 
+                        width: "100%", 
+                        padding: "1.25rem 1.25rem 1.25rem 3.5rem", 
+                        fontSize: "0.85rem", 
+                        fontWeight: "700",
+                        background: "rgba(255,255,255,0.02)",
+                        border: "1px solid var(--border-dim)",
+                        color: "var(--text-main)",
+                        outline: "none"
+                      }} 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: "absolute",
+                        right: "1.25rem",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "none",
+                        border: "none",
+                        color: "var(--primary)",
+                        cursor: "pointer",
+                        opacity: 0.7
+                      }}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </div>
+
+                <button 
+                  disabled={isLoading}
+                  className="btn-cyan" 
+                  style={{ width: "100%", padding: "1.5rem", marginTop: "1rem" }}
+                >
+                  {isLoading ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
+                       <Activity size={18} className="animate-pulse" /> VERIFYING_CLEARANCE...
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
+                       INITIALIZE_SESSION <ArrowRight size={18} />
+                    </div>
+                  )}
+                </button>
+              </form>
+
+              <div style={{ marginTop: "2.5rem", textAlign: "center", display: "flex", justifyContent: "space-between" }}>
+                <p style={{ fontSize: "0.55rem", color: "var(--primary)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer", textDecoration: "underline" }}>NEW_REGISTRATION</p>
+                <p style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer" }}>FORGOT_ACCESS?</p>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="login-biometric"
+              initial={{ opacity: 0, scale: 0.9, x: 20 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 1.1, x: -20 }}
+              transition={{ duration: 0.4 }}
+              className="sapphire-card"
+              style={{ padding: "4rem", textAlign: "center", position: "relative", overflow: "hidden" }}
             >
-              NEW_REGISTRATION
-            </p>
-            <p 
-              onClick={() => router.push("/forgot-password")}
-              style={{ fontSize: "0.55rem", color: "var(--text-dim)", fontWeight: "900", letterSpacing: "0.1em", cursor: "pointer" }}
-            >
-              FORGOT_ACCESS?
-            </p>
-          </div>
-        </motion.div>
+              <div style={{ marginBottom: "3rem" }}>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>BIOMETRIC_FORTRESS</h2>
+                <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>STAGE_2_IDENTITY_VERIFICATION</p>
+              </div>
+
+              <div style={{ position: "relative", width: "160px", height: "160px", margin: "0 auto 3rem" }}>
+                 <motion.div 
+                   animate={{ rotate: 360 }}
+                   transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                   style={{ position: "absolute", inset: -10, border: "2px dashed var(--primary)", borderRadius: "50%", opacity: 0.3 }}
+                 />
+                 <div style={{ width: "100%", height: "100%", background: "rgba(0, 229, 255, 0.05)", border: "2px solid var(--primary)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                    <Fingerprint size={64} color="var(--primary)" />
+                    {/* Scan Line */}
+                    <motion.div 
+                      animate={{ y: ["-100%", "100%"] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                      style={{ position: "absolute", top: 0, left: 0, right: 0, height: "40px", background: "linear-gradient(to bottom, transparent, rgba(0, 229, 255, 0.3), transparent)" }}
+                    />
+                 </div>
+              </div>
+
+              <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", height: "4px", borderRadius: "2px", overflow: "hidden", marginBottom: "1rem" }}>
+                 <motion.div 
+                   initial={{ width: 0 }}
+                   animate={{ width: `${biometricProgress}%` }}
+                   style={{ height: "100%", background: "var(--primary)", boxShadow: "0 0 10px var(--primary)" }}
+                 />
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>
+                 <span>CALIBRATING_BIOMETRIC_NODES...</span>
+                 <span>{biometricProgress}%</span>
+              </div>
+
+              <div style={{ marginTop: "3rem", display: "flex", alignItems: "center", gap: "1rem", justifyContent: "center" }}>
+                 <ShieldCheck size={16} color="var(--primary)" />
+                 <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>MULTI_FACTOR_ENFORCEMENT_ACTIVE</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* FOOTER METRICS */}
