@@ -15,6 +15,9 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "SPARK OSAS",
   },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 export default function RootLayout({

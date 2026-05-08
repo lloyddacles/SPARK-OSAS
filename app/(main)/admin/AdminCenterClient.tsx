@@ -50,7 +50,7 @@ export default function AdminCenterPage() {
     setIsLoaded(true);
   }, [currentUser, router]);
 
-  if (!isLoaded) return null;
+  if (!isLoaded) return <div style={{ minHeight: "100vh" }} />;
 
   return (
     <div style={{ padding: "3rem", maxWidth: "1400px", margin: "0 auto" }}>

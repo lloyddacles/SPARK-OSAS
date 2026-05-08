@@ -250,7 +250,7 @@ export default function ScholarInventoryPage() {
 
   const totalPages = Math.ceil(total / pageSize);
 
-  if (!isHydrated) return null;
+  if (!isHydrated) return <div style={{ minHeight: "100vh" }} />;
 
   return (
     <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto", position: "relative" }}>
