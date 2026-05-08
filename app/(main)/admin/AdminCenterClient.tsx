@@ -21,7 +21,8 @@ import {
   Hash,
   FileUp,
   Workflow,
-  GraduationCap
+  GraduationCap,
+  Users
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,7 @@ function getSeverityColor(sev: string) {
 }
 
 export default function AdminCenterPage() {
-  const { currentUser, organizations, activities, announcements, referrals, auditLogs } = useGlobalState();
+  const { currentUser, organizations, activities, announcements, referrals, auditLogs, users } = useGlobalState();
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
 
@@ -77,6 +78,7 @@ export default function AdminCenterPage() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
         {[
           { label: "Organizations", count: organizations.length, icon: <Building2 size={24} />, sub: "Active Organizations", color: "#3b82f6", href: "/organizations" },
+          { label: "User Management", count: users.length, icon: <Users size={24} />, sub: "System Access Nodes", color: "#f43f5e", href: "/admin/users" },
           { label: "Activity Logs", count: auditLogs.length, icon: <Activity size={24} />, sub: "Audit Entries Recorded", color: "#10b981", href: "/admin/audit" },
           { label: "Student Profiles", count: 0, icon: <Fingerprint size={24} />, sub: "Passports Registered", color: "#8b5cf6", href: "/admin/passport" }
         ].map(node => (
