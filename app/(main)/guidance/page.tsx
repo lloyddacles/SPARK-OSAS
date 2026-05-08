@@ -22,7 +22,9 @@ import {
   ArrowRight,
   Lock,
   Database,
-  ShieldCheck
+  ShieldCheck,
+  RefreshCw,
+  Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
@@ -47,7 +49,7 @@ export default function GuidancePortal() {
   if (!isHydrated) {
     return (
       <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-         <Activity size={48} className="status-pulse" color="var(--primary)" />
+         <Activity size={48} className="animate-pulse" color="#3b82f6" />
       </div>
     );
   }
@@ -56,17 +58,17 @@ export default function GuidancePortal() {
     return (
       <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2.5rem" }}>
          <div style={{ position: "relative" }}>
-            <ShieldAlert size={80} color="#ef4444" style={{ opacity: 0.2 }} />
+            <ShieldAlert size={80} color="#ef4444" style={{ opacity: 0.1 }} />
             <Lock size={32} color="#ef4444" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
          </div>
          <div style={{ textAlign: "center" }}>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>Access Restricted</h2>
-            <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.75rem", fontSize: "0.85rem" }}>This page is restricted to Guidance Counselors.</p>
-            <p style={{ color: "var(--primary)", fontWeight: "900", marginTop: "1rem", fontSize: "0.6rem", letterSpacing: "0.1em" }}>Required Role: Guidance Counselor</p>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "800", color: "#1e293b", letterSpacing: "-0.02em" }}>Access Restricted</h2>
+            <p style={{ color: "#64748b", fontWeight: "600", marginTop: "0.75rem", fontSize: "0.95rem" }}>This page is restricted to Guidance Counselors.</p>
+            <p style={{ color: "#ef4444", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem" }}>Required Role: Guidance Counselor</p>
          </div>
          <div style={{ display: "flex", gap: "1rem" }}>
-            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>Go to Dashboard</a>
-            <a href="/login" className="btn-cyan" style={{ padding: "1rem 2rem", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>Sign In</a>
+            <a href="/" style={{ padding: "0.85rem 2rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#475569", textDecoration: "none", fontSize: "0.85rem", fontWeight: "700", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>Go to Dashboard</a>
+            <a href="/login" style={{ padding: "0.85rem 2rem", background: "#3b82f6", color: "white", borderRadius: "8px", textDecoration: "none", fontSize: "0.85rem", fontWeight: "700", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>Sign In</a>
          </div>
       </div>
     );
@@ -77,39 +79,39 @@ export default function GuidancePortal() {
   };
 
   const dataNodes = [
-    { label: "Active Cases", value: "12", meta: "open now", color: "#ef4444" },
-    { label: "Today's Sessions", value: "5", meta: "scheduled", color: "#3b82f6" },
-    { label: "Good Moral Requests", value: goodMoralRequests.length.toString(), meta: "awaiting clearance", color: "#10b981" },
-    { label: "Student Referrals", value: pendingReferrals.length.toString(), meta: "pending review", color: "var(--primary)" },
+    { label: "Active Cases", value: "12", meta: "Open now", color: "#ef4444", bg: "#fef2f2" },
+    { label: "Today's Sessions", value: "5", meta: "Scheduled", color: "#3b82f6", bg: "#eff6ff" },
+    { label: "Good Moral Requests", value: goodMoralRequests.length.toString(), meta: "Awaiting clearance", color: "#10b981", bg: "#f0fdf4" },
+    { label: "Student Referrals", value: pendingReferrals.length.toString(), meta: "Pending review", color: "#f59e0b", bg: "#fffbeb" },
   ];
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto" }}>
       
-      {/* Sapphire Header */}
-      <div style={{ marginBottom: "3rem" }}>
+      {/* Header */}
+      <div style={{ marginBottom: "4rem" }}>
         <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Guidance Office</p>
-        <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+        <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
           <span style={{ color: "var(--primary)" }}>Guidance Office</span>
         </h1>
-        <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Manage counseling sessions, Good Moral clearances, and student referrals.</p>
+        <p style={{ marginTop: "0.5rem", fontSize: "0.95rem", color: "#6b7280", maxWidth: "600px", lineHeight: "1.6" }}>Manage counseling sessions, Good Moral clearances, and student referrals to ensure student well-being.</p>
       </div>
 
       {/* Operation Navigation Nodes */}
-      <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", marginBottom: "3rem", width: "fit-content", padding: "1px" }}>
-        {["Overview", "Referrals", "Appointments"].map((tab, i) => (
+      <div style={{ display: "flex", gap: "0.5rem", background: "#f8fafc", marginBottom: "3rem", width: "fit-content", padding: "0.5rem", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
+        {["Overview", "Referrals", "Appointments"].map((tab) => (
           <button 
             key={tab} 
             onClick={() => setActiveTab(tab as any)} 
             style={{ 
-              padding: "0.85rem 1.5rem", 
-              fontSize: "0.7rem",
-              fontWeight: "900",
-              letterSpacing: "0.05em",
-              background: activeTab === tab ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)",
-              color: activeTab === tab ? "var(--primary)" : "var(--text-dim)",
+              padding: "0.75rem 1.5rem", 
+              fontSize: "0.85rem",
+              fontWeight: "700",
+              background: activeTab === tab ? "white" : "transparent",
+              color: activeTab === tab ? "#3b82f6" : "#64748b",
               border: "none",
-              borderBottom: activeTab === tab ? "2px solid var(--primary)" : "2px solid transparent",
+              borderRadius: "8px",
+              boxShadow: activeTab === tab ? "0 2px 4px rgba(0,0,0,0.05)" : "none",
               transition: "all 0.2s",
               cursor: "pointer"
             }}
@@ -120,74 +122,92 @@ export default function GuidancePortal() {
       </div>
 
       {/* Telemetry Row */}
-      <div className="card-grid" style={{ marginBottom: "3rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
         {dataNodes.map((node, i) => (
           <motion.div 
             key={node.label}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="sapphire-card"
+            style={{ background: "white", padding: "2rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}
           >
-            <p style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em", color: "var(--text-dim)", marginBottom: "1.5rem" }}>{node.label}</p>
-            <div style={{ display: "flex", alignItems: "baseline", gap: "1rem" }}>
-               <h2 style={{ fontSize: "2.5rem", fontWeight: "900" }}>{node.value}</h2>
+            <p style={{ fontSize: "0.8rem", fontWeight: "700", color: "#64748b", marginBottom: "1rem" }}>{node.label}</p>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#1e293b", lineHeight: "1" }}>{node.value}</h2>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", marginTop: "1.5rem", padding: "0.4rem 0.8rem", background: node.bg, borderRadius: "20px" }}>
+              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: node.color }} />
+              <p style={{ fontSize: "0.7rem", fontWeight: "700", color: node.color }}>{node.meta}</p>
             </div>
-            <p style={{ fontSize: "0.55rem", fontWeight: "800", color: node.color, marginTop: "1rem", letterSpacing: "0.1em" }}>{node.meta}</p>
           </motion.div>
         ))}
       </div>
 
       <AnimatePresence mode="wait">
         {activeTab === "Overview" && (
-          <motion.div key="overview" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div key="overview" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.4, ease: "easeOut" }}>
             
-            <ProcessGuide 
-                title="How to Use the Guidance Office"
-                steps={[
-                   { title: "Review Referrals", desc: "Check incoming referrals from advisers and walk-in requests.", icon: <ClipboardList size={14} /> },
-                   { title: "Conduct Session", desc: "Meet with the student for counseling and assessment.", icon: <HeartHandshake size={14} /> },
-                   { title: "Record Notes", desc: "Document your findings and recommendations after the session.", icon: <FileText size={14} /> },
-                   { title: "Endorse & Clear", desc: "Forward cases to OSAS and clear students for Good Moral certificates.", icon: <ShieldCheck size={14} /> }
-                ]}
-             />
+            <div style={{ marginBottom: "3rem" }}>
+              <ProcessGuide 
+                  title="How to Use the Guidance Office"
+                  steps={[
+                     { title: "Review Referrals", desc: "Check incoming referrals from advisers and walk-in requests.", icon: <ClipboardList size={16} /> },
+                     { title: "Conduct Session", desc: "Meet with the student for counseling and assessment.", icon: <HeartHandshake size={16} /> },
+                     { title: "Record Notes", desc: "Document your findings and recommendations after the session.", icon: <FileText size={16} /> },
+                     { title: "Endorse & Clear", desc: "Forward cases to OSAS and clear students for Good Moral certificates.", icon: <ShieldCheck size={16} /> }
+                  ]}
+               />
+            </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-               {/* GOOD MORAL QUEUE */}
-               <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)" }}>
-                  <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem" }}>Quick Actions</h3>
-                  <div style={{ display: "grid", gap: "1.5rem" }}>
-                     <button className="btn-cyan" style={{ width: "100%", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                        <Lock size={16} /> Refresh Data
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2.5rem" }}>
+               {/* QUICK ACTIONS */}
+               <div style={{ background: "white", padding: "2.5rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                  <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b", marginBottom: "2rem" }}>Quick Actions</h3>
+                  <div style={{ display: "grid", gap: "1rem" }}>
+                     <button style={{ width: "100%", padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "12px", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s" }}>
+                        <RefreshCw size={18} /> Refresh Data
                      </button>
-                     <button className="btn-cyan" style={{ width: "100%", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
-                        <Database size={16} color="var(--primary)" /> Reload Records
+                     <button style={{ width: "100%", padding: "1.25rem", display: "flex", alignItems: "center", gap: "1rem", background: "#f8fafc", border: "1px solid #e2e8f0", color: "#475569", borderRadius: "12px", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s" }}>
+                        <Database size={18} /> Reload Records
                      </button>
                   </div>
                </div>
 
                {/* RECENT RECORDS */}
-               <div className="sapphire-card">
-                  <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <ShieldCheck size={18} color="var(--primary)" /> Good Moral Clearance Queue
-                  </h2>
-                  <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginBottom: "2rem" }}>Students waiting for Good Moral certificate clearance.</p>
+               <div style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", overflow: "hidden" }}>
+                  <div style={{ padding: "2.5rem", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b", display: "flex", alignItems: "center", gap: "1rem" }}>
+                      <ShieldCheck size={24} color="#10b981" /> Good Moral Clearance Queue
+                    </h2>
+                    <p style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: "500", marginTop: "0.5rem" }}>Students waiting for Good Moral certificate clearance.</p>
+                  </div>
                   
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
-                    {goodMoralRequests.map((req) => (
-                      <div key={req.id} style={{ background: "var(--bg-surface)", padding: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    {goodMoralRequests.map((req, i) => (
+                      <motion.div 
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        key={req.id} 
+                        style={{ padding: "1.5rem 2.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid #f1f5f9" }}
+                      >
                         <div>
-                          <p style={{ fontSize: "0.8rem", fontWeight: "800" }}>{req.studentName.toUpperCase()}</p>
-                          <p style={{ fontSize: "0.6rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "0.2rem" }}>Date: {req.date}</p>
+                          <p style={{ fontSize: "0.95rem", fontWeight: "700", color: "#1e293b" }}>{req.studentName}</p>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "0.4rem", color: "#64748b" }}>
+                             <Clock size={14} />
+                             <p style={{ fontSize: "0.8rem", fontWeight: "600" }}>{req.date}</p>
+                          </div>
                         </div>
-                        <button onClick={() => handleIssueGoodMoral(req.id)} className="btn-cyan" style={{ padding: "0.5rem 1.25rem", fontSize: "0.6rem" }}>
-                          Clear & Issue
+                        <button 
+                          onClick={() => handleIssueGoodMoral(req.id)} 
+                          style={{ padding: "0.75rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", background: "#f0fdf4", color: "#166534", border: "1px solid #bbf7d0", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}
+                        >
+                          <Check size={16} /> Clear & Issue
                         </button>
-                      </div>
+                      </motion.div>
                     ))}
                     {goodMoralRequests.length === 0 && (
-                       <div style={{ padding: "2rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                          <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO awaiting clearanceS</p>
+                       <div style={{ padding: "4rem", textAlign: "center" }}>
+                          <CheckCircle2 size={48} color="#cbd5e1" style={{ margin: "0 auto 1.5rem" }} />
+                          <p style={{ fontSize: "1rem", fontWeight: "700", color: "#64748b" }}>Queue is empty.</p>
                        </div>
                     )}
                   </div>
