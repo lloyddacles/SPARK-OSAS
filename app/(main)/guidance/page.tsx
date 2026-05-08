@@ -60,13 +60,13 @@ export default function GuidancePortal() {
             <Lock size={32} color="#ef4444" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
          </div>
          <div style={{ textAlign: "center" }}>
-            <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>ACCESS DENIED</h2>
-            <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.75rem", fontSize: "0.85rem" }}>COUNSELING VAULT REQUIRES UNIT CLEARANCE.</p>
-            <p style={{ color: "var(--primary)", fontWeight: "900", marginTop: "1rem", fontSize: "0.6rem", letterSpacing: "0.1em" }}>REQUIRED ROLE: GUIDANCE_COUNSELOR_ONLY</p>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>Access Restricted</h2>
+            <p style={{ color: "var(--text-dim)", fontWeight: "700", marginTop: "0.75rem", fontSize: "0.85rem" }}>This page is restricted to Guidance Counselors.</p>
+            <p style={{ color: "var(--primary)", fontWeight: "900", marginTop: "1rem", fontSize: "0.6rem", letterSpacing: "0.1em" }}>Required Role: Guidance Counselor</p>
          </div>
          <div style={{ display: "flex", gap: "1rem" }}>
-            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>RETURN HOME</a>
-            <a href="/login" className="btn-cyan" style={{ padding: "1rem 2rem", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>AUTHORIZE</a>
+            <a href="/" style={{ padding: "1rem 2rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>Go to Dashboard</a>
+            <a href="/login" className="btn-cyan" style={{ padding: "1rem 2rem", textDecoration: "none", fontSize: "0.7rem", fontWeight: "900" }}>Sign In</a>
          </div>
       </div>
     );
@@ -77,10 +77,10 @@ export default function GuidancePortal() {
   };
 
   const dataNodes = [
-    { label: "COUNSELING RECORDS", value: "12", meta: "ACTIVE CASES", color: "#ef4444" },
-    { label: "CONSULTATION SCHEDULE", value: "5", meta: "TODAY'S SESSIONS", color: "#3b82f6" },
-    { label: "GOOD MORAL VERIFICATION", value: goodMoralRequests.length.toString(), meta: "PENDING CLEARANCE", color: "#10b981" },
-    { label: "STUDENT REFERRALS", value: pendingReferrals.length.toString(), meta: "PIPELINE QUEUE", color: "var(--primary)" },
+    { label: "Active Cases", value: "12", meta: "open now", color: "#ef4444" },
+    { label: "Today's Sessions", value: "5", meta: "scheduled", color: "#3b82f6" },
+    { label: "Good Moral Requests", value: goodMoralRequests.length.toString(), meta: "awaiting clearance", color: "#10b981" },
+    { label: "Student Referrals", value: pendingReferrals.length.toString(), meta: "pending review", color: "var(--primary)" },
   ];
 
   return (
@@ -88,10 +88,11 @@ export default function GuidancePortal() {
       
       {/* Sapphire Header */}
       <div style={{ marginBottom: "3rem" }}>
-        <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>UNIT: COUNSELING & WELLNESS</p>
-        <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-          GUIDANCE <span style={{ color: "var(--primary)" }}>VAULT</span>
+        <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Guidance Office</p>
+        <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+          <span style={{ color: "var(--primary)" }}>Guidance Office</span>
         </h1>
+        <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Manage counseling sessions, Good Moral clearances, and student referrals.</p>
       </div>
 
       {/* Operation Navigation Nodes */}
@@ -113,7 +114,7 @@ export default function GuidancePortal() {
               cursor: "pointer"
             }}
           >
-            0{i+1}_ {tab.toUpperCase()}
+            {tab}
           </button>
         ))}
       </div>
@@ -142,25 +143,25 @@ export default function GuidancePortal() {
           <motion.div key="overview" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
             
             <ProcessGuide 
-                title="Counseling Management Protocol"
+                title="How to Use the Guidance Office"
                 steps={[
-                   { title: "Intake Assessment", desc: "Review student referral records or walk-in consultation requests in the pipeline queue.", icon: <ClipboardList size={14} /> },
-                   { title: "Counseling Session", desc: "Conduct one-on-one professional support and student wellness evaluation sessions.", icon: <HeartHandshake size={14} /> },
-                   { title: "Document Findings", desc: "Log behavioral recommendations and clinical observations in the secure institutional vault.", icon: <FileText size={14} /> },
-                   { title: "Endorsement & Finalization", desc: "Forward nodes to OSAS and verify conduct for the issuance of Good Moral certificates.", icon: <ShieldCheck size={14} /> }
+                   { title: "Review Referrals", desc: "Check incoming referrals from advisers and walk-in requests.", icon: <ClipboardList size={14} /> },
+                   { title: "Conduct Session", desc: "Meet with the student for counseling and assessment.", icon: <HeartHandshake size={14} /> },
+                   { title: "Record Notes", desc: "Document your findings and recommendations after the session.", icon: <FileText size={14} /> },
+                   { title: "Endorse & Clear", desc: "Forward cases to OSAS and clear students for Good Moral certificates.", icon: <ShieldCheck size={14} /> }
                 ]}
              />
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                {/* GOOD MORAL QUEUE */}
                <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)" }}>
-                  <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem" }}>VAULT CONTROLS</h3>
+                  <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem" }}>Quick Actions</h3>
                   <div style={{ display: "grid", gap: "1.5rem" }}>
                      <button className="btn-cyan" style={{ width: "100%", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                        <Lock size={16} /> RE-AUTHENTICATE VAULT
+                        <Lock size={16} /> Refresh Data
                      </button>
                      <button className="btn-cyan" style={{ width: "100%", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
-                        <Database size={16} color="var(--primary)" /> REFRESH REPOSITORY
+                        <Database size={16} color="var(--primary)" /> Reload Records
                      </button>
                   </div>
                </div>
@@ -168,25 +169,25 @@ export default function GuidancePortal() {
                {/* RECENT RECORDS */}
                <div className="sapphire-card">
                   <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <ShieldCheck size={18} color="var(--primary)" /> IDENTITY DOCUMENT VAULT
+                    <ShieldCheck size={18} color="var(--primary)" /> Good Moral Clearance Queue
                   </h2>
-                  <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginBottom: "2rem" }}>SECURE STORAGE FOR INSTITUTIONAL CLEARANCES.</p>
+                  <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginBottom: "2rem" }}>Students waiting for Good Moral certificate clearance.</p>
                   
                   <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
                     {goodMoralRequests.map((req) => (
                       <div key={req.id} style={{ background: "var(--bg-surface)", padding: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <div>
                           <p style={{ fontSize: "0.8rem", fontWeight: "800" }}>{req.studentName.toUpperCase()}</p>
-                          <p style={{ fontSize: "0.6rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "0.2rem" }}>STAMPED: {req.date}</p>
+                          <p style={{ fontSize: "0.6rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "0.2rem" }}>Date: {req.date}</p>
                         </div>
                         <button onClick={() => handleIssueGoodMoral(req.id)} className="btn-cyan" style={{ padding: "0.5rem 1.25rem", fontSize: "0.6rem" }}>
-                          ISSUE CERTIFICATE
+                          Clear & Issue
                         </button>
                       </div>
                     ))}
                     {goodMoralRequests.length === 0 && (
                        <div style={{ padding: "2rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                          <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO PENDING CLEARANCES</p>
+                          <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO awaiting clearanceS</p>
                        </div>
                     )}
                   </div>

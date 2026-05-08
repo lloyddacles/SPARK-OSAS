@@ -75,7 +75,7 @@ export default function SubmissionsPage() {
               <div style={{ padding: "1.5rem 2rem", background: "var(--bg-accent)", borderBottom: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                  <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                     <Terminal size={18} color="var(--primary)" />
-                    <p style={{ fontWeight: "900", fontSize: "0.7rem", letterSpacing: "0.2em", color: "var(--primary)" }}>DOCUMENT PREVIEW READY</p>
+                    <p style={{ fontWeight: "900", fontSize: "0.7rem", letterSpacing: "0.2em", color: "var(--primary)" }}>Document Preview</p>
                  </div>
                  <button onClick={() => setActiveTemplate(null)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", display: "flex", alignItems: "center" }}><X size={20} /></button>
               </div>
@@ -98,7 +98,7 @@ export default function SubmissionsPage() {
                   className="btn-cyan"
                   style={{ flex: 1, padding: "1.25rem", fontWeight: "900", fontSize: "0.7rem", letterSpacing: "0.1em" }}
                 >
-                  INITIALIZE VAULT DEPOSIT <Check size={18} />
+                  Save & Upload <Check size={18} />
                 </button>
               </div>
             </motion.div>
@@ -109,15 +109,11 @@ export default function SubmissionsPage() {
       {/* --- HEADER_AND_TELEMETRY --- */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "5rem" }}>
         <header>
-          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "1.25rem" }}>
-            <div style={{ background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)", width: "60px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)", boxShadow: "0 0 20px rgba(0, 229, 255, 0.1)" }}>
-              <Lock size={28} />
-            </div>
-            <div>
-               <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.01em", color: "var(--text-main)" }}>MY DOCUMENTS</h1>
-               <p style={{ color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.2em", marginTop: "0.25rem" }}>SAFE STORAGE V2</p>
-            </div>
-          </div>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Document Upload Center</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>My Documents</span>
+          </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Upload and manage your required documents for OSAS processing.</p>
         </header>
 
         <div style={{ textAlign: "right", width: "340px" }}>
@@ -127,12 +123,12 @@ export default function SubmissionsPage() {
               whileHover={{ x: 5 }}
               style={{ display: "flex", alignItems: "center", gap: "0.75rem", justifyContent: "flex-end", color: "var(--primary)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.15em", marginBottom: "2rem", textDecoration: "none" }}
             >
-              SWITCH TO VERIFICATION TERMINAL <ArrowRight size={14} />
+              Go to Document Verification <ArrowRight size={14} />
             </motion.a>
           )}
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.1em" }}>
-            <span style={{ color: "var(--text-dim)" }}>PROGRESS</span>
-            <span style={{ color: "var(--primary)" }}>{progress}% COMPLETE</span>
+            <span style={{ color: "var(--text-dim)" }}>Upload Progress</span>
+            <span style={{ color: "var(--primary)" }}>{progress}% Complete</span>
           </div>
           <div style={{ height: "4px", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", overflow: "hidden" }}>
             <motion.div 
@@ -147,9 +143,9 @@ export default function SubmissionsPage() {
       {/* --- PROTOCOL_OVERVIEW --- */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)", marginBottom: "4rem" }}>
           {[
-            { icon: <Activity size={18} />, label: "FILE TRACKING", desc: "We check your files to make sure they are correct." },
-            { icon: <ShieldCheck size={18} />, label: "SECURE STORAGE", desc: "Your personal data is kept safe and private." },
-            { icon: <Layers size={18} />, label: "CHECKING PROCESS", desc: "Directly reviewed by the student affairs office." }
+            { icon: <Activity size={18} />, label: "File Tracking", desc: "We check your files to make sure they are correct." },
+            { icon: <ShieldCheck size={18} />, label: "Secure Storage", desc: "Your personal data is kept safe and private." },
+            { icon: <Layers size={18} />, label: "Review Process", desc: "Directly reviewed by the student affairs office." }
           ].map((p) => (
            <div key={p.label} style={{ background: "var(--bg-surface)", padding: "2rem", display: "flex", gap: "1.5rem" }}>
               <div style={{ color: "var(--primary)" }}>{p.icon}</div>
@@ -165,12 +161,12 @@ export default function SubmissionsPage() {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             <FileStack size={18} color="var(--primary)" />
-            <h2 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>REQUIRED FILES</h2>
+            <h2 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>Required Documents</h2>
          </div>
           <div style={{ position: "relative", width: "280px" }}>
             <Search size={14} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-dim)" }} />
             <input 
-              placeholder="SEARCH FILES..." 
+              placeholder="Search documents..." 
               style={{ width: "100%", padding: "0.75rem 1rem 0.75rem 2.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", fontSize: "0.65rem", fontWeight: "900", color: "white" }}
             />
           </div>
@@ -235,7 +231,7 @@ export default function SubmissionsPage() {
                   <div style={{ marginBottom: "2rem", padding: "1.25rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", borderLeft: "2px solid var(--primary)", fontSize: "0.65rem", display: "flex", gap: "1rem" }}>
                      <Info size={16} color="var(--primary)" style={{ flexShrink: 0 }} />
                      <div>
-                        <p style={{ fontWeight: "900", marginBottom: "0.4rem", color: "var(--primary)" }}>OFFICE FEEDBACK</p>
+                        <p style={{ fontWeight: "900", marginBottom: "0.4rem", color: "var(--primary)" }}>Staff Feedback</p>
                         <p style={{ color: "var(--text-main)", fontWeight: "700", lineHeight: "1.4" }}>{uploadInfo.remarks.toUpperCase()}</p>
                      </div>
                   </div>
@@ -280,7 +276,7 @@ export default function SubmissionsPage() {
                   <div style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-dim)", fontSize: "0.55rem", color: "var(--text-dim)", display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: "900" }}>
                     <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><Clock size={12} /> FILED: {uploadInfo.date}</span>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: isVerified ? "#10b981" : "var(--primary)" }}>
-                       <ShieldCheck size={12} /> {isVerified ? "COMPLETE" : "PENDING REVIEW"}
+                       <ShieldCheck size={12} /> {isVerified ? "Complete" : "PENDING REVIEW"}
                     </div>
                   </div>
                 )}
@@ -296,13 +292,13 @@ export default function SubmissionsPage() {
             <ShieldCheck size={40} className="status-pulse" />
          </div>
          <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: "900", marginBottom: "0.75rem", color: "var(--text-main)", letterSpacing: "0.1em" }}>YOUR FILES ARE SAFE</h3>
+            <h3 style={{ fontSize: "1rem", fontWeight: "900", marginBottom: "0.75rem", color: "var(--text-main)", letterSpacing: "0.1em" }}>Your Files Are Secure</h3>
             <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", fontWeight: "700", lineHeight: "1.6" }}>
               We use high-security technology to keep your documents safe. 
               Only authorized staff from the OSAS office can view your information.
             </p>
          </div>
-         <button className="btn-cyan" style={{ padding: "1rem 2.5rem", fontSize: "0.7rem", fontWeight: "900" }}>LEARN MORE</button>
+         <button className="btn-cyan" style={{ padding: "1rem 2.5rem", fontSize: "0.7rem", fontWeight: "900" }}>Learn More</button>
       </div>
     </div>
   );

@@ -54,23 +54,21 @@ export default function AdminCenterPage() {
 
   return (
     <div style={{ padding: "3rem", maxWidth: "1600px", margin: "0 auto" }}>
-      {/* TERMINAL HEADER */}
+      {/* HEADER */}
       <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "1rem" }}>
-             <div style={{ width: "48px", height: "48px", background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--bg-deep)", borderRadius: "4px", boxShadow: "0 0 30px var(--primary-glow)" }}>
-                <Terminal size={24} />
-             </div>
-             <h1 style={{ fontSize: "3rem", fontWeight: "900", letterSpacing: "0.2em", color: "var(--text-main)" }}>SYSTEM_ADMIN</h1>
-          </div>
-          <p style={{ fontSize: "0.85rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.4em" }}>CORE_GOVERNANCE_TERMINAL_v2.5</p>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Administration</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>System Admin</span>
+          </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Manage organizations, audit logs, student profiles, and system health.</p>
         </div>
         
         <div style={{ textAlign: "right" }}>
-           <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>TERMINAL_STATUS</p>
-           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+           <p style={{ fontSize: "0.7rem", fontWeight: "700", color: "var(--text-dim)", marginBottom: "0.5rem" }}>System Status</p>
+           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981", boxShadow: "0 0 10px #10b981" }} />
-              <span style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.1em" }}>OPERATIONAL_LEVEL_01</span>
+              <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#10b981" }}>All Systems Online</span>
            </div>
         </div>
       </div>
@@ -78,9 +76,9 @@ export default function AdminCenterPage() {
       {/* COMMAND GRID */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem", marginBottom: "4rem" }}>
         {[
-          { label: "IDENTITY_REGISTRY", count: organizations.length, icon: <Building2 size={20} />, sub: "Organizations", color: "var(--primary)", href: "/organizations" },
-          { label: "TELEMETRY_LOGS", count: auditLogs.length, icon: <Activity size={20} />, sub: "Audit Entries", color: "#10b981", href: "/admin/audit" },
-          { label: "PASSPORT_CONTROL", count: 0, icon: <Fingerprint size={20} />, sub: "Student Passports", color: "#8b5cf6", href: "/admin/passport" }
+          { label: "Organizations", count: organizations.length, icon: <Building2 size={20} />, sub: "Organizations", color: "var(--primary)", href: "/organizations" },
+          { label: "Activity Logs", count: auditLogs.length, icon: <Activity size={20} />, sub: "Audit Entries", color: "#10b981", href: "/admin/audit" },
+          { label: "Student Profiles", count: 0, icon: <Fingerprint size={20} />, sub: "Student Passports", color: "#8b5cf6", href: "/admin/passport" }
         ].map(node => (
           <motion.div 
             key={node.label}
@@ -109,8 +107,8 @@ export default function AdminCenterPage() {
         {/* RECENT SYSTEM AUDIT */}
         <div className="sapphire-card" style={{ padding: "0" }}>
           <div style={{ padding: "2rem 2.5rem", borderBottom: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-             <h3 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.2em", color: "var(--text-main)" }}>SYSTEM_AUDIT_LEDGER</h3>
-             <button onClick={() => router.push("/admin/audit")} style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer", letterSpacing: "0.1em" }}>VIEW_ALL_LOGS</button>
+             <h3 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.2em", color: "var(--text-main)" }}>Recent Activity Log</h3>
+             <button onClick={() => router.push("/admin/audit")} style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer", letterSpacing: "0.1em" }}>View All Logs</button>
           </div>
           <div style={{ padding: "1.5rem" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -149,12 +147,12 @@ export default function AdminCenterPage() {
         {/* SYSTEM HEALTH */}
         <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
            <div className="sapphire-card" style={{ padding: "2.5rem" }}>
-              <h3 style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "0.15em", color: "var(--text-main)", marginBottom: "2rem" }}>RESOURCE_MONITOR</h3>
+              <h3 style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "0.15em", color: "var(--text-main)", marginBottom: "2rem" }}>System Health</h3>
               <div style={{ display: "grid", gap: "1.5rem" }}>
                 {[
-                  { label: "DATABASE_LATENCY", value: "24ms", progress: 15 },
-                  { label: "STORAGE_UTILIZATION", value: "1.2GB", progress: 45 },
-                  { label: "API_UPTIME", value: "99.98%", progress: 99 }
+                  { label: "Response Time", value: "24ms", progress: 15 },
+                  { label: "Storage Used", value: "1.2GB", progress: 45 },
+                  { label: "System Uptime", value: "99.98%", progress: 99 }
                 ].map(metric => (
                   <div key={metric.label}>
                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
@@ -175,11 +173,11 @@ export default function AdminCenterPage() {
 
            <div className="sapphire-card" style={{ padding: "2.5rem", background: "linear-gradient(135deg, var(--bg-surface) 0%, rgba(0, 229, 255, 0.05) 100%)" }}>
               <Zap size={24} color="var(--primary)" style={{ marginBottom: "1.5rem" }} />
-              <h3 style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "0.15em", color: "var(--text-main)", marginBottom: "1rem" }}>AUTOMATED_TASKS</h3>
+              <h3 style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "0.15em", color: "var(--text-main)", marginBottom: "1rem" }}>Scheduled Tasks</h3>
               <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", lineHeight: "1.6", marginBottom: "1.5rem" }}>System integrity checks scheduled for 04:00 AM daily. All telemetry is being aggregated in real-time.</p>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#10b981" }} />
-                 <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "#10b981", letterSpacing: "0.1em" }}>NEXT_SCAN: 14h 22m</span>
+                 <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "#10b981", letterSpacing: "0.1em" }}>Next check: 14h 22m</span>
               </div>
            </div>
         </div>

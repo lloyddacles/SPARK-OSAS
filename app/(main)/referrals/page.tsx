@@ -98,10 +98,11 @@ export default function StudentReferralsPage() {
       
       {/* Sapphire Header */}
       <div style={{ marginBottom: "3rem" }}>
-        <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>STUDENT MONITORING</p>
-        <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-          STUDENT <span style={{ color: "var(--primary)" }}>REFERRALS</span>
+        <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Welfare</p>
+        <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+          <span style={{ color: "var(--primary)" }}>Student Referrals</span>
         </h1>
+        <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Track student behavior referrals from advisers through guidance counseling to OSAS resolution.</p>
       </div>
 
       {/* Role Navigation Nodes */}
@@ -131,7 +132,7 @@ export default function StudentReferralsPage() {
                 cursor: "pointer"
               }}
             >
-              {tab === "Adviser" ? "TEACHER" : tab.toUpperCase()}
+              {tab === "Adviser" ? "Teacher" : tab}
             </button>
           );
         })}
@@ -139,7 +140,7 @@ export default function StudentReferralsPage() {
 
       <AnimatePresence mode="wait">
         
-        {/* ADVISER PHASE */}
+        {/* ADVISER Step */}
         {activeTab === "Adviser" && (
           <motion.div key="adviser" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
             <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "2rem" }}>
@@ -152,26 +153,26 @@ export default function StudentReferralsPage() {
                     <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>STUDENT NAME</label>
                     <input 
                       required value={studentName} onChange={e => setStudentName(e.target.value)} 
-                      placeholder="ENTER FULL NAME..."
+                      placeholder="Enter student's full name..."
                       style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} 
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>REASON FOR REFERRAL</label>
+                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>Reason for Referral</label>
                     <textarea 
                       required value={reason} onChange={e => setReason(e.target.value)} 
-                      placeholder="DESCRIBE THE ISSUE IN DETAIL..." rows={4}
+                      placeholder="Describe the concern or issue in detail..." rows={4}
                       style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} 
                     />
                   </div>
                   <button type="submit" className="btn-cyan" style={{ padding: "1rem", width: "fit-content" }}>
-                    SEND TO GUIDANCE <ArrowRight size={16} />
+                    Submit Referral <ArrowRight size={16} />
                   </button>
                 </form>
               </div>
 
               <div>
-                <h3 style={{ fontSize: "0.8rem", fontWeight: "900", marginBottom: "2rem", color: "var(--text-dim)" }}>MY SENT REFERRALS</h3>
+                <h3 style={{ fontSize: "0.8rem", fontWeight: "900", marginBottom: "2rem", color: "var(--text-dim)" }}>My Submitted Referrals</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
                   {referrals.map(ref => (
                     <div key={ref.id} style={{ background: "var(--bg-surface)", padding: "1.25rem", borderLeft: "2px solid var(--primary)" }}>
@@ -190,12 +191,12 @@ export default function StudentReferralsPage() {
           </motion.div>
         )}
 
-        {/* GUIDANCE_PHASE */}
+        {/* GUIDANCE_Step */}
         {activeTab === "Guidance" && (
           <motion.div key="guidance" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "2rem" }}>
               <div>
-                <h3 style={{ fontSize: "0.8rem", fontWeight: "900", marginBottom: "2rem", color: "var(--text-dim)" }}>INCOMING REFERRALS</h3>
+                <h3 style={{ fontSize: "0.8rem", fontWeight: "900", marginBottom: "2rem", color: "var(--text-dim)" }}>Incoming Referrals</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
                   {referrals.filter(r => r.status === "Referred to Guidance").map(ref => (
                     <div 
@@ -210,13 +211,13 @@ export default function StudentReferralsPage() {
                       }}
                     >
                       <h4 style={{ fontWeight: "800", fontSize: "0.85rem", marginBottom: "0.5rem" }}>{ref.studentName.toUpperCase()}</h4>
-                      <p style={{ fontSize: "0.6rem", color: "var(--primary)", fontWeight: "900", marginBottom: "1rem" }}>FILED BY: {ref.adviserName.toUpperCase()}</p>
+                      <p style={{ fontSize: "0.6rem", color: "var(--primary)", fontWeight: "900", marginBottom: "1rem" }}>Referred by: {ref.adviserName.toUpperCase()}</p>
                       <p style={{ fontSize: "0.75rem", color: "var(--text-dim)", fontWeight: "500" }}>{ref.reason}</p>
                     </div>
                   ))}
                   {referrals.filter(r => r.status === "Referred to Guidance").length === 0 && (
                     <div style={{ padding: "3rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                       <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO PENDING REFERRALS</p>
+                       <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>No pending referrals at this time.</p>
                     </div>
                   )}
                 </div>
@@ -225,22 +226,22 @@ export default function StudentReferralsPage() {
               {selectedGuidanceRef && (
                 <div className="sapphire-card">
                   <h2 style={{ fontSize: "1rem", fontWeight: "900", marginBottom: "2.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <FileSignature size={18} color="var(--primary)" /> COUNSELOR'S NOTES
+                    <FileSignature size={18} color="var(--primary)" /> Counselor's Assessment
                   </h2>
                   <div style={{ marginBottom: "2.5rem", padding: "1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)" }}>
-                    <p style={{ fontSize: "0.6rem", color: "var(--text-dim)", fontWeight: "900" }}>CURRENT STUDENT:</p>
+                    <p style={{ fontSize: "0.6rem", color: "var(--text-dim)", fontWeight: "900" }}>Student:</p>
                     <p style={{ fontWeight: "900", fontSize: "1.25rem", color: "var(--primary)", marginTop: "0.5rem" }}>{referrals.find(r => r.id === selectedGuidanceRef)?.studentName.toUpperCase()}</p>
                   </div>
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>COUNSELOR'S FEEDBACK</label>
+                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>Your Assessment & Recommendations</label>
                     <textarea 
                       required value={findings} onChange={e => setFindings(e.target.value)} 
-                      placeholder="ENTER CLINICAL ASSESSMENT AND RECOMMENDATION..." rows={5}
+                      placeholder="Enter your findings and recommendation..." rows={5}
                       style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} 
                     />
                   </div>
                   <button onClick={handleEndorse} className="btn-cyan" style={{ width: "100%", marginTop: "2rem" }}>
-                    SEND TO OSAS <ArrowRight size={16} />
+                    Endorse to OSAS <ArrowRight size={16} />
                   </button>
                 </div>
               )}
@@ -248,7 +249,7 @@ export default function StudentReferralsPage() {
           </motion.div>
         )}
 
-        {/* OSAS PHASE */}
+        {/* OSAS Step */}
         {activeTab === "OSAS" && (
           <motion.div key="osas" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
             
@@ -256,18 +257,18 @@ export default function StudentReferralsPage() {
             <div className="sapphire-card" style={{ marginBottom: "3rem", borderLeft: "4px solid #ef4444" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2.5rem" }}>
                 <Activity size={20} color="#ef4444" />
-                <h3 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>OSAS DISCIPLINARY PROCESS</h3>
+                <h3 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>OSAS Referral Process</h3>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "1px", background: "var(--border-dim)" }}>
                 {[
-                  { step: "01", title: "INITIAL REVIEW", desc: "Read counselor notes." },
-                  { step: "02", title: "CASE ANALYSIS", desc: "Check student history." },
-                  { step: "03", title: "RESOLUTION MEETING", desc: "Meet with student." },
-                  { step: "04", title: "FINAL DECISION", desc: "Give official OSAS verdict." },
-                  { step: "05", title: "ARCHIVING", desc: "Save case to records." }
+                  { step: "01", title: "Read Notes", desc: "Review the counselor's findings." },
+                  { step: "02", title: "Check History", desc: "Review the student's past records." },
+                  { step: "03", title: "Meet Student", desc: "Schedule a meeting with the student." },
+                  { step: "04", title: "Make Decision", desc: "Issue the final OSAS decision." },
+                  { step: "05", title: "Save Record", desc: "Archive the completed case." }
                 ].map((s) => (
                   <div key={s.step} style={{ background: "var(--bg-surface)", padding: "1.5rem", position: "relative" }}>
-                    <div style={{ fontSize: "0.6rem", fontWeight: "900", color: "#ef4444", marginBottom: "0.75rem" }}>PHASE {s.step}</div>
+                    <div style={{ fontSize: "0.6rem", fontWeight: "900", color: "#ef4444", marginBottom: "0.75rem" }}>Step {s.step}</div>
                     <p style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "0.5rem" }}>{s.title}</p>
                     <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.4" }}>{s.desc}</p>
                   </div>
@@ -279,7 +280,7 @@ export default function StudentReferralsPage() {
             <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", flexWrap: "wrap" }}>
                <div style={{ flex: 1, display: "flex", gap: "1rem" }}>
                   <div className="sapphire-card" style={{ flex: 1, padding: "1.5rem" }}>
-                     <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)" }}>TOTAL CASES</p>
+                     <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)" }}>Total Cases</p>
                      <p style={{ fontSize: "1.5rem", fontWeight: "900" }}>{osasCases.length}</p>
                   </div>
                   <div className="sapphire-card" style={{ flex: 1, padding: "1.5rem" }}>
@@ -298,7 +299,7 @@ export default function StudentReferralsPage() {
                      <input 
                        value={osasSearchTerm} 
                        onChange={e => setOsasSearchTerm(e.target.value)} 
-                       placeholder="SEARCH STUDENT NAME..."
+                       placeholder="Search by student name..."
                        style={{ background: "transparent", border: "none", color: "var(--text-main)", fontSize: "0.75rem", fontWeight: "700", marginLeft: "0.75rem", width: "100%", outline: "none" }}
                      />
                   </div>
@@ -327,7 +328,7 @@ export default function StudentReferralsPage() {
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "2rem" }}>
               <div>
-                <h3 style={{ fontSize: "0.8rem", fontWeight: "900", marginBottom: "2rem", color: "var(--text-dim)" }}>STUDENT CASES</h3>
+                <h3 style={{ fontSize: "0.8rem", fontWeight: "900", marginBottom: "2rem", color: "var(--text-dim)" }}>Case List</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
                   {filteredOsasCases.map(ref => (
                     <div 
@@ -348,14 +349,14 @@ export default function StudentReferralsPage() {
                          </span>
                       </div>
                       <div style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)" }}>
-                         <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.5rem" }}>GUIDANCE FINDINGS:</p>
+                         <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.5rem" }}>Counselor's Findings:</p>
                          <p style={{ fontSize: "0.75rem", color: "var(--text-dim)", fontWeight: "500", lineHeight: "1.5" }}>{ref.counselorFindings}</p>
                       </div>
                     </div>
                   ))}
                   {filteredOsasCases.length === 0 && (
                     <div style={{ padding: "3rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                       <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO CASES FOUND</p>
+                       <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>No cases match your filters.</p>
                     </div>
                   )}
                 </div>
@@ -366,25 +367,25 @@ export default function StudentReferralsPage() {
                  return activeRef && (
                    <div className="sapphire-card" style={{ borderTop: "4px solid #ef4444" }}>
                      <h2 style={{ fontSize: "1rem", fontWeight: "900", marginBottom: "2.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                       <Gavel size={18} color="#ef4444" /> CASE FILE: {activeRef.studentName.toUpperCase()}
+                       <Gavel size={18} color="#ef4444" /> Case: {activeRef.studentName.toUpperCase()}
                      </h2>
                      
                      {/* TIMELINE */}
                      <div style={{ marginBottom: "3rem", paddingLeft: "1rem", borderLeft: "2px solid var(--border-dim)", display: "flex", flexDirection: "column", gap: "2rem" }}>
                         <div style={{ position: "relative" }}>
                            <div style={{ position: "absolute", left: "-1.35rem", top: "0", width: "12px", height: "12px", borderRadius: "50%", background: "var(--bg-surface)", border: "2px solid var(--text-dim)" }} />
-                           <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.25rem", letterSpacing: "0.1em" }}>FILED BY {activeRef.adviserName?.toUpperCase() || "ADVISER"}</p>
+                           <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.25rem", letterSpacing: "0.1em" }}>Referred by {activeRef.adviserName?.toUpperCase() || "ADVISER"}</p>
                            <p style={{ fontSize: "0.75rem", fontWeight: "700" }}>{activeRef.reason}</p>
                         </div>
                         <div style={{ position: "relative" }}>
                            <div style={{ position: "absolute", left: "-1.35rem", top: "0", width: "12px", height: "12px", borderRadius: "50%", background: "var(--bg-surface)", border: "2px solid var(--primary)" }} />
-                           <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.25rem", letterSpacing: "0.1em" }}>COUNSELOR FINDINGS</p>
+                           <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.25rem", letterSpacing: "0.1em" }}>Counselor's Assessment</p>
                            <p style={{ fontSize: "0.75rem", fontWeight: "700" }}>{activeRef.counselorFindings}</p>
                         </div>
                         {activeRef.status !== "Endorsed to OSAS" && (
                            <div style={{ position: "relative" }}>
                               <div style={{ position: "absolute", left: "-1.35rem", top: "0", width: "12px", height: "12px", borderRadius: "50%", background: "var(--bg-surface)", border: "2px solid #ef4444" }} />
-                              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "#ef4444", marginBottom: "0.25rem", letterSpacing: "0.1em" }}>OSAS VERDICT: {activeRef.status.toUpperCase()}</p>
+                              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "#ef4444", marginBottom: "0.25rem", letterSpacing: "0.1em" }}>OSAS Decision: {activeRef.status.toUpperCase()}</p>
                               <p style={{ fontSize: "0.75rem", fontWeight: "700" }}>{activeRef.osasVerdict || "No additional notes provided."}</p>
                            </div>
                         )}
@@ -401,11 +402,11 @@ export default function StudentReferralsPage() {
                              <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
                                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                                   <Sparkles size={16} color="var(--primary)" />
-                                  <h3 style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>SMART CASE ANALYSIS</h3>
+                                  <h3 style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>SMART Check History</h3>
                                </div>
                                {!aiCaseSummary && !isAnalyzingCase && (
                                  <button onClick={runCaseAnalysis} className="btn-cyan" style={{ padding: "0.5rem 1rem", fontSize: "0.55rem" }}>
-                                   RUN ANALYSIS
+                                   Generate Summary
                                  </button>
                                )}
                              </div>
@@ -415,7 +416,7 @@ export default function StudentReferralsPage() {
                                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}>
                                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>
-                                         <span>CHECKING SCHOOL HANDBOOK RULES...</span>
+                                         <span>Analyzing case details...</span>
                                       </div>
                                       <div style={{ height: "2px", background: "var(--bg-accent)", width: "100%", overflow: "hidden" }}>
                                          <motion.div 
@@ -438,25 +439,25 @@ export default function StudentReferralsPage() {
                            </div>
 
                            <div style={{ marginBottom: "2rem" }}>
-                             <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>OFFICIAL NOTES</label>
+                             <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>Your Decision & Notes</label>
                              <textarea 
                                required value={verdictNotes} onChange={e => setVerdictNotes(e.target.value)} 
-                               placeholder="ENTER OFFICIAL SANCTION OR REASON FOR DISMISSAL..." rows={5}
+                               placeholder="Enter your decision and any notes or sanctions..." rows={5}
                                style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} 
                              />
                            </div>
                            {isOSAS ? (
                              <div style={{ display: "flex", gap: "1rem" }}>
                                <button onClick={() => handleVerdict("Dismissed")} style={{ flex: 1, padding: "1rem", fontSize: "0.7rem", fontWeight: "900", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", cursor: "pointer" }}>
-                                 DISMISS CASE
+                                 Dismiss Case
                                </button>
                                <button onClick={() => handleVerdict("Sanctioned")} className="btn-cyan" style={{ flex: 1, background: "#ef4444", border: "1px solid #ef4444" }}>
-                                 APPLY SANCTION
+                                 Apply Sanction
                                </button>
                              </div>
                            ) : (
                              <div style={{ padding: "1.5rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.2)", textAlign: "center" }}>
-                                <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "#ef4444" }}>AWAITING OSAS DIRECTOR VERDICT</p>
+                                <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "#ef4444" }}>Awaiting OSAS Director's decision</p>
                              </div>
                            )}
                         </div>

@@ -50,12 +50,12 @@ export default function StudentPassportPage() {
       const data = await getStudentPassport(identifier);
       if (data && (data.identity || data.scholarships.length > 0)) {
         setPassport(data);
-        logAudit("PASSPORT_ACCESS", `Digital Passport accessed for identifier: ${identifier}`, "LOW");
+        logAudit("STUDENT_PROFILE_VIEWED", `Student profile viewed for identifier: ${identifier}`, "LOW");
       } else {
-        setError("IDENTITY_NOT_FOUND: UNABLE_TO_VERIFY_SUBJECT_NODES");
+        setError("Student not found. Please check the name or ID and try again.");
       }
     } catch (err) {
-      setError("SYSTEM_REJECTION: SECURITY_PROTOCOL_INTERRUPTED_DATA_FLOW");
+      setError("An error occurred while searching. Please try again.");
     } finally {
       setIsSearching(false);
     }
@@ -98,7 +98,7 @@ export default function StudentPassportPage() {
       title: "STUDENT IDENTITY PASSPORT",
       sections: sections
     });
-    logAudit("PASSPORT_EXPORT", `Digital Passport exported for ${studentName}`, "MEDIUM");
+    logAudit("STUDENT_PROFILE_EXPORTED", `Student profile exported for ${studentName}`, "MEDIUM");
   };
 
   return (
@@ -135,8 +135,8 @@ export default function StudentPassportPage() {
               <Fingerprint size={48} color="var(--primary)" />
             </motion.div>
             <div style={{ textAlign: "center" }}>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>BIOMETRIC_DATA_SCAN</h2>
-              <p style={{ color: "var(--primary)", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem", letterSpacing: "0.1em" }}>RECOGNIZING_SUBJECT_IDENTIFIER: {identifier.toUpperCase()}</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>Searching Student Records</h2>
+              <p style={{ color: "var(--primary)", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem", letterSpacing: "0.1em" }}>Searching for: {identifier.toUpperCase()}</p>
             </div>
             
             {/* Dynamic Scan Line */}
@@ -152,18 +152,18 @@ export default function StudentPassportPage() {
       {/* Sapphire Header */}
       <div style={{ marginBottom: "5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.6em", marginBottom: "0.75rem" }}>GOVERNANCE: IDENTITY_TERMINAL</p>
-          <h1 style={{ fontSize: "4.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)", lineHeight: "0.9" }}>
-            STUDENT <br />
-            <span style={{ color: "var(--primary)" }}>PASSPORT.</span>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Records</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>Student Profile</span>
           </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Look up any student's full record — scholarships, requests, appointments, and referral history.</p>
         </div>
         <div style={{ textAlign: "right" }}>
            <div style={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "flex-end", marginBottom: "1rem" }}>
              <Activity size={16} className="animate-pulse" color="var(--primary)" />
-             <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>ENCRYPTED_SYNC_ACTIVE</p>
+             <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>Connected & Secure</p>
            </div>
-           <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>NODE: OSAS_IDENTITY_GWAY_01</p>
+           <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>OSAS Student Records System</p>
         </div>
       </div>
 
@@ -174,7 +174,7 @@ export default function StudentPassportPage() {
         style={{ marginBottom: "5rem", padding: "3rem", borderLeft: "4px solid var(--primary)", position: "relative", overflow: "hidden" }}
       >
          <div style={{ position: "absolute", top: 0, right: 0, padding: "0.5rem 1rem", background: "var(--primary)", color: "var(--bg-deep)", fontSize: "0.55rem", fontWeight: "900", letterSpacing: "0.1em" }}>
-           INPUT_REQUIRED
+           Search Required
          </div>
          <form onSubmit={handleSearch} style={{ display: "flex", gap: "1.5rem" }}>
             <div style={{ flex: 1, position: "relative" }}>
@@ -182,7 +182,7 @@ export default function StudentPassportPage() {
                <input 
                  value={identifier}
                  onChange={(e) => setIdentifier(e.target.value)}
-                 placeholder="ENTER STUDENT ID OR FULL NAME TO SCAN..."
+                 placeholder="Enter student name or ID..."
                  style={{ 
                    width: "100%", 
                    padding: "1.5rem 1.5rem 1.5rem 4rem", 
@@ -197,7 +197,7 @@ export default function StudentPassportPage() {
             </div>
             <button type="submit" disabled={isSearching} className="btn-cyan" style={{ padding: "0 4rem", fontSize: "0.8rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1.25rem" }}>
                {isSearching ? <Cpu className="animate-spin" size={20} /> : <Fingerprint size={20} />}
-               {isSearching ? "ANALYZING..." : "INITIALIZE SCAN"}
+               {isSearching ? "ANALYZING..." : "Search Student"}
             </button>
          </form>
          {error && (
@@ -255,7 +255,7 @@ export default function StudentPassportPage() {
                   <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "0.75rem", letterSpacing: "-0.02em" }}>{passport.identity?.name?.toUpperCase() || passport.scholarships[0]?.studentName.toUpperCase()}</h2>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", background: "rgba(0, 229, 255, 0.1)", padding: "0.5rem 1.25rem", borderRadius: "4px", marginBottom: "3rem" }}>
                     <div style={{ width: "6px", height: "6px", background: "var(--primary)", borderRadius: "50%" }} />
-                    <span style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>{passport.identity?.role?.replace(/_/g, ' ') || "STUDENT_SUBJECT"}</span>
+                    <span style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>{passport.identity?.role?.replace(/_/g, ' ') || "STUDENT"}</span>
                   </div>
                   
                   <div style={{ display: "grid", gap: "1.5rem", textAlign: "left", paddingTop: "3rem", borderTop: "1px solid var(--border-dim)" }}>
@@ -264,8 +264,8 @@ export default function StudentPassportPage() {
                            <Fingerprint size={16} color="var(--primary)" />
                         </div>
                         <div>
-                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>SUBJECT_IDENTIFIER</p>
-                          <p style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-main)" }}>{passport.identity?.studentId || "UNVERIFIED_NODE"}</p>
+                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>Student ID</p>
+                          <p style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-main)" }}>{passport.identity?.studentId || "Not Available"}</p>
                         </div>
                      </div>
                      <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
@@ -273,8 +273,8 @@ export default function StudentPassportPage() {
                            <MapPin size={16} color="var(--primary)" />
                         </div>
                         <div>
-                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>INSTITUTIONAL_UNIT</p>
-                          <p style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-main)" }}>{passport.identity?.department || "GENERAL_UNIT"}</p>
+                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>Department</p>
+                          <p style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-main)" }}>{passport.identity?.department || "General"}</p>
                         </div>
                      </div>
                      <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
@@ -282,7 +282,7 @@ export default function StudentPassportPage() {
                            <Mail size={16} color="var(--primary)" />
                         </div>
                         <div>
-                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>COMMS_CHANNEL</p>
+                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>Email</p>
                           <p style={{ fontSize: "0.85rem", fontWeight: "800", color: "var(--text-main)" }}>{passport.identity?.email || "N/A"}</p>
                         </div>
                      </div>
@@ -294,7 +294,7 @@ export default function StudentPassportPage() {
                     <div className="sapphire-card" style={{ padding: "3rem", borderTop: "4px solid var(--primary)" }}>
                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
                           <h3 style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "1rem", letterSpacing: "0.1em" }}>
-                             <Star size={18} color="var(--primary)" /> SCHOLARSHIP_REGISTRY
+                             <Star size={18} color="var(--primary)" /> Scholarships
                           </h3>
                        </div>
                        {passport.scholarships.length > 0 ? (
@@ -315,7 +315,7 @@ export default function StudentPassportPage() {
                        ) : (
                          <div style={{ padding: "3rem 1rem", textAlign: "center", opacity: 0.3 }}>
                            <FileText size={32} style={{ margin: "0 auto 1.5rem" }} />
-                           <p style={{ fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.1em" }}>NO_ACTIVE_RECORDS</p>
+                           <p style={{ fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.1em" }}>No Records Found</p>
                          </div>
                        )}
                     </div>
@@ -323,7 +323,7 @@ export default function StudentPassportPage() {
                     <div className="sapphire-card" style={{ padding: "3rem", borderTop: "4px solid #f59e0b" }}>
                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
                           <h3 style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "1rem", letterSpacing: "0.1em" }}>
-                             <Activity size={18} color="#f59e0b" /> BEHAVIORAL_METRICS
+                             <Activity size={18} color="#f59e0b" /> Behavior Record
                           </h3>
                        </div>
                        <div style={{ textAlign: "center", padding: "1rem" }}>
@@ -337,7 +337,7 @@ export default function StudentPassportPage() {
                                {passport.referralHistory.length > 0 ? passport.referralHistory.length : "00"}
                             </h4>
                           </div>
-                          <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem", letterSpacing: "0.2em" }}>OPEN_REFERRAL_CASES</p>
+                          <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem", letterSpacing: "0.2em" }}>Open Referral Cases</p>
                           <div style={{ marginTop: "2.5rem", height: "6px", background: "var(--bg-accent)", borderRadius: "3px", overflow: "hidden" }}>
                              <motion.div 
                                initial={{ width: 0 }}
@@ -345,7 +345,7 @@ export default function StudentPassportPage() {
                                style={{ height: "100%", background: passport.referralHistory.length > 0 ? "#f59e0b" : "#10b981" }} 
                              />
                           </div>
-                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1rem" }}>{passport.referralHistory.length > 0 ? "UNUSUAL_BEHAVIOR_DETECTED" : "OPTIMAL_STUDENT_INTEGRITY"}</p>
+                          <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1rem" }}>{passport.referralHistory.length > 0 ? "Has open referral cases" : "No behavior concerns"}</p>
                        </div>
                     </div>
                   </div>
@@ -353,22 +353,22 @@ export default function StudentPassportPage() {
                   <div className="sapphire-card" style={{ padding: "2.5rem 3.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(0, 229, 255, 0.02)", border: "1px solid var(--primary)" }}>
                       <div style={{ display: "flex", gap: "5rem" }}>
                          <div>
-                            <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>LAST_SYSTEM_AUDIT</p>
+                            <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>Last Updated</p>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                               <Clock size={14} color="var(--text-dim)" />
                               <p style={{ fontSize: "0.9rem", fontWeight: "900", color: "var(--text-main)" }}>{new Date(passport.lastAudit).toLocaleString()}</p>
                             </div>
                          </div>
                          <div>
-                            <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>DATA_FIDELITY</p>
+                            <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>Data Status</p>
                             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                               <ShieldCheck size={14} color="#10b981" />
-                              <p style={{ fontSize: "0.9rem", fontWeight: "900", color: "#10b981" }}>VERIFIED_ENCRYPTED</p>
+                              <p style={{ fontSize: "0.9rem", fontWeight: "900", color: "#10b981" }}>Verified & Secure</p>
                             </div>
                          </div>
                       </div>
                       <button onClick={exportPassport} className="btn-cyan" style={{ padding: "1.25rem 3rem", fontSize: "0.75rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                         <Download size={18} /> EXPORT_PASSPORT_PDF
+                         <Download size={18} /> Export Student Profile PDF
                       </button>
                   </div>
                </div>
@@ -379,9 +379,9 @@ export default function StudentPassportPage() {
                <div style={{ padding: "3rem", borderBottom: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.01)" }}>
                   <div>
                     <h3 style={{ fontSize: "1.25rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1.25rem", color: "var(--text-main)" }}>
-                       <History size={24} color="var(--primary)" /> INSTITUTIONAL_TRANSACTION_LEDGER
+                       <History size={24} color="var(--primary)" /> Student History
                     </h3>
-                    <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.5rem", letterSpacing: "0.2em" }}>CROSS_DEPARTMENTAL_HISTORY_STREAM</p>
+                    <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.5rem", letterSpacing: "0.2em" }}>All records across departments</p>
                   </div>
                </div>
                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--border-dim)" }}>
@@ -392,7 +392,7 @@ export default function StudentPassportPage() {
                         <div style={{ width: "32px", height: "32px", background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px" }}>
                            <FileText size={16} color="var(--bg-deep)" />
                         </div>
-                        <h4 style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>01_SERVICE_PROTOCOL_LOGS</h4>
+                        <h4 style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>Service Requests</h4>
                      </div>
                      <div style={{ display: "grid", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
                         {passport.serviceRequests.map((req: any, i: number) => (
@@ -418,7 +418,7 @@ export default function StudentPassportPage() {
                         ))}
                         {passport.serviceRequests.length === 0 && (
                           <div style={{ padding: "5rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                            <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>NO_RECORDS_IN_STREAM</p>
+                            <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>No records found</p>
                           </div>
                         )}
                      </div>
@@ -430,7 +430,7 @@ export default function StudentPassportPage() {
                         <div style={{ width: "32px", height: "32px", background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px" }}>
                            <Clock size={16} color="var(--bg-deep)" />
                         </div>
-                        <h4 style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>02_ADVISORY_SESSION_ARCHIVE</h4>
+                        <h4 style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>Appointment History</h4>
                      </div>
                      <div style={{ display: "grid", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
                         {passport.appointmentHistory.map((appt: any, i: number) => (
@@ -456,7 +456,7 @@ export default function StudentPassportPage() {
                         ))}
                         {passport.appointmentHistory.length === 0 && (
                           <div style={{ padding: "5rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                            <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>NO_RECORDS_IN_STREAM</p>
+                            <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>No records found</p>
                           </div>
                         )}
                      </div>
@@ -484,8 +484,8 @@ export default function StudentPassportPage() {
                  <Fingerprint size={80} color="var(--primary)" />
                </div>
              </div>
-             <h3 style={{ fontSize: "1.25rem", fontWeight: "900", letterSpacing: "0.4em", color: "var(--text-main)" }}>AWAITING_IDENTITY_SCAN</h3>
-             <p style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "1.5rem", color: "var(--text-dim)", letterSpacing: "0.1em" }}>ENTER A VALID STUDENT IDENTIFIER TO ACTIVATE THE IDENTITY TERMINAL.</p>
+             <h3 style={{ fontSize: "1.25rem", fontWeight: "900", letterSpacing: "0.4em", color: "var(--text-main)" }}>Search for a Student</h3>
+             <p style={{ fontSize: "0.8rem", fontWeight: "700", marginTop: "1.5rem", color: "var(--text-dim)", letterSpacing: "0.1em" }}>Enter a student name or ID above to view their full profile.</p>
           </motion.div>
         )}
       </AnimatePresence>

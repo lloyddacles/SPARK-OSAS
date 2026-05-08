@@ -134,8 +134,8 @@ export default function AuditCenterPage() {
               style={{ width: "64px", height: "64px", border: "2px solid var(--primary)", borderTopColor: "transparent", borderRadius: "50%" }}
             />
             <div style={{ textAlign: "center" }}>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>GENERATING_LEDGER</h2>
-              <p style={{ color: "var(--primary)", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem" }}>PROCESSING {filteredLogs.length} INSTITUTIONAL NODES...</p>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em" }}>Generating Report</h2>
+              <p style={{ color: "var(--primary)", fontWeight: "700", marginTop: "1rem", fontSize: "0.8rem" }}>Processing {filteredLogs.length} log entries...</p>
             </div>
           </motion.div>
         )}
@@ -144,10 +144,11 @@ export default function AuditCenterPage() {
       {/* Institutional Header */}
       <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>SYSTEM: INSTITUTIONAL TELEMETRY</p>
-          <h1 style={{ fontSize: "3rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-            AUDIT <span style={{ color: "var(--primary)" }}>COMMAND</span>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Administration</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>Activity Log</span>
           </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Track all administrative actions across the OSAS platform.</p>
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button 
@@ -157,7 +158,7 @@ export default function AuditCenterPage() {
             style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)", color: "var(--primary)" }}
           >
             {isAnalyzing ? <Activity className="animate-pulse" size={18} /> : <Zap size={18} />} 
-            {isAnalyzing ? "ANALYZING..." : "AI SENTINEL ANALYSIS"}
+            {isAnalyzing ? "Analyzing..." : "AI Summary"}
           </button>
           <button 
             onClick={handleExportPDF}
@@ -170,12 +171,12 @@ export default function AuditCenterPage() {
       </div>
 
       <ProcessGuide 
-         title="System Accountability Protocol"
+         title="How to Use the Activity Log"
          steps={[
-            { title: "Monitor Activity", desc: "Review real-time administrative logs for potential security anomalies or workflow errors.", icon: <Activity size={14} /> },
-            { title: "Verify Severity", desc: "Analyze high-severity logs (Critical/High) to ensure system integrity and institutional safety.", icon: <ShieldAlert size={14} /> },
-            { title: "Audit Identity", desc: "Trace actions back to specific personnel nodes to maintain administrative non-repudiation.", icon: <User size={14} /> },
-            { title: "Export Ledger", desc: "Generate encrypted PDF reports for board review and institutional record-keeping.", icon: <Database size={14} /> }
+            { title: "View Activity", desc: "See what actions were taken across the system.", icon: <Activity size={14} /> },
+            { title: "Check Severity", desc: "Review critical or important actions that may need attention.", icon: <ShieldAlert size={14} /> },
+            { title: "Identify Users", desc: "See which staff member performed each action.", icon: <User size={14} /> },
+            { title: "Export Report", desc: "Download a PDF of the activity log for your records.", icon: <Database size={14} /> }
          ]}
       />
 
@@ -187,10 +188,10 @@ export default function AuditCenterPage() {
             <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "var(--primary)" }}>
                 <Activity size={18} />
-                <span style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.05em" }}>LIVE_TELEMETRY_STREAM</span>
+                <span style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.05em" }}>Activity Feed</span>
               </div>
               <div style={{ height: "1px", width: "100px", background: "var(--border-dim)" }} />
-              <span style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>{filteredLogs.length} NODES DETECTED</span>
+              <span style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)" }}>{filteredLogs.length} entries found</span>
             </div>
           </div>
 
@@ -204,7 +205,7 @@ export default function AuditCenterPage() {
                 style={{ padding: "2.5rem", marginBottom: "3rem", border: "1px solid var(--primary)", position: "relative", overflow: "hidden" }}
               >
                 <div style={{ position: "absolute", top: 0, right: 0, padding: "0.75rem 1.25rem", background: "var(--primary)", color: "var(--bg-deep)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>
-                  AI_SENTINEL_SUMMARY
+                  AI Summary
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 250px", gap: "3rem" }}>
                   <div>
@@ -212,7 +213,7 @@ export default function AuditCenterPage() {
                     <p style={{ fontSize: "0.9rem", color: "var(--text-dim)", lineHeight: "1.6", fontWeight: "600" }}>{aiAnalysis.summary}</p>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>ANOMALY_FLAGS</p>
+                    <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>Flagged Items</p>
                     {aiAnalysis.anomalies.map((a: string, i: number) => (
                       <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.7rem", color: a.includes("NO") ? "var(--text-dim)" : "#ef4444", fontWeight: "700" }}>
                         <ShieldAlert size={14} /> {a}
@@ -228,7 +229,7 @@ export default function AuditCenterPage() {
             {filteredLogs.length === 0 ? (
               <div className="sapphire-card" style={{ padding: "8rem", textAlign: "center" }}>
                 <Database size={48} style={{ opacity: 0.1, margin: "0 auto 2rem" }} />
-                <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>NO_LOGS_FOUND_IN_CURRENT_BUFFER</p>
+                <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>No log entries match your filters.</p>
               </div>
             ) : (
               filteredLogs.map((log, i) => (
@@ -248,7 +249,7 @@ export default function AuditCenterPage() {
                   }}
                 >
                   <div>
-                    <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>STAMP: {log.timestamp}</p>
+                    <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.5rem" }}>Time: {log.timestamp}</p>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: getSeverityColor(log.severity), boxShadow: `0 0 10px ${getSeverityColor(log.severity)}` }} />
                       <span style={{ fontSize: "0.7rem", fontWeight: "900", color: getSeverityColor(log.severity) }}>{log.severity}</span>
@@ -265,7 +266,7 @@ export default function AuditCenterPage() {
                       <User size={14} color="var(--primary)" />
                       <span style={{ fontSize: "0.75rem", fontWeight: "900" }}>{log.user.toUpperCase()}</span>
                     </div>
-                    <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.5rem", letterSpacing: "0.05em" }}>ROLE: {log.role}</p>
+                    <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.5rem", letterSpacing: "0.05em" }}>Role: {log.role}</p>
                   </div>
                 </motion.div>
               ))
@@ -277,25 +278,25 @@ export default function AuditCenterPage() {
         <div style={{ position: "sticky", top: "2rem" }}>
           <div className="sapphire-card" style={{ padding: "2.5rem" }}>
             <h3 style={{ fontSize: "0.8rem", fontWeight: "900", letterSpacing: "0.1em", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-              <Filter size={16} color="var(--primary)" /> TELEMETRY FILTERS
+              <Filter size={16} color="var(--primary)" /> Filters
             </h3>
             
             <div style={{ display: "grid", gap: "2rem" }}>
               <div>
-                <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "1rem", letterSpacing: "0.1em" }}>SEARCH LOG ENTRIES</label>
+                <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "1rem", letterSpacing: "0.1em" }}>Search Logs</label>
                 <div style={{ position: "relative" }}>
                   <Search size={14} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-dim)" }} />
                   <input 
                     value={searchTerm}
                     onChange={e => setSearchTerm(e.target.value)}
-                    placeholder="ACTION, USER, DETAIL..." 
+                    placeholder="Search by action, user, or detail..." 
                     style={{ width: "100%", padding: "1rem 1rem 1rem 3rem", fontSize: "0.75rem", fontWeight: "800", background: "var(--bg-accent)", border: "1px solid var(--border-dim)" }} 
                   />
                 </div>
               </div>
 
               <div>
-                <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "1rem", letterSpacing: "0.1em" }}>SEVERITY THRESHOLD</label>
+                <label style={{ display: "block", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "1rem", letterSpacing: "0.1em" }}>Severity Level</label>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   {["ALL", "CRITICAL", "HIGH", "MEDIUM", "LOW"].map((sev) => (
                     <button 
@@ -322,7 +323,7 @@ export default function AuditCenterPage() {
               </div>
 
               <div style={{ marginTop: "2rem", padding: "1.5rem", background: "rgba(255,255,255,0.02)", border: "1px solid var(--border-dim)" }}>
-                <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>SYSTEM_INTEGRITY_INDEX</p>
+                <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.75rem" }}>System Health</p>
                 <div style={{ height: "4px", background: "var(--bg-accent)", borderRadius: "2px", overflow: "hidden" }}>
                   <motion.div 
                     initial={{ width: 0 }}
@@ -330,7 +331,7 @@ export default function AuditCenterPage() {
                     style={{ height: "100%", background: "#10b981" }} 
                   />
                 </div>
-                <p style={{ fontSize: "0.5rem", color: "var(--text-dim)", marginTop: "0.75rem", fontWeight: "700" }}>NO ANOMALIES DETECTED IN LAST 1,000 NODES.</p>
+                <p style={{ fontSize: "0.5rem", color: "var(--text-dim)", marginTop: "0.75rem", fontWeight: "700" }}>No issues detected. System is running normally.</p>
               </div>
             </div>
           </div>

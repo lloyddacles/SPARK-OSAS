@@ -107,33 +107,33 @@ export default function ScholarInventoryPage() {
     if (selectedIds.length === 0) return;
     
     setIsProcessingBatch(true);
-    setBatchStatus("INITIALIZING_SECURITY_SCAN...");
+    setBatchStatus("Preparing update...");
     setBatchProgress(10);
     
     // Artificial High-Fidelity Sequence
     await new Promise(r => setTimeout(r, 800));
-    setBatchStatus("VERIFYING_REGISTRY_NODES...");
+    setBatchStatus("Verifying records...");
     setBatchProgress(30);
     
     await new Promise(r => setTimeout(r, 1000));
-    setBatchStatus(`EXECUTING_BATCH_UPDATE: ${status.toUpperCase()}...`);
+    setBatchStatus(`Updating status: ${status.toUpperCase()}...`);
     setBatchProgress(60);
 
     const res = await bulkUpdateScholarStatus(selectedIds, status);
     
     if (res.success) {
       setBatchProgress(90);
-      setBatchStatus("SYNCHRONIZING_TELEMETRY...");
+      setBatchStatus("Saving changes...");
       await new Promise(r => setTimeout(r, 600));
       
       logAudit("BULK_STATUS_UPDATE", `Updated status to ${status} for ${selectedIds.length} scholars.`, "MEDIUM");
       fetchScholars();
       
       setBatchProgress(100);
-      setBatchStatus("BATCH_SUCCESSFUL");
+      setBatchStatus("Update complete!");
       await new Promise(r => setTimeout(r, 1000));
     } else {
-      setBatchStatus("BATCH_REJECTED: SYSTEM_INTEGRITY_FAIL");
+      setBatchStatus("Update failed. Please try again.");
       await new Promise(r => setTimeout(r, 2000));
     }
     
@@ -161,7 +161,7 @@ export default function ScholarInventoryPage() {
       setIsAddModalOpen(false);
       resetForm();
       fetchScholars();
-      logAudit("SCHOLAR_PROVISIONED", `New scholar record: ${formData.studentName} (${formData.studentId})`, "MEDIUM");
+      logAudit("SCHOLAR_ADDED", `New scholar added: ${formData.studentName} (${formData.studentId})`, "MEDIUM");
     }
   };
 
@@ -187,7 +187,7 @@ export default function ScholarInventoryPage() {
         const res = await deleteScholarFromInventory(id);
         if (res.success) {
           fetchScholars();
-          logAudit("SCHOLAR_DELETED", `Deleted record: ${name}`, "HIGH");
+          logAudit("SCHOLAR_REMOVED", `Removed scholar: ${name}`, "HIGH");
         }
         setConfirmConfig({ ...confirmConfig, isOpen: false });
       }
@@ -288,7 +288,7 @@ export default function ScholarInventoryPage() {
               </motion.div>
 
               <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "0.2em", marginBottom: "1rem" }}>{batchStatus}</h2>
-              <p style={{ color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.1em", marginBottom: "3rem" }}>AFFECTING_{selectedIds.length}_REGISTRY_NODES</p>
+              <p style={{ color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.1em", marginBottom: "3rem" }}>Updating {selectedIds.length} scholar records</p>
               
               <div style={{ height: "4px", width: "100%", background: "var(--bg-accent)", borderRadius: "2px", overflow: "hidden", marginBottom: "1rem" }}>
                 <motion.div 
@@ -298,7 +298,7 @@ export default function ScholarInventoryPage() {
                 />
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>
-                <span>PROGRESS_STREAM</span>
+                <span>Progress</span>
                 <span>{batchProgress}%</span>
               </div>
             </div>
@@ -323,10 +323,11 @@ export default function ScholarInventoryPage() {
           {/* HEADER SECTION */}
        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem" }}>
           <div>
-             <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>UNIT: OSAS_SCHOLARSHIP_DIVISION</p>
-             <h1 style={{ fontSize: "3.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-               SCHOLAR <span style={{ color: "var(--primary)" }}>INVENTORY.</span>
+             <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Scholarship Management</p>
+             <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+               <span style={{ color: "var(--primary)" }}>Scholar Registry</span>
              </h1>
+             <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>View, add, update, and manage all scholarship records.</p>
           </div>
           <div style={{ display: "flex", gap: "1rem" }}>
              <button 
@@ -334,50 +335,50 @@ export default function ScholarInventoryPage() {
                disabled={scholars.length === 0}
                style={{ padding: "1.25rem 2.5rem", display: "flex", alignItems: "center", gap: "1rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--border-active)", color: "var(--primary)", fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.15em", cursor: "pointer", opacity: scholars.length === 0 ? 0.3 : 1 }}
              >
-                <Download size={18} /> EXPORT_OFFICIAL_ROSTER
+                <Download size={18} /> Export Scholar List
              </button>
              <button 
                onClick={() => { resetForm(); setIsAddModalOpen(true); }}
                className="btn-cyan" 
                style={{ padding: "1.25rem 2.5rem", display: "flex", alignItems: "center", gap: "1rem" }}
              >
-                <Plus size={18} /> PROVISION_NEW_RECORD
+                <Plus size={18} /> Add New Scholar
              </button>
           </div>
        </div>
 
        <ProcessGuide 
-          title="Scholarship Registry Audit Protocol"
+          title="How to Manage Scholars"
           steps={[
-             { title: "Monitor Registry", desc: "Review the official institutional list of active, continuing, and graduated scholars.", icon: <Search size={14} /> },
-             { title: "Provision Records", desc: "Execute a new scholar registration by defining their program, type, and batch year.", icon: <Plus size={14} /> },
-             { title: "Audit Status", desc: "Monitor student academic standing and update their system status (Active, Graduated, Terminated).", icon: <User size={14} /> },
-             { title: "Export Compliance", desc: "Generate official scholarship reports for university management and financial audits.", icon: <Download size={14} /> }
+             { title: "View Scholars", desc: "Browse the full list of scholars by program, batch, or status.", icon: <Search size={14} /> },
+             { title: "Add Scholar", desc: "Register a new student into a scholarship program.", icon: <Plus size={14} /> },
+             { title: "Update Status", desc: "Change a scholar's status based on their academic standing.", icon: <User size={14} /> },
+             { title: "Export Report", desc: "Download the scholar list as a PDF for reporting.", icon: <Download size={14} /> }
           ]}
        />
 
        {/* TELEMETRY NODES */}
        <div className="card-grid" style={{ marginBottom: "4rem" }}>
           <div className="sapphire-card" style={{ borderLeft: "4px solid var(--primary)" }}>
-             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>TOTAL_ACTIVE_SCHOLARS</p>
+             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>Total Scholars</p>
              <h2 style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--text-main)" }}>{total}</h2>
              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "1.5rem" }}>
                 <Activity size={14} color="var(--primary)" className="animate-pulse" />
-                <span style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.05em" }}>LIVE_REGISTRY_SYNC</span>
+                <span style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.05em" }}>Live Data</span>
              </div>
           </div>
           <div className="sapphire-card">
-             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>PRIMARY_COHORT_BATCH</p>
+             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>Current Batch</p>
              <h2 style={{ fontSize: "2.5rem", fontWeight: "900", color: "var(--text-main)" }}>{scholars.length > 0 ? scholars[0].batch : "N/A"}</h2>
-             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem" }}>ACTIVE_INSTITUTIONAL_BATCH</p>
+             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem" }}>Active school year batch</p>
           </div>
           <div className="sapphire-card" style={{ background: "rgba(0, 229, 255, 0.02)", border: "1px solid var(--primary)" }}>
-             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>SECURITY_STATE</p>
+             <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em", marginBottom: "1.5rem" }}>Data Security</p>
              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
                 <ShieldCheck size={28} color="#10b981" />
-                <span style={{ fontSize: "1rem", fontWeight: "900", color: "#10b981" }}>ENCRYPTED</span>
+                <span style={{ fontSize: "1rem", fontWeight: "900", color: "#10b981" }}>Secure</span>
              </div>
-             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem" }}>DATA_FIDELITY_VERIFIED</p>
+             <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "1.5rem" }}>Data verified and up to date</p>
           </div>
        </div>
 
@@ -388,7 +389,7 @@ export default function ScholarInventoryPage() {
                 <Search size={18} style={{ position: "absolute", left: "1.5rem", top: "50%", transform: "translateY(-50%)", color: "var(--primary)", opacity: 0.5 }} />
                 <input 
                   type="text" 
-                  placeholder="SEARCH_BY_NAME_OR_IDENTIFIER..." 
+                  placeholder="Search by name or student ID..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   style={{ 
@@ -408,7 +409,7 @@ export default function ScholarInventoryPage() {
                onChange={(e) => setFilters({...filters, program: e.target.value})}
                style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "900" }}
              >
-                <option value="">ALL_PROGRAMS</option>
+                <option value="">All Programs</option>
                 {Array.from(new Set(scholars.map(s => s.programName))).map(p => (
                   <option key={p} value={p}>{p.toUpperCase()}</option>
                 ))}
@@ -419,7 +420,7 @@ export default function ScholarInventoryPage() {
                onChange={(e) => setFilters({...filters, batch: e.target.value})}
                style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "900" }}
              >
-                <option value="">ALL_BATCHES</option>
+                <option value="">All Batches</option>
                 {Array.from(new Set(scholars.map(s => s.batch))).map(b => (
                   <option key={b} value={b}>{b}</option>
                 ))}
@@ -430,7 +431,7 @@ export default function ScholarInventoryPage() {
                onChange={(e) => setFilters({...filters, status: e.target.value})}
                style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "white", fontSize: "0.75rem", fontWeight: "900" }}
              >
-                <option value="">ALL_STATUSES</option>
+                <option value="">All Statuses</option>
                 <option value="Active">ACTIVE</option>
                 <option value="Graduated">GRADUATED</option>
                 <option value="Terminated">TERMINATED</option>
@@ -460,10 +461,10 @@ export default function ScholarInventoryPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
                      <Zap size={20} color="var(--primary)" />
-                     <p style={{ fontSize: "0.85rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.05em" }}>{selectedIds.length} SCHOLARS_SELECTED</p>
+                     <p style={{ fontSize: "0.85rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.05em" }}>{selectedIds.length}  scholars selected</p>
                    </div>
                    <div style={{ width: "1px", height: "30px", background: "var(--border-dim)" }} />
-                   <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>EXECUTE_BATCH_GOVERNANCE:</p>
+                   <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>Batch actions:</p>
                 </div>
                 <div style={{ display: "flex", gap: "1rem" }}>
                    <button onClick={() => handleBulkStatusUpdate("Active")} className="btn-cyan" style={{ padding: "0.75rem 2rem", fontSize: "0.7rem", fontWeight: "900" }}>ACTIVATE</button>
@@ -569,7 +570,7 @@ export default function ScholarInventoryPage() {
                       <tr>
                          <td colSpan={8} style={{ padding: "10rem", textAlign: "center" }}>
                             <Layers size={64} color="var(--text-dim)" style={{ marginBottom: "2rem", opacity: 0.1 }} />
-                            <p style={{ fontSize: "1rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>NO_RECORDS_DETECTED_IN_ARCHIVE</p>
+                            <p style={{ fontSize: "1rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>No scholars found matching your search.</p>
                          </td>
                       </tr>
                    )}
@@ -580,7 +581,7 @@ export default function ScholarInventoryPage() {
           {/* PAGINATION FOOTER */}
           <div style={{ padding: "2rem 3rem", background: "rgba(255, 255, 255, 0.01)", borderTop: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
              <p style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.05em" }}>
-                SHOWING_METRICS: <span style={{ color: "var(--text-main)" }}>{(page - 1) * pageSize + 1}—{Math.min(page * pageSize, total)}</span> // TOTAL_NODES: <span style={{ color: "var(--primary)" }}>{total}</span>
+                Showing: <span style={{ color: "var(--text-main)" }}>{(page - 1) * pageSize + 1}—{Math.min(page * pageSize, total)}</span> of <span style={{ color: "var(--primary)" }}>{total}</span>
              </p>
              <div style={{ display: "flex", gap: "0.75rem" }}>
                 <button 
@@ -638,8 +639,8 @@ export default function ScholarInventoryPage() {
 
                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4rem" }}>
                       <div>
-                         <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>{isAddModalOpen ? "PROVISION_NEW_SCHOLAR" : "MODIFY_SCHOLAR_RECORD"}</h2>
-                         <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", marginTop: "0.5rem", letterSpacing: "0.2em" }}>INSTITUTIONAL_REGISTRY_NODE</p>
+                         <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "var(--text-main)", letterSpacing: "-0.02em" }}>{isAddModalOpen ? "Add New Scholar" : "Edit Scholar Record"}</h2>
+                         <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--primary)", marginTop: "0.5rem", letterSpacing: "0.2em" }}>Scholarship Registry</p>
                       </div>
                       <button onClick={() => { setIsAddModalOpen(false); setIsEditModalOpen(false); }} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid var(--border-dim)", color: "var(--text-dim)", cursor: "pointer", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "4px" }}>
                          <X size={20} />
@@ -648,7 +649,7 @@ export default function ScholarInventoryPage() {
 
                    <form onSubmit={isAddModalOpen ? handleAddScholar : handleUpdateScholar} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem" }}>
                       <div style={{ gridColumn: "span 2" }}>
-                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>SUBJECT_FULL_NAME</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>Full Name</label>
                          <input 
                            required
                            value={formData.studentName}
@@ -657,7 +658,7 @@ export default function ScholarInventoryPage() {
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>IDENTIFIER_TOKEN</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>Student ID</label>
                          <input 
                            required
                            value={formData.studentId}
@@ -666,7 +667,7 @@ export default function ScholarInventoryPage() {
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>BATCH_COHORT</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>Batch / School Year</label>
                          <input 
                            required
                            value={formData.batch}
@@ -676,7 +677,7 @@ export default function ScholarInventoryPage() {
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>SCHOLARSHIP_PROTOCOL</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>Scholarship Program</label>
                          <input 
                            required
                            value={formData.programName}
@@ -685,7 +686,7 @@ export default function ScholarInventoryPage() {
                          />
                       </div>
                       <div>
-                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>PROVIDER_CLASS</label>
+                         <label style={{ display: "block", fontSize: "0.65rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.75rem", letterSpacing: "0.1em" }}>Scholarship Type</label>
                          <select 
                            value={formData.type}
                            onChange={e => setFormData({...formData, type: e.target.value})}
@@ -699,7 +700,7 @@ export default function ScholarInventoryPage() {
                       <div style={{ gridColumn: "span 2", marginTop: "3rem" }}>
                          <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.5rem", fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1.25rem", justifyContent: "center" }}>
                             <ShieldCheck size={20} />
-                            {isAddModalOpen ? "AUTHORIZE_PROVISIONING" : "SAVE_GOVERNANCE_UPDATES"}
+                            {isAddModalOpen ? "Add Scholar" : "Save Changes"}
                          </button>
                       </div>
                    </form>
