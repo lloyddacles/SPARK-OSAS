@@ -64,14 +64,15 @@ export default function AppointmentsPage() {
       {/* Sapphire Header */}
       <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>NETWORK: CONSULTATION SCHEDULER</p>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-            CONSULTATION <span style={{ color: "var(--primary)" }}>NETWORK</span>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Guidance & Support</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>Appointments</span>
           </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "450px", lineHeight: "1.5" }}>Schedule a consultation with the OSAS or Guidance office.</p>
         </div>
         {!isAdmin && !isBooking && (
           <button onClick={() => setIsBooking(true)} className="btn-cyan" style={{ padding: "0.8rem 2rem" }}>
-            INITIALIZE CONSULTATION <Plus size={16} />
+            Book Appointment <Plus size={16} />
           </button>
         )}
       </div>
@@ -82,24 +83,24 @@ export default function AppointmentsPage() {
             {isSuccess ? (
               <div className="sapphire-card" style={{ padding: "5rem", textAlign: "center" }}>
                 <CheckCircle2 size={64} color="#10b981" style={{ margin: "0 auto 2rem" }} />
-                <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>SESSION INITIALIZED</h2>
-                <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", fontWeight: "700", marginTop: "1rem" }}>YOUR REQUEST HAS BEEN LOGGED TO THE INSTITUTIONAL NETWORK.</p>
+                <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>Appointment Booked!</h2>
+                <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", fontWeight: "700", marginTop: "1rem" }}>Your appointment request has been submitted. You will be notified once it is confirmed.</p>
               </div>
             ) : (
               <div className="sapphire-card" style={{ maxWidth: "800px", margin: "0 auto", padding: "3rem" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3rem" }}>
-                  <h2 style={{ fontSize: "1rem", fontWeight: "900", letterSpacing: "0.1em" }}>BOOK CONSULTATION</h2>
+                  <h2 style={{ fontSize: "1rem", fontWeight: "900", letterSpacing: "0.1em" }}>Book an Appointment</h2>
                   <button onClick={() => setIsBooking(false)} style={{ color: "var(--text-dim)", background: "none", border: "none", cursor: "pointer" }}><X size={20} /></button>
                 </div>
                 
                 <form onSubmit={handleBooking} style={{ display: "grid", gap: "2.5rem" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                     <div>
-                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>SESSION TITLE</label>
-                      <input required value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. ACADEMIC ADVISING" style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
+                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>What is this about?</label>
+                      <input required value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Academic advising" style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>PROTOCOL TYPE</label>
+                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Appointment Type</label>
                       <select value={type} onChange={e => setType(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
                         <option>Counseling</option>
                         <option>Scholarship</option>
@@ -111,11 +112,11 @@ export default function AppointmentsPage() {
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                     <div>
-                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>TARGET DATE</label>
+                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Preferred Date</label>
                       <input required type="date" value={date} onChange={e => setDate(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }} />
                     </div>
                     <div>
-                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>AVAILABILITY SLOTS</label>
+                      <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Choose a Time Slot</label>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                         {timeSlots.map(t => (
                           <button 
@@ -141,12 +142,12 @@ export default function AppointmentsPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>SESSION DESCRIPTION</label>
-                    <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={4} placeholder="BRIEF LOG ENTRANCE..." style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
+                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Additional Notes</label>
+                    <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={4} placeholder="Briefly describe what you need help with..." style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                   </div>
 
                   <button type="submit" className="btn-cyan" style={{ padding: "1rem", width: "fit-content" }}>
-                    EXECUTE BOOKING REQUEST <ArrowRight size={16} />
+                    Submit Appointment <ArrowRight size={16} />
                   </button>
                 </form>
               </div>
@@ -156,12 +157,12 @@ export default function AppointmentsPage() {
           <motion.div key="appt-list" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {isAdmin && (
                <ProcessGuide 
-                  title="Scheduling Master Protocol"
+                  title="How Appointments Work"
                   steps={[
-                     { title: "Configure Availability", desc: "Define operational hours and consultation slots for the academic term.", icon: <Clock size={14} /> },
-                     { title: "Monitor Queue", desc: "Review incoming session requests and student identity details in real-time.", icon: <Search size={14} /> },
-                     { title: "Execute Validation", desc: "Approve or cancel appointments based on priority and personnel availability.", icon: <CalendarCheck size={14} /> },
-                     { title: "Initialize Session", desc: "Execute the consultation and log the completion node in the institutional ledger.", icon: <Activity size={14} /> }
+                     { title: "Office Hours", desc: "Set the days and times when students can book appointments.", icon: <Clock size={14} /> },
+                     { title: "View Requests", desc: "See all incoming appointment requests from students.", icon: <Search size={14} /> },
+                     { title: "Approve or Cancel", desc: "Accept or decline appointments based on availability.", icon: <CalendarCheck size={14} /> },
+                     { title: "Complete Session", desc: "After the meeting, mark the appointment as completed.", icon: <Activity size={14} /> }
                   ]}
                />
             )}
@@ -169,9 +170,9 @@ export default function AppointmentsPage() {
             {/* TELEMETRY ROW */}
             <div className="card-grid" style={{ marginBottom: "3rem" }}>
               {[
-                { label: "ACTIVE SESSIONS", value: appointments.filter(a => a.status === "APPROVED").length, color: "var(--primary)" },
-                { label: "PENDING QUEUE", value: appointments.filter(a => a.status === "PENDING").length, color: "#f59e0b" },
-                { label: "COMPLETED NODES", value: appointments.filter(a => a.status === "COMPLETED").length, color: "#10b981" }
+                { label: "Approved", value: appointments.filter(a => a.status === "APPROVED").length, color: "var(--primary)" },
+                { label: "Pending", value: appointments.filter(a => a.status === "PENDING").length, color: "#f59e0b" },
+                { label: "Completed", value: appointments.filter(a => a.status === "COMPLETED").length, color: "#10b981" }
               ].map((stat, i) => (
                 <div key={i} className="sapphire-card">
                   <p style={{ fontSize: "0.55rem", fontWeight: "900", letterSpacing: "0.2em", color: "var(--text-dim)", marginBottom: "1rem" }}>{stat.label}</p>
@@ -186,7 +187,7 @@ export default function AppointmentsPage() {
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
                    <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                      <Activity size={18} color="var(--primary)" /> {isAdmin ? "CONSULTATION QUEUE" : "IDENTITY SESSIONS"}
+                      <Activity size={18} color="var(--primary)" /> {isAdmin ? "All Appointments" : "My Appointments"}
                    </h2>
                    <button style={{ color: "var(--text-dim)", background: "none", cursor: "pointer" }}><Filter size={16} /></button>
                 </div>
@@ -194,7 +195,7 @@ export default function AppointmentsPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
                    {appointments.length === 0 ? (
                      <div className="sapphire-card" style={{ padding: "5rem", textAlign: "center" }}>
-                        <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO ACTIVE SESSIONS FOUND</p>
+                        <p style={{ fontSize: "0.7rem", fontWeight: "900", color: "var(--text-dim)" }}>NO Approved FOUND</p>
                      </div>
                    ) : (
                      appointments.map(appt => (
@@ -220,7 +221,7 @@ export default function AppointmentsPage() {
                            <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
                               {isAdmin && appt.status === "PENDING" ? (
                                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                                   <button onClick={() => updateApptStatus(appt.id, "APPROVED")} className="btn-cyan" style={{ padding: "0.5rem 1rem", fontSize: "0.6rem" }}>VALIDATE</button>
+                                   <button onClick={() => updateApptStatus(appt.id, "APPROVED")} className="btn-cyan" style={{ padding: "0.5rem 1rem", fontSize: "0.6rem" }}>Approve</button>
                                    <button onClick={() => updateApptStatus(appt.id, "CANCELLED")} style={{ padding: "0.5rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid #ef4444", color: "#ef4444", cursor: "pointer" }}><X size={14} /></button>
                                 </div>
                               ) : (
@@ -240,7 +241,7 @@ export default function AppointmentsPage() {
               {isAdmin && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
                    <div className="sapphire-card">
-                      <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>OFFICE AVAILABILITY</h3>
+                      <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>Office Hours</h3>
                       <div style={{ display: "grid", gap: "1rem" }}>
                          {["MON - FRI: 08:00 - 17:00", "SAT: 08:00 - 12:00", "SUN: CLOSED"].map(t => (
                            <div key={t} style={{ fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "1rem", color: "var(--text-dim)", fontWeight: "700" }}>
@@ -252,9 +253,9 @@ export default function AppointmentsPage() {
 
                    <div className="sapphire-card" style={{ background: "rgba(0, 229, 255, 0.02)", border: "1px solid var(--primary)" }}>
                       <Video size={24} color="var(--primary)" style={{ marginBottom: "1.5rem" }} />
-                      <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "0.75rem" }}>VIRTUAL PROTOCOL</h3>
-                      <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.6", marginBottom: "2rem" }}>GENERATE ENCRYPTED MEET TOKEN FOR ACTIVE SESSIONS.</p>
-                      <button className="btn-cyan" style={{ width: "100%", padding: "0.85rem" }}>INITIALIZE ROOM</button>
+                      <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "0.75rem" }}>Virtual Meeting</h3>
+                      <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.6", marginBottom: "2rem" }}>GENERATE ENCRYPTED MEET TOKEN FOR Approved.</p>
+                      <button className="btn-cyan" style={{ width: "100%", padding: "0.85rem" }}>Start Video Call</button>
                    </div>
                 </div>
               )}
