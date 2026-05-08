@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useGlobalState, ScholarshipProgram, BatchConfig } from "@/lib/GlobalStateContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ProcessGuide from "@/components/ProcessGuide";
@@ -33,7 +34,13 @@ import {
    AlertCircle,
    X,
    Sparkles,
-   Cpu
+   Cpu,
+   Plus,
+   MoreVertical,
+   Trash2,
+   Edit2,
+   ShieldAlert,
+   Zap
 } from "lucide-react";
 
 export default function ScholarshipsClient() {
@@ -59,6 +66,7 @@ export default function ScholarshipsClient() {
       logAudit,
       updateProfile
    } = useGlobalState();
+   
    const [activeTab, setActiveTab] = useState<"Student" | "OSAS">("Student");
    const [isHydrated, setIsHydrated] = useState(false);
 
@@ -73,29 +81,24 @@ export default function ScholarshipsClient() {
    const [lastName, setLastName] = useState("");
    const [isVerifyingIdentity, setIsVerifyingIdentity] = useState(false);
 
-   // AI Matchmaker State
    const [isScanning, setIsScanning] = useState(false);
    const [aiMatch, setAiMatch] = useState<ScholarshipProgram | null>(null);
    const [matchScore, setMatchScore] = useState(0);
 
-
    const [reqs, setReqs] = useState({ pic1x1: false, letter: false, sketch: false, cor: false, grades: false, picHouse: false });
    const [isSuccess, setIsSuccess] = useState(false);
 
-   // OSAS View State
    const [selectedApp, setSelectedApp] = useState<string | null>(null);
    const [selectedApps, setSelectedApps] = useState<string[]>([]);
    const [recommendationLevel, setRecommendationLevel] = useState<"Partial" | "Half" | "Full">("Partial");
    const [viewBatch, setViewBatch] = useState<number>(1);
 
-   // New Program State
    const [editingProg, setEditingProg] = useState<ScholarshipProgram | null>(null);
    const [newProgName, setNewProgName] = useState("");
    const [newProgProvider, setNewProgProvider] = useState("");
    const [newProgDesc, setNewProgDesc] = useState("");
    const [newProgDeadline, setNewProgDeadline] = useState("");
 
-   // New Batch State
    const [editingBatch, setEditingBatch] = useState<BatchConfig | null>(null);
    const [batchName, setBatchName] = useState("");
    const [batchStart, setBatchStart] = useState("");
@@ -119,17 +122,13 @@ export default function ScholarshipsClient() {
    });
 
    useEffect(() => {
-      // Determine initial tab based on role
       if (currentUser) {
          if (isStaff && !isStudent) setActiveTab("OSAS");
          else setActiveTab("Student");
       }
-
-      // Finalize hydration after tab is set
       setIsHydrated(true);
    }, [currentUser, isStaff, isStudent]);
 
-   // Auto-fill effect
    useEffect(() => {
       if (currentUser) {
          setStudentName(currentUser.name || "");
@@ -141,8 +140,8 @@ export default function ScholarshipsClient() {
 
    if (!isHydrated) {
       return (
-         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Activity size={48} className="status-pulse" color="var(--primary)" />
+         <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Activity size={48} className="animate-pulse" color="#3b82f6" />
          </div>
       );
    }
@@ -150,10 +149,8 @@ export default function ScholarshipsClient() {
    const runAIMatchmaker = () => {
       setIsScanning(true);
       setAiMatch(null);
-      // Simulate AI computing vault parameters
       setTimeout(() => {
          setIsScanning(false);
-         // Pick the first active program as a demo match
          if (scholarshipPrograms.length > 0) {
             setAiMatch(scholarshipPrograms[0]);
             setMatchScore(94);
@@ -161,7 +158,6 @@ export default function ScholarshipsClient() {
       }, 2500);
    };
 
-   // Requirement Mapping & Lock Logic
    const vaultMapping: { [key: string]: string } = {
       pic1x1: "1x1 Photo",
       letter: "Letter of Intent",
@@ -188,102 +184,68 @@ export default function ScholarshipsClient() {
       e.preventDefault();
       if (!newProgName || !newProgProvider || !newProgDesc || !newProgDeadline) return;
       addScholarshipProgram(newProgName, newProgProvider, newProgDesc, newProgDeadline);
-      setNewProgName("");
-      setNewProgProvider("");
-      setNewProgDesc("");
-      setNewProgDeadline("");
+      setNewProgName(""); setNewProgProvider(""); setNewProgDesc(""); setNewProgDeadline("");
    };
 
    const handleUpdateProgram = (e: React.FormEvent) => {
       e.preventDefault();
       if (!editingProg) return;
       updateScholarshipProgram(editingProg.id, {
-         name: newProgName,
-         provider: newProgProvider,
-         description: newProgDesc,
-         deadline: newProgDeadline
+         name: newProgName, provider: newProgProvider, description: newProgDesc, deadline: newProgDeadline
       });
       setEditingProg(null);
-      setNewProgName("");
-      setNewProgProvider("");
-      setNewProgDesc("");
-      setNewProgDeadline("");
+      setNewProgName(""); setNewProgProvider(""); setNewProgDesc(""); setNewProgDeadline("");
    };
 
    const startEdit = (prog: ScholarshipProgram) => {
       setEditingProg(prog);
-      setNewProgName(prog.name);
-      setNewProgProvider(prog.provider);
-      setNewProgDesc(prog.description);
-      setNewProgDeadline(prog.deadline);
+      setNewProgName(prog.name); setNewProgProvider(prog.provider); setNewProgDesc(prog.description); setNewProgDeadline(prog.deadline);
    };
 
    const handleCreateBatch = (e: React.FormEvent) => {
       e.preventDefault();
       if (!batchName || !batchStart || !batchEnd) return;
       addBatchConfig(batchName, batchStart, batchEnd);
-      setBatchName("");
-      setBatchStart("");
-      setBatchEnd("");
+      setBatchName(""); setBatchStart(""); setBatchEnd("");
    };
 
    const handleUpdateBatch = (e: React.FormEvent) => {
       e.preventDefault();
       if (!editingBatch) return;
-      updateBatchConfig(editingBatch.id, {
-         name: batchName,
-         startDate: batchStart,
-         endDate: batchEnd
-      });
+      updateBatchConfig(editingBatch.id, { name: batchName, startDate: batchStart, endDate: batchEnd });
       setEditingBatch(null);
-      setBatchName("");
-      setBatchStart("");
-      setBatchEnd("");
+      setBatchName(""); setBatchStart(""); setBatchEnd("");
    };
 
    const startEditBatch = (batch: BatchConfig) => {
       setEditingBatch(batch);
-      setBatchName(batch.name);
-      setBatchStart(batch.startDate);
-      setBatchEnd(batch.endDate);
+      setBatchName(batch.name); setBatchStart(batch.startDate); setBatchEnd(batch.endDate);
    };
 
    const handleApply = (e: React.FormEvent) => {
       e.preventDefault();
-
-      // Check if name components exist
       if (!currentUser?.firstName || !currentUser?.lastName) {
          setIsVerifyingIdentity(true);
          return;
       }
-
       if (applyingTo) {
          submitScholarshipApp(applyingTo.id, studentName || currentUser?.name || "Current Student", effectiveReqs);
       }
       setIsSuccess(true);
-      setTimeout(() => {
-         setIsSuccess(false);
-         setApplyingTo(null);
-      }, 2000);
+      setTimeout(() => { setIsSuccess(false); setApplyingTo(null); }, 2000);
    };
 
    const handleCommitIdentity = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!firstName || !lastName) return;
-
       await updateProfile({ firstName, middleName, lastName });
       await logAudit("IDENTITY_VERIFIED", `Applicant: ${firstName} ${lastName} | Protocol: Digital Signature`, "LOW");
       setIsVerifyingIdentity(false);
-
-      // Automatically proceed with application
       if (applyingTo) {
          submitScholarshipApp(applyingTo.id, `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`, effectiveReqs);
       }
       setIsSuccess(true);
-      setTimeout(() => {
-         setIsSuccess(false);
-         setApplyingTo(null);
-      }, 2000);
+      setTimeout(() => { setIsSuccess(false); setApplyingTo(null); }, 2000);
    };
 
    const handleRecommend = () => {
@@ -304,7 +266,6 @@ export default function ScholarshipsClient() {
          });
       } else {
          alert("Error: The application date doesn't match the current batch dates.");
-         return;
       }
    };
 
@@ -315,7 +276,6 @@ export default function ScholarshipsClient() {
          alert("Please activate a batch before bulk recommending.");
          return;
       }
-
       setConfirmConfig({
          isOpen: true,
          title: "Bulk Recommendation",
@@ -352,21 +312,22 @@ export default function ScholarshipsClient() {
    };
 
    return (
-      <div style={{ width: "100%" }}>
-         {/* Sapphire Header */}
-         <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto", position: "relative" }}>
+         {/* Modern Light Header */}
+         <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem" }}>
             <div>
-               <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>Scholarships</p>
-               <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-                  SCHOLAR <span style={{ color: "var(--primary)" }}>SHIPS</span>
+               <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Funding</p>
+               <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
+                  Scholar<span style={{ color: "var(--primary)" }}>ships</span>
                </h1>
+               <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Explore opportunities, apply for funding, and manage scholarship cycles.</p>
             </div>
-            <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
-               <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Student" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Student" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Student" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
+            <div style={{ display: "flex", gap: "0.5rem", background: "#f1f5f9", padding: "0.5rem", borderRadius: "12px" }}>
+               <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", background: activeTab === "Student" ? "white" : "transparent", color: activeTab === "Student" ? "#3b82f6" : "#64748b", border: "none", borderRadius: "8px", boxShadow: activeTab === "Student" ? "0 2px 4px rgba(0,0,0,0.05)" : "none", cursor: "pointer", transition: "all 0.2s" }}>
                   For Students
                </button>
                {isStaff && (
-                  <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "OSAS" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "OSAS" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "OSAS" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
+                  <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", background: activeTab === "OSAS" ? "white" : "transparent", color: activeTab === "OSAS" ? "#3b82f6" : "#64748b", border: "none", borderRadius: "8px", boxShadow: activeTab === "OSAS" ? "0 2px 4px rgba(0,0,0,0.05)" : "none", cursor: "pointer", transition: "all 0.2s" }}>
                      For Staff
                   </button>
                )}
@@ -378,55 +339,56 @@ export default function ScholarshipsClient() {
                {!applyingTo ? (
                   <div>
                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
-                        <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                           <Database size={18} color="var(--primary)" /> AVAILABLE SCHOLARSHIPS
+                        <h2 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                           <Award size={20} color="#3b82f6" /> Available Scholarships
                         </h2>
                      </div>
 
                      <ProcessGuide
                         title="How to Apply for Scholarships"
                         steps={[
-                           { title: "Review Eligibility", desc: "Browse available scholarship programs below and click 'APPLY NOW' on the one you qualify for.", icon: <Search size={14} color="var(--text-main)" /> },
-                           { title: "Complete Digital Vault", desc: "Ensure your Student Identity Vault has all required documents uploaded and verified by OSAS.", icon: <UploadCloud size={14} color="var(--text-main)" /> },
-                           { title: "Submit Application", desc: "Fill in any final requirements and submit. Track your status directly on your dashboard.", icon: <Send size={14} color="var(--text-main)" /> }
+                           { title: "Review Eligibility", desc: "Browse available programs below.", icon: <Search size={16} /> },
+                           { title: "Complete Vault", desc: "Ensure documents are verified.", icon: <UploadCloud size={16} /> },
+                           { title: "Submit Application", desc: "Apply and track status.", icon: <Send size={16} /> }
                         ]}
-                        themeColor="var(--primary)"
                      />
 
                      {/* AI MATCHMAKER ENGINE */}
-                     <div data-tour="ai-matchmaker" style={{ marginBottom: "3rem", padding: "2rem", background: "rgba(0, 229, 255, 0.03)", border: "1px solid var(--primary)", position: "relative", overflow: "hidden" }}>
-                        <div style={{ position: "absolute", right: "-20px", top: "-20px", opacity: 0.1 }}>
-                           <Cpu size={150} color="var(--primary)" />
+                     <div style={{ marginBottom: "3rem", padding: "2.5rem", background: "linear-gradient(135deg, #eff6ff, #f8fafc)", border: "1px solid #bfdbfe", borderRadius: "16px", position: "relative", overflow: "hidden", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                        <div style={{ position: "absolute", right: "-20px", top: "-20px", opacity: 0.05 }}>
+                           <Cpu size={200} color="#3b82f6" />
                         </div>
 
-                        <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "2rem" }}>
                            <div>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
-                                 <Sparkles size={16} color="var(--primary)" />
-                                 <h3 style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>SMART SCHOLARSHIP MATCHER</h3>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                                 <Sparkles size={18} color="#2563eb" />
+                                 <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "#1e3a8a", textTransform: "uppercase", letterSpacing: "0.05em" }}>Smart Scholarship Matcher</h3>
                               </div>
-                              <p style={{ fontSize: "0.75rem", color: "var(--text-dim)", fontWeight: "600", maxWidth: "500px", lineHeight: "1.6" }}>
-                                 We instantly scan your uploaded documents, grades, and profile to automatically find the exact scholarship you are most likely to win.
+                              <p style={{ fontSize: "0.9rem", color: "#475569", fontWeight: "500", maxWidth: "500px", lineHeight: "1.6" }}>
+                                 Automatically scan your verified vault documents and academic standing to find the exact scholarship program you are most likely to win.
                               </p>
                            </div>
                            {!aiMatch && !isScanning && (
-                              <button onClick={runAIMatchmaker} className="btn-cyan" style={{ padding: "1rem 2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                                 <Sparkles size={16} /> SCAN MY PROFILE
+                              <button onClick={runAIMatchmaker} style={{ padding: "1rem 2rem", background: "white", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.1)", transition: "all 0.2s" }}>
+                                 <Sparkles size={18} /> Scan My Profile
                               </button>
                            )}
                         </div>
 
-
                         {isScanning && (
-                           <div style={{ marginTop: "2rem" }}>
+                           <div style={{ marginTop: "2.5rem" }}>
                               <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)" }}>
-                                    <span>CHECKING YOUR DOCUMENTS...</span>
-                                    <span>PROCESSING</span>
+                                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", fontWeight: "700", color: "#2563eb" }}>
+                                    <span>Analyzing documents...</span>
+                                    <span>Processing</span>
                                  </div>
-                                 <div style={{ height: "2px", background: "var(--bg-accent)", width: "100%", overflow: "hidden" }}>
-                                    <div
-                                       style={{ width: "50%", height: "100%", background: "var(--primary)", boxShadow: "0 0 10px var(--primary)" }}
+                                 <div style={{ height: "6px", background: "#bfdbfe", borderRadius: "3px", width: "100%", overflow: "hidden" }}>
+                                    <motion.div
+                                       initial={{ width: 0 }}
+                                       animate={{ width: "80%" }}
+                                       transition={{ duration: 2, ease: "easeInOut" }}
+                                       style={{ height: "100%", background: "#2563eb", borderRadius: "3px" }}
                                     />
                                  </div>
                               </div>
@@ -434,33 +396,35 @@ export default function ScholarshipsClient() {
                         )}
 
                         {aiMatch && (
-                           <div style={{ marginTop: "2rem", display: "grid", gridTemplateColumns: "1fr auto", gap: "2rem", alignItems: "center", background: "var(--bg-surface)", padding: "1.5rem", borderLeft: "4px solid var(--primary)" }}>
+                           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ marginTop: "2.5rem", display: "grid", gridTemplateColumns: "1fr auto", gap: "2rem", alignItems: "center", background: "white", padding: "2rem", borderRadius: "12px", border: "1px solid #e2e8f0", borderLeft: "4px solid #10b981", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
                               <div>
-                                 <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "#10b981", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>{matchScore}% BEST SCHOLARSHIP FOUND</p>
-                                 <h4 style={{ fontSize: "1.25rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "0.5rem" }}>{aiMatch.name.toUpperCase()}</h4>
-                                 <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", fontWeight: "600" }}>Based on your grades and uploaded requirements, you are a perfect fit for this scholarship.</p>
+                                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
+                                    <div style={{ padding: "0.3rem 0.75rem", background: "#f0fdf4", color: "#16a34a", borderRadius: "20px", fontSize: "0.7rem", fontWeight: "800" }}>{matchScore}% MATCH</div>
+                                 </div>
+                                 <h4 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.5rem" }}>{aiMatch.name}</h4>
+                                 <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500", lineHeight: "1.5" }}>Based on your verified documents and academic record, you are a strong candidate for this program.</p>
                               </div>
-                              <button onClick={() => setApplyingTo(aiMatch)} className="btn-cyan" style={{ padding: "0.75rem 2rem", height: "fit-content" }}>
-                                 APPLY IMMEDIATELY
+                              <button onClick={() => setApplyingTo(aiMatch)} style={{ padding: "1rem 2rem", background: "#10b981", color: "white", border: "none", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer", boxShadow: "0 4px 6px rgba(16, 185, 129, 0.2)" }}>
+                                 Apply Now
                               </button>
-                           </div>
+                           </motion.div>
                         )}
                      </div>
 
-                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "2rem" }}>
+                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.5rem" }}>
                         {scholarshipPrograms.map(prog => (
-                           <div key={prog.id} className="sapphire-card" style={{ display: "flex", flexDirection: "column" }}>
-                              <div style={{ marginBottom: "2rem" }}>
-                                 <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>PROVIDER: {prog.provider.toUpperCase()}</p>
-                                 <h3 style={{ fontSize: "1.1rem", fontWeight: "900", color: "var(--text-main)" }}>{prog.name.toUpperCase()}</h3>
+                           <div key={prog.id} style={{ display: "flex", flexDirection: "column", background: "white", padding: "2rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                              <div style={{ marginBottom: "1.5rem" }}>
+                                 <p style={{ fontSize: "0.7rem", fontWeight: "700", color: "#3b82f6", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>Provider: {prog.provider}</p>
+                                 <h3 style={{ fontSize: "1.15rem", fontWeight: "800", color: "#1e293b", lineHeight: "1.3" }}>{prog.name}</h3>
                               </div>
-                              <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.6", marginBottom: "2.5rem" }}>{prog.description}</p>
-                              <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-dim)" }}>
-                                    <Calendar size={12} /> <span style={{ fontSize: "0.6rem", fontWeight: "900" }}>EXP: {prog.deadline}</span>
+                              <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500", lineHeight: "1.6", marginBottom: "2rem" }}>{prog.description}</p>
+                              <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "1.5rem", borderTop: "1px solid #f1f5f9" }}>
+                                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#94a3b8" }}>
+                                    <Calendar size={14} /> <span style={{ fontSize: "0.75rem", fontWeight: "600" }}>Ends {prog.deadline}</span>
                                  </div>
-                                 <button onClick={() => setApplyingTo(prog)} className="btn-cyan" style={{ padding: "0.5rem 1.25rem", fontSize: "0.65rem" }}>
-                                    APPLY NOW
+                                 <button onClick={() => setApplyingTo(prog)} style={{ padding: "0.6rem 1.25rem", fontSize: "0.85rem", fontWeight: "700", background: "#f8fafc", color: "#3b82f6", border: "1px solid #e2e8f0", borderRadius: "8px", cursor: "pointer", transition: "all 0.2s" }}>
+                                    Apply
                                  </button>
                               </div>
                            </div>
@@ -468,50 +432,50 @@ export default function ScholarshipsClient() {
                      </div>
                   </div>
                ) : (
-                  <div style={{ opacity: 1, transform: "none" }}>
-                     <button onClick={() => setApplyingTo(null)} style={{ color: "var(--text-dim)", background: "none", border: "none", marginBottom: "2rem", fontWeight: "900", fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer" }}>
-                        <ArrowLeft size={14} /> GO BACK
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} style={{ maxWidth: "800px", margin: "0 auto" }}>
+                     <button onClick={() => setApplyingTo(null)} style={{ color: "#64748b", background: "white", border: "1px solid #e2e8f0", padding: "0.5rem 1rem", borderRadius: "8px", marginBottom: "2rem", fontWeight: "700", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
+                        <ArrowLeft size={16} /> Go Back
                      </button>
 
                      {isSuccess ? (
-                        <div className="sapphire-card" style={{ padding: "6rem", textAlign: "center" }}>
-                           <CheckCircle2 size={64} color="#10b981" style={{ margin: "0 auto 2.5rem" }} />
-                           <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>APPLICATION SENT</h2>
-                           <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", fontWeight: "700", marginTop: "1.5rem", maxWidth: "600px", margin: "1.5rem auto 0", lineHeight: "1.8" }}>
-                              We have received your application. We will review it soon.
+                        <div style={{ padding: "6rem 3rem", textAlign: "center", background: "white", borderRadius: "24px", border: "1px solid #f3f4f6", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" }}>
+                           <div style={{ width: "80px", height: "80px", background: "#f0fdf4", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem" }}>
+                              <CheckCircle2 size={40} color="#10b981" />
+                           </div>
+                           <h2 style={{ fontSize: "1.8rem", fontWeight: "800", color: "#1e293b", marginBottom: "1rem" }}>Application Submitted!</h2>
+                           <p style={{ color: "#64748b", fontSize: "1rem", fontWeight: "500", maxWidth: "400px", margin: "0 auto", lineHeight: "1.6" }}>
+                              Your application for <strong>{applyingTo.name}</strong> has been successfully received and is queued for review.
                            </p>
                         </div>
                      ) : (
-                        <div className="sapphire-card" style={{ padding: "4rem" }}>
-                           <div style={{ marginBottom: "3.5rem" }}>
-                              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>APPLICATION FORM</p>
-                              <h2 style={{ fontSize: "1.5rem", fontWeight: "900" }}>{applyingTo.name.toUpperCase()}</h2>
+                        <div style={{ padding: "3rem", background: "white", borderRadius: "24px", border: "1px solid #f3f4f6", boxShadow: "0 10px 25px rgba(0,0,0,0.05)" }}>
+                           <div style={{ marginBottom: "3rem", paddingBottom: "2rem", borderBottom: "1px solid #f1f5f9" }}>
+                              <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#3b82f6", letterSpacing: "0.05em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Application Form</p>
+                              <h2 style={{ fontSize: "1.8rem", fontWeight: "900", color: "#1e293b", lineHeight: "1.2" }}>{applyingTo.name}</h2>
                            </div>
 
                            <form onSubmit={handleApply} style={{ display: "grid", gap: "2.5rem" }}>
                               <div>
-                                 <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Your Name</label>
-                                 <input required value={studentName} onChange={e => setStudentName(e.target.value)} placeholder="ENTER YOUR FULL NAME..." style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700" }} />
+                                 <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Full Name</label>
+                                 <input required value={studentName} onChange={e => setStudentName(e.target.value)} placeholder="Enter your full name" style={{ width: "100%", padding: "1.25rem", fontSize: "0.95rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", outline: "none", color: "#1e293b" }} />
                               </div>
 
                               <div>
-                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1.5rem" }}>
-                                    <label style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DOCUMENT STATUS</label>
-                                    <p data-tour="vault-info" style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>VERIFIED FROM YOUR VAULT</p>
+                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "1rem" }}>
+                                    <label style={{ fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Document Verification Status</label>
+                                    <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#10b981", display: "flex", alignItems: "center", gap: "0.25rem" }}><ShieldCheck size={14} /> Checked against Vault</p>
                                  </div>
-                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--border-dim)" }}>
+                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                                     {Object.entries(vaultMapping).map(([key, label]) => {
                                        const isVerified = (effectiveReqs as any)[key];
                                        return (
-                                          <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem", background: "var(--bg-surface)" }}>
-                                             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                                                {isVerified ? <CheckCircle2 size={16} color="#10b981" /> : <div style={{ width: "16px", height: "16px", border: "1px solid var(--border-dim)" }} />}
-                                                <span style={{ fontWeight: "700", fontSize: "0.75rem", color: isVerified ? "var(--text-main)" : "var(--text-dim)" }}>{label.toUpperCase()}</span>
+                                          <div key={key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1.25rem", background: isVerified ? "#f0fdf4" : "#f8fafc", borderRadius: "12px", border: isVerified ? "1px solid #bbf7d0" : "1px solid #e2e8f0" }}>
+                                             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                                {isVerified ? <CheckCircle2 size={18} color="#10b981" /> : <div style={{ width: "18px", height: "18px", border: "2px solid #cbd5e1", borderRadius: "4px" }} />}
+                                                <span style={{ fontWeight: "600", fontSize: "0.85rem", color: isVerified ? "#166534" : "#64748b" }}>{label}</span>
                                              </div>
                                              {isVerified && (
-                                                <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", fontSize: "0.5rem", fontWeight: "900", padding: "0.25rem 0.5rem", borderRadius: "2px" }}>
-                                                   Verified
-                                                </div>
+                                                <span style={{ fontSize: "0.7rem", fontWeight: "800", color: "#16a34a", textTransform: "uppercase" }}>Verified</span>
                                              )}
                                           </div>
                                        );
@@ -519,30 +483,29 @@ export default function ScholarshipsClient() {
                                  </div>
                               </div>
 
-                              <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.25rem" }}>
-                                 <UploadCloud size={18} /> SUBMIT APPLICATION
+                              <button type="submit" style={{ width: "100%", padding: "1.25rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "12px", fontSize: "1rem", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)", marginTop: "1rem" }}>
+                                 <Send size={18} /> Submit Application
                               </button>
                            </form>
                         </div>
                      )}
-                  </div>
+                  </motion.div>
                )}
             </div>
          )}
 
          {activeTab === "OSAS" && (
             <div key="osas">
-               {/* OSAS SUB NAV */}
-               <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", borderBottom: "1px solid var(--border-dim)" }}>
+               <div style={{ display: "flex", gap: "0.5rem", marginBottom: "3rem", borderBottom: "1px solid #e2e8f0" }}>
                   {[
-                     { id: "Applications", label: "REVIEW APPLICATIONS" },
-                     { id: "Programs", label: "MANAGE PROGRAMS" },
-                     { id: "Batches", label: "MANAGE BATCHES" }
+                     { id: "Applications", label: "Review Applications" },
+                     { id: "Programs", label: "Manage Programs" },
+                     { id: "Batches", label: "Manage Batches" }
                   ].map(v => (
                      <button
                         key={v.id}
                         onClick={() => setOsasView(v.id as any)}
-                        style={{ padding: "1rem 0", background: "none", border: "none", borderBottom: osasView === v.id ? "2px solid var(--primary)" : "2px solid transparent", color: osasView === v.id ? "var(--primary)" : "var(--text-dim)", fontSize: "0.75rem", fontWeight: "900", cursor: "pointer", transition: "all 0.2s" }}
+                        style={{ padding: "1rem 1.5rem", background: "none", border: "none", borderBottom: osasView === v.id ? "2px solid #3b82f6" : "2px solid transparent", color: osasView === v.id ? "#3b82f6" : "#64748b", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s" }}
                      >
                         {v.label}
                      </button>
@@ -552,70 +515,80 @@ export default function ScholarshipsClient() {
                <ProcessGuide
                   title="How Scholarship Review Works"
                   steps={[
-                     { title: "Configure Batches", desc: "Define the scholarship cycle timeline (Start/End dates) in 'MANAGE BATCHES' to enable student applications.", icon: <Calendar size={14} color="var(--text-main)" /> },
-                     { title: "Manage Programs", desc: "Update scholarship providers and specific program requirements in 'MANAGE PROGRAMS'.", icon: <Database size={14} color="var(--text-main)" /> },
-                     { title: "Review & Recommend", desc: "Filter applications by batch and issue recommendations based on student vault verification.", icon: <FileCheck size={14} color="var(--text-main)" /> },
-                     { title: "Final Management Approval", desc: "Review the recommended list and execute a bulk approval to finalize the scholarship awarding.", icon: <ShieldCheck size={14} color="var(--text-main)" /> }
+                     { title: "Batches", desc: "Define timelines.", icon: <Calendar size={16} /> },
+                     { title: "Programs", desc: "Update requirements.", icon: <Database size={16} /> },
+                     { title: "Review", desc: "Filter by batch.", icon: <FileCheck size={16} /> },
+                     { title: "Approve", desc: "Finalize scholarship.", icon: <ShieldCheck size={16} /> }
                   ]}
-                  themeColor="var(--primary)"
                />
 
                {osasView === "Applications" && (
                   <div style={{ width: "100%" }}>
-                     {/* TIMELINE_PROTOCOL */}
-                     <div className="sapphire-card" style={{ marginBottom: "3rem", borderLeft: "4px solid var(--primary)" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2.5rem" }}>
-                           <Activity size={20} color="var(--primary)" />
-                           <h3 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>CURRENT BATCHES</h3>
+                     <div style={{ marginBottom: "3rem", background: "white", padding: "2rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
+                           <Activity size={20} color="#3b82f6" />
+                           <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b" }}>Active Batches</h3>
                         </div>
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1px", background: "var(--border-dim)" }}>
-                           {batchConfigs.map((b) => (
-                              <div key={b.id} style={{ background: "var(--bg-surface)", padding: "1.5rem" }}>
-                                 <div style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.75rem" }}>BATCH 0{b.id}</div>
-                                 <p style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "0.5rem" }}>{(b.status || "Inactive").toUpperCase()}</p>
-                                 <p style={{ fontSize: "0.6rem", color: "var(--text-dim)", fontWeight: "700" }}>{b.startDate} → {b.endDate}</p>
-                              </div>
-                           ))}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem" }}>
+                           {batchConfigs.map((b) => {
+                              const isActive = b.status === "Active";
+                              return (
+                                 <div key={b.id} style={{ background: isActive ? "#eff6ff" : "#f8fafc", border: isActive ? "1px solid #bfdbfe" : "1px solid #e2e8f0", padding: "1.5rem", borderRadius: "12px", display: "flex", flexDirection: "column" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                                       <div style={{ fontSize: "0.75rem", fontWeight: "800", color: isActive ? "#2563eb" : "#64748b" }}>BATCH {b.id}</div>
+                                       <span style={{ fontSize: "0.7rem", fontWeight: "700", padding: "0.2rem 0.6rem", borderRadius: "20px", background: isActive ? "#dbeafe" : "#f1f5f9", color: isActive ? "#1e40af" : "#94a3b8" }}>
+                                          {(b.status || "Inactive")}
+                                       </span>
+                                    </div>
+                                    <p style={{ fontSize: "0.85rem", color: "#475569", fontWeight: "600", marginTop: "auto" }}>{b.startDate} to {b.endDate}</p>
+                                 </div>
+                              );
+                           })}
                         </div>
                      </div>
 
-                     <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "3rem", alignItems: "start" }}>
-                        {/* APPLICATION QUEUE */}
+                     <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "2.5rem", alignItems: "start" }}>
                         <div>
-                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-                                 <h2 style={{ fontSize: "0.85rem", fontWeight: "900" }}>APPLICATIONS TO REVIEW</h2>
+                           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", background: "white", padding: "1.5rem 2rem", borderRadius: "12px", border: "1px solid #f3f4f6", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                                 <h2 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b" }}>Application Queue</h2>
                                  {selectedApps.length > 0 && (
-                                    <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "0.5rem 1rem", background: "var(--primary)", color: "var(--bg-deep)", borderRadius: "4px", fontSize: "0.65rem", fontWeight: "900" }}>
-                                       {selectedApps.length} SELECTED
-                                       <button onClick={() => setSelectedApps([])} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", fontWeight: "900" }}>✕</button>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.4rem 1rem", background: "#eff6ff", color: "#2563eb", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "700", border: "1px solid #bfdbfe" }}>
+                                       {selectedApps.length} Selected
+                                       <button onClick={() => setSelectedApps([])} style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center" }}><X size={14} /></button>
                                     </div>
                                  )}
                               </div>
-                              <div style={{ display: "flex", gap: "1rem" }}>
-                                 <select value={viewBatch} onChange={e => setViewBatch(Number(e.target.value))} style={{ padding: "0.5rem", fontSize: "0.65rem", fontWeight: "900", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
-                                    {batchConfigs.map(b => (
-                                       <option key={b.id} value={b.id}>BATCH {b.id}</option>
-                                    ))}
-                                 </select>
-                              </div>
+                              <select value={viewBatch} onChange={e => setViewBatch(Number(e.target.value))} style={{ padding: "0.6rem 1rem", fontSize: "0.85rem", fontWeight: "600", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#1e293b", outline: "none" }}>
+                                 {batchConfigs.map(b => (
+                                    <option key={b.id} value={b.id}>Batch {b.id}</option>
+                                 ))}
+                              </select>
                            </div>
 
-                           <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
+                           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                              {scholarshipApps.filter(s => s.batchId === viewBatch).length === 0 && (
+                                 <div style={{ padding: "4rem", textAlign: "center", background: "white", borderRadius: "16px", border: "1px dashed #cbd5e1" }}>
+                                    <p style={{ color: "#64748b", fontWeight: "600" }}>No applications found for this batch.</p>
+                                 </div>
+                              )}
                               {scholarshipApps.filter(s => s.batchId === viewBatch).map(app => (
                                  <div
                                     key={app.id}
                                     style={{
                                        display: "grid",
-                                       gridTemplateColumns: "auto 1fr",
+                                       gridTemplateColumns: "auto 1fr auto",
                                        alignItems: "center",
                                        gap: "1.5rem",
                                        padding: "1.5rem 2rem",
-                                       background: selectedApp === app.id ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)",
+                                       background: selectedApp === app.id ? "#eff6ff" : "white",
+                                       borderRadius: "12px",
+                                       border: selectedApp === app.id ? "1px solid #bfdbfe" : "1px solid #f1f5f9",
                                        cursor: "pointer",
-                                       borderLeft: selectedApp === app.id ? "2px solid var(--primary)" : "2px solid transparent",
+                                       boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
                                        transition: "all 0.2s"
                                     }}
+                                    onClick={() => setSelectedApp(app.id)}
                                  >
                                     <input
                                        type="checkbox"
@@ -624,33 +597,30 @@ export default function ScholarshipsClient() {
                                           e.stopPropagation();
                                           setSelectedApps(prev => e.target.checked ? [...prev, app.id] : prev.filter(id => id !== app.id));
                                        }}
-                                       style={{ width: "16px", height: "16px", cursor: "pointer" }}
+                                       style={{ width: "18px", height: "18px", cursor: "pointer" }}
                                     />
-                                    <div onClick={() => setSelectedApp(app.id)}>
-                                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                          <div>
-                                             <h4 style={{ fontWeight: "900", fontSize: "0.9rem", color: "var(--text-main)" }}>{app.studentName.toUpperCase()}</h4>
-                                             <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginTop: "0.25rem" }}>STAMPED: {app.dateApplied}</p>
-                                          </div>
-                                          <div style={{ textAlign: "right" }}>
-                                             <span style={{ fontSize: "0.6rem", fontWeight: "900", padding: "0.4rem 1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: app.status === "Recommended" ? "#10b981" : "#f59e0b" }}>
-                                                {app.status.toUpperCase()}
-                                             </span>
-                                          </div>
-                                       </div>
+                                    <div>
+                                       <h4 style={{ fontWeight: "800", fontSize: "1rem", color: "#1e293b", marginBottom: "0.25rem" }}>{app.studentName}</h4>
+                                       <p style={{ fontSize: "0.8rem", color: "#64748b", fontWeight: "500" }}>Submitted: {app.dateApplied}</p>
+                                    </div>
+                                    <div>
+                                       <span style={{ fontSize: "0.75rem", fontWeight: "700", padding: "0.4rem 1rem", borderRadius: "20px", background: app.status === "Recommended" ? "#f0fdf4" : "#fef3c7", color: app.status === "Recommended" ? "#16a34a" : "#d97706" }}>
+                                          {app.status}
+                                       </span>
                                     </div>
                                  </div>
                               ))}
                            </div>
                         </div>
 
-                        {/* ACTION PANEL */}
                         <div>
                            {selectedApp ? (
-                              <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)" }}>
+                              <div style={{ background: "white", padding: "2.5rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", position: "sticky", top: "2rem" }}>
                                  <div style={{ marginBottom: "2.5rem" }}>
-                                    <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DOCUMENT INSPECTION</label>
-                                    <div style={{ display: "grid", gap: "0.5rem" }}>
+                                    <h4 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                       <FileCheck size={18} color="#3b82f6" /> Document Inspection
+                                    </h4>
+                                    <div style={{ display: "grid", gap: "0.75rem" }}>
                                        {(() => {
                                           const app = scholarshipApps.find(a => a.id === selectedApp);
                                           const student = users.find(u => u.name === app?.studentName);
@@ -659,33 +629,34 @@ export default function ScholarshipsClient() {
                                              return (
                                                 <div key={key} style={{
                                                    padding: "1rem",
-                                                   background: "var(--bg-accent)",
-                                                   border: "1px solid var(--border-dim)",
+                                                   background: doc?.uploaded ? "#f8fafc" : "#fff1f2",
+                                                   border: doc?.uploaded ? "1px solid #e2e8f0" : "1px solid #ffe4e6",
+                                                   borderRadius: "8px",
                                                    display: "flex",
                                                    alignItems: "center",
                                                    justifyContent: "space-between"
                                                 }}>
-                                                   <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                                                      <FileText size={16} color={doc?.uploaded ? "var(--primary)" : "var(--text-dim)"} />
-                                                      <span style={{ fontSize: "0.6rem", fontWeight: "900", color: doc?.uploaded ? "var(--text-main)" : "var(--text-dim)" }}>{label.toUpperCase()}</span>
+                                                   <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                                      <FileText size={16} color={doc?.uploaded ? "#3b82f6" : "#f43f5e"} />
+                                                      <span style={{ fontSize: "0.85rem", fontWeight: "600", color: doc?.uploaded ? "#1e293b" : "#9f1239" }}>{label}</span>
                                                    </div>
                                                    {doc?.uploaded ? (
-                                                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                                         <span style={{ fontSize: "0.5rem", fontWeight: "900", color: doc.status === "Approved" ? "#10b981" : doc.status === "Rejected" ? "#ef4444" : "#f59e0b" }}>
-                                                            {(doc.status || "PENDING").toUpperCase()}
+                                                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                                         <span style={{ fontSize: "0.7rem", fontWeight: "800", color: doc.status === "Approved" ? "#10b981" : doc.status === "Rejected" ? "#ef4444" : "#f59e0b" }}>
+                                                            {doc.status}
                                                          </span>
                                                          <button
                                                             onClick={() => {
                                                                setPreviewDoc({ name: label, userId: student?.id || "", studentName: student?.name || "" });
                                                                setPreviewData(doc);
                                                             }}
-                                                            style={{ padding: "0.4rem", background: "var(--primary)", border: "none", color: "var(--text-dark)", cursor: "pointer", display: "flex", alignItems: "center" }}
+                                                            style={{ padding: "0.4rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "6px", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", transition: "all 0.2s" }}
                                                          >
-                                                            <Eye size={12} />
+                                                            <Eye size={14} />
                                                          </button>
                                                       </div>
                                                    ) : (
-                                                      <span style={{ fontSize: "0.5rem", fontWeight: "900", color: "var(--text-dim)" }}>MISSING</span>
+                                                      <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#e11d48" }}>Missing</span>
                                                    )}
                                                 </div>
                                              );
@@ -693,74 +664,48 @@ export default function ScholarshipsClient() {
                                        })()}
                                     </div>
                                  </div>
-
-                                 <button onClick={handleRecommend} className="btn-cyan" style={{ width: "100%", padding: "1rem" }}>
-                                    SUBMIT FINAL DECISION
+                                 <button onClick={handleRecommend} style={{ width: "100%", padding: "1rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "800", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
+                                    Submit Recommendation
                                  </button>
                               </div>
                            ) : (
-                              <div className="sapphire-card" style={{ textAlign: "center", padding: "4rem", color: "var(--text-dim)" }}>
-                                 <ShieldCheck size={40} style={{ margin: "0 auto 1.5rem", opacity: 0.1 }} />
-                                 <p style={{ fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.1em" }}>SELECT A STUDENT TO REVIEW</p>
+                              <div style={{ background: "white", padding: "4rem 2rem", borderRadius: "16px", border: "1px dashed #cbd5e1", textAlign: "center" }}>
+                                 <ShieldCheck size={48} color="#94a3b8" style={{ margin: "0 auto 1.5rem", opacity: 0.5 }} />
+                                 <p style={{ fontSize: "0.9rem", fontWeight: "700", color: "#64748b" }}>Select a student application from the queue to review their documents.</p>
                               </div>
                            )}
 
                            {selectedApps.length > 0 && (
-                              <div style={{ marginTop: "2rem" }}>
-                                 <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)", background: "rgba(0, 229, 255, 0.02)" }}>
-                                    <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>Batch Actions</h3>
-                                    <div style={{ display: "grid", gap: "1rem" }}>
-                                       <div style={{ display: "flex", gap: "1rem" }}>
-                                          <select
-                                             value={recommendationLevel}
-                                             onChange={e => setRecommendationLevel(e.target.value as any)}
-                                             style={{ flex: 1, padding: "0.75rem", fontSize: "0.65rem", fontWeight: "900", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}
-                                          >
-                                             <option value="Partial">PARTIAL SCHOLAR</option>
-                                             <option value="Half">HALF SCHOLAR</option>
-                                             <option value="Full">FULL SCHOLAR</option>
-                                          </select>
-                                          <button onClick={handleBulkRecommend} className="btn-cyan" style={{ flex: 1.5, padding: "0.75rem", fontSize: "0.65rem" }}>RECOMMEND SELECTED</button>
-                                       </div>
-                                       <button onClick={handleBulkApprove} style={{ width: "100%", padding: "1rem", background: "#10b981", color: "white", border: "none", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>FINAL APPROVAL FOR SELECTED</button>
+                              <div style={{ marginTop: "2rem", background: "white", padding: "2rem", borderRadius: "16px", border: "1px solid #bfdbfe", boxShadow: "0 10px 25px rgba(59, 130, 246, 0.1)" }}>
+                                 <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e3a8a", marginBottom: "1.5rem" }}>Batch Actions</h3>
+                                 <div style={{ display: "grid", gap: "1.5rem" }}>
+                                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                                       <select
+                                          value={recommendationLevel}
+                                          onChange={e => setRecommendationLevel(e.target.value as any)}
+                                          style={{ width: "100%", padding: "0.85rem", fontSize: "0.85rem", fontWeight: "600", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#1e293b", outline: "none" }}
+                                       >
+                                          <option value="Partial">Partial Scholar</option>
+                                          <option value="Half">Half Scholar</option>
+                                          <option value="Full">Full Scholar</option>
+                                       </select>
+                                       <button onClick={handleBulkRecommend} style={{ width: "100%", padding: "1rem", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", cursor: "pointer" }}>Recommend Selected</button>
                                     </div>
+                                    <div style={{ height: "1px", background: "#e2e8f0" }} />
+                                    <button onClick={handleBulkApprove} style={{ width: "100%", padding: "1rem", background: "#10b981", color: "white", border: "none", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "800", cursor: "pointer", boxShadow: "0 4px 6px rgba(16, 185, 129, 0.2)" }}>Final Approval For Selected</button>
                                  </div>
                               </div>
                            )}
 
-                           <div style={{ marginTop: "2rem" }}>
-                              <div className="sapphire-card">
-                                 <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem" }}>BATCH OPTIONS</h3>
-                                 <button onClick={handlePrintBatch} style={{ width: "100%", padding: "1rem", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer", marginBottom: "1rem" }}>
-                                    <Printer size={14} color="var(--primary)" /> PRINT LIST
+                           <div style={{ marginTop: "2rem", background: "white", padding: "2rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                              <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b", marginBottom: "1.5rem" }}>Batch Tools</h3>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                                 <button onClick={handlePrintBatch} style={{ width: "100%", padding: "1rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#475569", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer", transition: "all 0.2s" }}>
+                                    <Printer size={16} /> Print List
                                  </button>
-                                 <button style={{ width: "100%", padding: "1rem", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer" }}>
-                                    <Settings size={14} color="var(--primary)" /> EDIT DATES
+                                 <button style={{ width: "100%", padding: "1rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#475569", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer", transition: "all 0.2s" }}>
+                                    <Settings size={16} /> Edit Dates
                                  </button>
-                              </div>
-                           </div>
-
-                           <div style={{ marginTop: "2rem" }}>
-                              <div className="sapphire-card">
-                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-                                    <h3 style={{ fontSize: "0.75rem", fontWeight: "900" }}>Recent Activity</h3>
-                                    <Activity size={14} color="var(--primary)" />
-                                 </div>
-                                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxHeight: "300px", overflowY: "auto", paddingRight: "0.5rem" }}>
-                                    {auditLogs.filter(l => l.action.includes("SCHOLARSHIP")).map(log => (
-                                       <div key={log.id} style={{ padding: "1rem", background: "var(--bg-accent)", borderLeft: `2px solid ${log.severity === "HIGH" ? "#ef4444" : "var(--primary)"}` }}>
-                                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-                                             <span style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>{log.action}</span>
-                                             <span style={{ fontSize: "0.5rem", color: "var(--text-dim)" }}>{log.timestamp}</span>
-                                          </div>
-                                          <p style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-main)" }}>{log.details}</p>
-                                          <p style={{ fontSize: "0.5rem", color: "var(--text-dim)", marginTop: "0.4rem" }}>ADMIN: {log.user} ({log.role})</p>
-                                       </div>
-                                    ))}
-                                    {auditLogs.filter(l => l.action.includes("SCHOLARSHIP")).length === 0 && (
-                                       <p style={{ fontSize: "0.6rem", color: "var(--text-dim)", textAlign: "center", padding: "2rem" }}>NO RECENT ACTIONS RECORDED</p>
-                                    )}
-                                 </div>
                               </div>
                            </div>
                         </div>
@@ -769,36 +714,36 @@ export default function ScholarshipsClient() {
                )}
 
                {osasView === "Programs" && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem", alignItems: "start" }}>
                      <div>
-                        <h2 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>All Programs</h2>
+                        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b", marginBottom: "2rem" }}>Active Programs</h2>
                         <div style={{ display: "grid", gap: "1.5rem" }}>
                            {scholarshipPrograms.map(prog => (
-                              <div key={prog.id} className="sapphire-card" style={{ borderLeft: prog.status === "Archived" ? "4px solid var(--text-dim)" : "4px solid var(--primary)" }}>
+                              <div key={prog.id} style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", borderLeft: prog.status === "Archived" ? "4px solid #cbd5e1" : "4px solid #3b82f6", padding: "2rem", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
                                     <div>
-                                       <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.4rem" }}>{prog.provider.toUpperCase()}</p>
-                                       <h3 style={{ fontSize: "1rem", fontWeight: "900", color: prog.status === "Archived" ? "var(--text-dim)" : "var(--text-main)" }}>{prog.name.toUpperCase()}</h3>
+                                       <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#64748b", marginBottom: "0.25rem" }}>{prog.provider}</p>
+                                       <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: prog.status === "Archived" ? "#94a3b8" : "#1e293b" }}>{prog.name}</h3>
                                     </div>
                                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                                       <button onClick={() => startEdit(prog)} style={{ padding: "0.4rem", background: "var(--bg-accent)", border: "none", color: "var(--primary)", cursor: "pointer" }}><Settings size={14} /></button>
+                                       <button onClick={() => startEdit(prog)} style={{ width: "36px", height: "36px", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s" }}><Edit2 size={16} /></button>
                                        <button onClick={() => setConfirmConfig({
                                           isOpen: true,
                                           title: "Delete Program",
-                                          message: `Are you sure you want to permanently delete the ${prog.name} scholarship program?`,
+                                          message: `Are you sure you want to permanently delete the ${prog.name} program?`,
                                           type: "danger",
                                           onConfirm: () => deleteScholarshipProgram(prog.id)
-                                       })} style={{ padding: "0.4rem", background: "rgba(239, 68, 68, 0.1)", border: "none", color: "#ef4444", cursor: "pointer" }}><X size={14} /></button>
+                                       })} style={{ width: "36px", height: "36px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s" }}><Trash2 size={16} /></button>
                                     </div>
                                  </div>
-                                 <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", fontWeight: "600", marginBottom: "1.5rem", lineHeight: "1.6" }}>{prog.description}</p>
-                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <span style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DEADLINE: {prog.deadline}</span>
+                                 <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500", marginBottom: "2rem", lineHeight: "1.6" }}>{prog.description}</p>
+                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "1.5rem", borderTop: "1px solid #f1f5f9" }}>
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "600", color: "#94a3b8" }}><Calendar size={14} style={{ display: "inline", verticalAlign: "middle", marginRight: "0.25rem" }}/> Deadline: {prog.deadline}</span>
                                     <button
                                        onClick={() => updateScholarshipProgram(prog.id, { status: prog.status === "Active" ? "Archived" : "Active" })}
-                                       style={{ background: "none", border: "1px solid var(--border-dim)", padding: "0.4rem 1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", cursor: "pointer" }}
+                                       style={{ background: "white", border: "1px solid #e2e8f0", padding: "0.5rem 1rem", borderRadius: "8px", fontSize: "0.75rem", fontWeight: "700", color: "#64748b", cursor: "pointer", transition: "all 0.2s" }}
                                     >
-                                       {prog.status === "Active" ? "ARCHIVE" : "RESTORE"}
+                                       {prog.status === "Active" ? "Archive Program" : "Restore Program"}
                                     </button>
                                  </div>
                               </div>
@@ -806,30 +751,32 @@ export default function ScholarshipsClient() {
                         </div>
                      </div>
 
-                     <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)", position: "sticky", top: "2rem" }}>
-                        <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>{editingProg ? "EDIT PROGRAM" : "NEW PROGRAM"}</h3>
+                     <div style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", padding: "2.5rem", position: "sticky", top: "2rem", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                        <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                           {editingProg ? <Edit2 size={18} color="#3b82f6" /> : <Plus size={18} color="#3b82f6" />} {editingProg ? "Edit Program" : "New Program"}
+                        </h3>
                         <form onSubmit={editingProg ? handleUpdateProgram : handleCreateProgram} style={{ display: "grid", gap: "1.5rem" }}>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>PROGRAM NAME</label>
-                              <input required value={newProgName} onChange={e => setNewProgName(e.target.value)} style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>Program Name</label>
+                              <input required value={newProgName} onChange={e => setNewProgName(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b" }} />
                            </div>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>PROVIDER</label>
-                              <input required value={newProgProvider} onChange={e => setNewProgProvider(e.target.value)} style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>Provider</label>
+                              <input required value={newProgProvider} onChange={e => setNewProgProvider(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b" }} />
                            </div>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DESCRIPTION</label>
-                              <textarea required value={newProgDesc} onChange={e => setNewProgDesc(e.target.value)} rows={4} style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>Description</label>
+                              <textarea required value={newProgDesc} onChange={e => setNewProgDesc(e.target.value)} rows={4} style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b", resize: "vertical" }} />
                            </div>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>DEADLINE</label>
-                              <input type="date" required value={newProgDeadline} onChange={e => setNewProgDeadline(e.target.value)} style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>Deadline</label>
+                              <input type="date" required value={newProgDeadline} onChange={e => setNewProgDeadline(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b" }} />
                            </div>
-                           <div style={{ display: "flex", gap: "1rem" }}>
+                           <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                               {editingProg && (
-                                 <button type="button" onClick={() => setEditingProg(null)} style={{ flex: 1, padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900" }}>CANCEL</button>
+                                 <button type="button" onClick={() => setEditingProg(null)} style={{ flex: 1, padding: "1rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#475569", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer" }}>Cancel</button>
                               )}
-                              <button type="submit" className="btn-cyan" style={{ flex: 2, padding: "1rem" }}>{editingProg ? "UPDATE PROGRAM" : "CREATE PROGRAM"}</button>
+                              <button type="submit" style={{ flex: 2, padding: "1rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontSize: "0.9rem", fontWeight: "800", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>{editingProg ? "Update Program" : "Create Program"}</button>
                            </div>
                         </form>
                      </div>
@@ -837,49 +784,50 @@ export default function ScholarshipsClient() {
                )}
 
                {osasView === "Batches" && (
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem", alignItems: "start" }}>
                      <div>
                         <div style={{ marginBottom: "3rem" }}>
-                           <h2 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>SCHEDULING BATCHES</h2>
+                           <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b", marginBottom: "2rem" }}>Scheduling Cycles</h2>
                            
                            {/* BATCH TIMELINE VISUALIZER */}
-                           <div className="sapphire-card" style={{ padding: "2rem", background: "rgba(0, 229, 255, 0.02)", marginBottom: "3rem" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "2rem" }}>
-                                 <Layers size={16} color="var(--primary)" />
-                                 <h4 style={{ fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.2em" }}>CYCLE TIMELINE</h4>
+                           <div style={{ padding: "3rem", background: "white", border: "1px solid #f3f4f6", borderRadius: "16px", marginBottom: "3rem", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "3rem" }}>
+                                 <Layers size={20} color="#3b82f6" />
+                                 <h4 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b" }}>Timeline Map</h4>
                               </div>
                               
-                              <div style={{ position: "relative", padding: "2rem 0", minHeight: "150px" }}>
+                              <div style={{ position: "relative", padding: "1rem 0" }}>
                                  {/* Timeline Axis */}
-                                 <div style={{ position: "absolute", top: "50%", left: 0, width: "100%", height: "1px", background: "var(--border-dim)", zIndex: 0 }} />
+                                 <div style={{ position: "absolute", top: "35px", left: 0, width: "100%", height: "2px", background: "#e2e8f0", zIndex: 0 }} />
                                  
                                  <div style={{ display: "flex", justifyContent: "space-between", position: "relative", zIndex: 1 }}>
                                     {batchConfigs.length === 0 ? (
-                                       <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", textAlign: "center", width: "100%" }}>NO ACTIVE BATCH CYCLES DEFINED</p>
+                                       <p style={{ fontSize: "0.85rem", color: "#94a3b8", fontWeight: "600", textAlign: "center", width: "100%" }}>No cycles defined.</p>
                                     ) : (
                                        batchConfigs.map((batch, index) => {
                                           const isActive = batch.status === "Active";
                                           return (
                                              <div key={batch.id} style={{ position: "relative", flex: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                                                 <div style={{ 
-                                                   width: "12px", 
-                                                   height: "12px", 
+                                                   width: "16px", 
+                                                   height: "16px", 
                                                    borderRadius: "50%", 
-                                                   background: isActive ? "var(--primary)" : "var(--bg-accent)", 
-                                                   border: "2px solid var(--border-dim)",
-                                                   boxShadow: isActive ? "0 0 15px var(--primary)" : "none",
+                                                   background: isActive ? "#3b82f6" : "white", 
+                                                   border: isActive ? "4px solid #bfdbfe" : "2px solid #cbd5e1",
                                                    marginBottom: "1rem"
                                                 }} />
                                                 <div style={{ 
-                                                   padding: "0.75rem", 
-                                                   background: isActive ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", 
-                                                   border: "1px solid var(--border-dim)",
-                                                   borderTop: isActive ? "2px solid var(--primary)" : "1px solid var(--border-dim)",
+                                                   padding: "1rem", 
+                                                   background: isActive ? "#eff6ff" : "white", 
+                                                   border: "1px solid",
+                                                   borderColor: isActive ? "#bfdbfe" : "#e2e8f0",
+                                                   borderRadius: "8px",
                                                    textAlign: "center",
-                                                   minWidth: "120px"
+                                                   minWidth: "120px",
+                                                   boxShadow: isActive ? "0 4px 6px rgba(59, 130, 246, 0.1)" : "none"
                                                 }}>
-                                                   <p style={{ fontSize: "0.5rem", fontWeight: "900", color: isActive ? "var(--primary)" : "var(--text-dim)" }}>{batch.name.toUpperCase()}</p>
-                                                   <p style={{ fontSize: "0.6rem", fontWeight: "700", marginTop: "0.25rem" }}>{batch.startDate?.split('-').slice(1).join('/') || "TBD"}</p>
+                                                   <p style={{ fontSize: "0.8rem", fontWeight: "800", color: isActive ? "#1e3a8a" : "#64748b" }}>{batch.name}</p>
+                                                   <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#94a3b8", marginTop: "0.25rem" }}>{batch.startDate?.split('-').slice(1).join('/') || "TBD"}</p>
                                                 </div>
                                              </div>
                                           );
@@ -889,53 +837,54 @@ export default function ScholarshipsClient() {
                               </div>
                            </div>
                         </div>
+
                         <div style={{ display: "grid", gap: "1.5rem" }}>
                            {batchConfigs.map(batch => (
-                              <div key={batch.id} className="sapphire-card" style={{ borderLeft: batch.status === "Archived" ? "4px solid var(--text-dim)" : "4px solid var(--primary)" }}>
+                              <div key={batch.id} style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", borderLeft: batch.status === "Archived" ? "4px solid #cbd5e1" : "4px solid #10b981", padding: "2rem", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
                                     <div>
-                                       <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.4rem" }}>BATCH ID: {batch.id}</p>
-                                       <h3 style={{ fontSize: "1rem", fontWeight: "900", color: batch.status === "Archived" ? "var(--text-dim)" : "var(--text-main)" }}>{batch.name.toUpperCase()}</h3>
+                                       <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#64748b", marginBottom: "0.25rem" }}>Batch #{batch.id}</p>
+                                       <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: batch.status === "Archived" ? "#94a3b8" : "#1e293b" }}>{batch.name}</h3>
                                     </div>
                                     <div style={{ display: "flex", gap: "0.5rem" }}>
-                                       <button onClick={() => startEditBatch(batch)} style={{ padding: "0.4rem", background: "var(--bg-accent)", border: "none", color: "var(--primary)", cursor: "pointer" }}><Settings size={14} /></button>
+                                       <button onClick={() => startEditBatch(batch)} style={{ width: "36px", height: "36px", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Edit2 size={16} /></button>
                                        <button onClick={() => setConfirmConfig({
                                           isOpen: true,
                                           title: "Delete Batch",
-                                          message: `Are you sure you want to permanently delete ${batch.name}? This will affect scholarship scheduling.`,
+                                          message: `Are you sure you want to permanently delete ${batch.name}?`,
                                           type: "danger",
                                           onConfirm: () => deleteBatchConfig(batch.id)
-                                       })} style={{ padding: "0.4rem", background: "rgba(239, 68, 68, 0.1)", border: "none", color: "#ef4444", cursor: "pointer" }}><X size={14} /></button>
+                                       })} style={{ width: "36px", height: "36px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "8px", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><Trash2 size={16} /></button>
                                     </div>
                                  </div>
-                                 <div style={{ display: "flex", gap: "2rem", marginBottom: "1.5rem" }}>
+                                 <div style={{ display: "flex", gap: "3rem", marginBottom: "2rem", background: "#f8fafc", padding: "1.5rem", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
                                     <div>
-                                       <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.25rem" }}>START DATE</p>
-                                       <p style={{ fontSize: "0.75rem", fontWeight: "700" }}>{batch.startDate || "NOT SET"}</p>
+                                       <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#94a3b8", marginBottom: "0.25rem" }}>Start Date</p>
+                                       <p style={{ fontSize: "0.9rem", fontWeight: "700", color: "#1e293b" }}>{batch.startDate || "Not Set"}</p>
                                     </div>
                                     <div>
-                                       <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.25rem" }}>END DATE</p>
-                                       <p style={{ fontSize: "0.75rem", fontWeight: "700" }}>{batch.endDate || "NOT SET"}</p>
+                                       <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#94a3b8", marginBottom: "0.25rem" }}>End Date</p>
+                                       <p style={{ fontSize: "0.9rem", fontWeight: "700", color: "#1e293b" }}>{batch.endDate || "Not Set"}</p>
                                     </div>
                                  </div>
                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                    <span style={{ fontSize: "0.6rem", fontWeight: "900", color: batch.status === "Active" ? "#10b981" : "var(--text-dim)" }}>
-                                       STATUS: {batch.status.toUpperCase()}
+                                    <span style={{ fontSize: "0.8rem", fontWeight: "700", color: batch.status === "Active" ? "#10b981" : "#64748b", background: batch.status === "Active" ? "#f0fdf4" : "#f1f5f9", padding: "0.4rem 1rem", borderRadius: "20px" }}>
+                                       {batch.status}
                                     </span>
                                     <div style={{ display: "flex", gap: "0.75rem" }}>
                                        {batch.status !== "Active" && (
                                           <button
                                              onClick={() => updateBatchConfig(batch.id, { status: "Active" })}
-                                             style={{ background: "none", border: "1px solid var(--primary)", padding: "0.4rem 1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", cursor: "pointer" }}
+                                             style={{ background: "#eff6ff", border: "1px solid #bfdbfe", padding: "0.5rem 1.25rem", borderRadius: "8px", fontSize: "0.8rem", fontWeight: "700", color: "#2563eb", cursor: "pointer" }}
                                           >
-                                             ACTIVATE
+                                             Activate
                                           </button>
                                        )}
                                        <button
                                           onClick={() => updateBatchConfig(batch.id, { status: batch.status === "Archived" ? "Inactive" : "Archived" })}
-                                          style={{ background: "none", border: "1px solid var(--border-dim)", padding: "0.4rem 1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", cursor: "pointer" }}
+                                          style={{ background: "white", border: "1px solid #e2e8f0", padding: "0.5rem 1.25rem", borderRadius: "8px", fontSize: "0.8rem", fontWeight: "700", color: "#64748b", cursor: "pointer" }}
                                        >
-                                          {batch.status === "Archived" ? "RESTORE" : "ARCHIVE"}
+                                          {batch.status === "Archived" ? "Restore" : "Archive"}
                                        </button>
                                     </div>
                                  </div>
@@ -944,26 +893,28 @@ export default function ScholarshipsClient() {
                         </div>
                      </div>
 
-                     <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)", position: "sticky", top: "2rem" }}>
-                        <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>{editingBatch ? "EDIT BATCH" : "NEW BATCH"}</h3>
+                     <div style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", padding: "2.5rem", position: "sticky", top: "2rem", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                        <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                           {editingBatch ? <Edit2 size={18} color="#3b82f6" /> : <Plus size={18} color="#3b82f6" />} {editingBatch ? "Edit Batch" : "New Batch"}
+                        </h3>
                         <form onSubmit={editingBatch ? handleUpdateBatch : handleCreateBatch} style={{ display: "grid", gap: "1.5rem" }}>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>BATCH NAME</label>
-                              <input required value={batchName} onChange={e => setBatchName(e.target.value)} placeholder="E.G. BATCH 2" style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>Batch Name</label>
+                              <input required value={batchName} onChange={e => setBatchName(e.target.value)} placeholder="e.g. Batch 2" style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b" }} />
                            </div>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>START DATE</label>
-                              <input type="date" required value={batchStart} onChange={e => setBatchStart(e.target.value)} style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>Start Date</label>
+                              <input type="date" required value={batchStart} onChange={e => setBatchStart(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b" }} />
                            </div>
                            <div>
-                              <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>END DATE</label>
-                              <input type="date" required value={batchEnd} onChange={e => setBatchEnd(e.target.value)} style={{ width: "100%", padding: "0.85rem", fontSize: "0.75rem", fontWeight: "700" }} />
+                              <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.8rem", fontWeight: "700", color: "#475569" }}>End Date</label>
+                              <input type="date" required value={batchEnd} onChange={e => setBatchEnd(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", outline: "none", color: "#1e293b" }} />
                            </div>
-                           <div style={{ display: "flex", gap: "1rem" }}>
+                           <div style={{ display: "flex", gap: "1rem", marginTop: "1rem" }}>
                               {editingBatch && (
-                                 <button type="button" onClick={() => setEditingBatch(null)} style={{ flex: 1, padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900" }}>CANCEL</button>
+                                 <button type="button" onClick={() => setEditingBatch(null)} style={{ flex: 1, padding: "1rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#475569", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer" }}>Cancel</button>
                               )}
-                              <button type="submit" className="btn-cyan" style={{ flex: 2, padding: "1rem" }}>{editingBatch ? "UPDATE BATCH" : "CREATE BATCH"}</button>
+                              <button type="submit" style={{ flex: 2, padding: "1rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontSize: "0.9rem", fontWeight: "800", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>{editingBatch ? "Update Batch" : "Create Batch"}</button>
                            </div>
                         </form>
                      </div>
@@ -983,88 +934,82 @@ export default function ScholarshipsClient() {
 
          {/* Digital Vault Previewer Modal */}
          {previewDoc && (
-            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem", backdropFilter: "blur(10px)" }}>
-               <div style={{ width: "100%", maxWidth: "1000px", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", display: "grid", gridTemplateColumns: "1fr 300px", height: "80vh", overflow: "hidden" }}>
-                  <div style={{ background: "#000", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-                     <div style={{ textAlign: "center" }}>
-                        <div style={{ width: "400px", height: "560px", background: "white", boxShadow: "0 20px 50px rgba(0,0,0,0.5)", position: "relative", padding: "3rem" }}>
-                           <div style={{ width: "100%", height: "100%", border: "2px solid #eee", display: "flex", flexDirection: "column", padding: "2rem", textAlign: "left" }}>
-                              <div style={{ borderBottom: "2px solid #333", paddingBottom: "1rem", marginBottom: "2rem" }}>
-                                 <h4 style={{ color: "#333", fontSize: "1rem", fontWeight: "900", marginBottom: "0.25rem" }}>OFFICIAL DOCUMENT</h4>
-                                 <p style={{ color: "#666", fontSize: "0.6rem", fontWeight: "700" }}>UNIVERSITY OF THE PHILIPPINES • SPARK OSAS</p>
-                              </div>
-                              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "1rem" }}>
-                                 <div style={{ width: "100%", height: "10px", background: "#f0f0f0" }} />
-                                 <div style={{ width: "80%", height: "10px", background: "#f0f0f0" }} />
-                                 <div style={{ width: "100%", height: "150px", background: "#f9f9f9", border: "1px solid #eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <FileText size={40} color="#ccc" />
-                                 </div>
-                              </div>
-                              <div style={{ marginTop: "auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-                                 <div>
-                                    <p style={{ color: "#333", fontSize: "0.5rem", fontWeight: "900" }}>STUDENT NAME</p>
-                                    <p style={{ color: "#333", fontSize: "0.7rem", fontWeight: "900" }}>{previewDoc.studentName.toUpperCase()}</p>
-                                 </div>
-                                 <div style={{ width: "60px", height: "60px", background: "#f0f0f0", borderRadius: "50%" }} />
-                              </div>
-                           </div>
-                           <div style={{ position: "absolute", top: "1rem", right: "1rem", background: "var(--primary)", color: "var(--bg-deep)", padding: "0.5rem", fontSize: "0.5rem", fontWeight: "900", letterSpacing: "0.1em" }}>
-                              {previewDoc.name.toUpperCase()}
-                           </div>
+            <div style={{ position: "fixed", inset: 0, background: "rgba(15, 23, 42, 0.7)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem", backdropFilter: "blur(10px)" }}>
+               <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ width: "100%", maxWidth: "1000px", background: "white", borderRadius: "24px", overflow: "hidden", display: "grid", gridTemplateColumns: "1fr 350px", height: "80vh", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+                  <div style={{ background: "#f8fafc", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+                     <div style={{ width: "100%", maxWidth: "450px", aspectRatio: "1/1.4", background: "white", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", borderRadius: "8px", padding: "3rem", display: "flex", flexDirection: "column" }}>
+                        <div style={{ borderBottom: "2px solid #e2e8f0", paddingBottom: "1rem", marginBottom: "2rem", textAlign: "center" }}>
+                           <h4 style={{ color: "#1e293b", fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.25rem" }}>Official Document</h4>
+                           <p style={{ color: "#64748b", fontSize: "0.7rem", fontWeight: "700" }}>UNIVERSITY OF THE PHILIPPINES • SPARK OSAS</p>
+                        </div>
+                        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                           <FileText size={64} color="#cbd5e1" />
+                        </div>
+                        <div style={{ marginTop: "auto", borderTop: "1px solid #e2e8f0", paddingTop: "1.5rem" }}>
+                           <p style={{ color: "#64748b", fontSize: "0.65rem", fontWeight: "700", textTransform: "uppercase", marginBottom: "0.25rem" }}>Document Type</p>
+                           <p style={{ color: "#1e293b", fontSize: "0.9rem", fontWeight: "800" }}>{previewDoc.name}</p>
                         </div>
                      </div>
-                     <button onClick={() => setPreviewDoc(null)} style={{ position: "absolute", top: "2rem", right: "2rem", background: "rgba(255,255,255,0.1)", border: "none", color: "white", padding: "1rem", cursor: "pointer", borderRadius: "50%" }}>
-                        <X size={20} />
-                     </button>
                   </div>
-                  <div style={{ padding: "2.5rem", display: "flex", flexDirection: "column", borderLeft: "1px solid var(--border-dim)" }}>
-                     <div style={{ marginBottom: "3rem" }}>
-                        <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>DOCUMENT METADATA</p>
-                        <h3 style={{ fontSize: "1.1rem", fontWeight: "900", marginBottom: "0.5rem" }}>{previewDoc.name}</h3>
-                        <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700" }}>Submitted by {previewDoc.studentName}</p>
+                  
+                  <div style={{ padding: "3rem 2.5rem", display: "flex", flexDirection: "column", borderLeft: "1px solid #f1f5f9", background: "white" }}>
+                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "3rem" }}>
+                        <div>
+                           <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#3b82f6", letterSpacing: "0.05em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Document Review</p>
+                           <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.5rem" }}>{previewDoc.name}</h3>
+                           <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500" }}>Submitted by <strong>{previewDoc.studentName}</strong></p>
+                        </div>
+                        <button onClick={() => setPreviewDoc(null)} style={{ width: "36px", height: "36px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "8px", color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                           <X size={16} />
+                        </button>
                      </div>
                      <div style={{ marginTop: "auto", display: "grid", gap: "1rem" }}>
-                        <button onClick={async () => { await verifyDocument(previewDoc.userId, previewDoc.name, "Approved", "Approved by OSAS."); setPreviewDoc(null); }} style={{ width: "100%", padding: "1.25rem", background: "#10b981", color: "white", border: "none", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>APPROVE</button>
-                        <button onClick={async () => { const r = prompt("Reason:"); if (r) { await verifyDocument(previewDoc.userId, previewDoc.name, "Rejected", r); setPreviewDoc(null); } }} style={{ width: "100%", padding: "1.25rem", background: "rgba(239, 68, 68, 0.1)", border: "1px solid #ef4444", color: "#ef4444", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>REJECT</button>
+                        <button onClick={async () => { await verifyDocument(previewDoc.userId, previewDoc.name, "Approved", "Approved by OSAS."); setPreviewDoc(null); }} style={{ width: "100%", padding: "1.25rem", background: "#10b981", color: "white", border: "none", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "800", cursor: "pointer", boxShadow: "0 4px 6px rgba(16, 185, 129, 0.2)", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
+                           <CheckCircle2 size={18} /> Approve Document
+                        </button>
+                        <button onClick={async () => { const r = prompt("Reason for rejection:"); if (r) { await verifyDocument(previewDoc.userId, previewDoc.name, "Rejected", r); setPreviewDoc(null); } }} style={{ width: "100%", padding: "1.25rem", background: "white", border: "1px solid #fecaca", color: "#ef4444", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
+                           <X size={18} /> Reject Document
+                        </button>
                      </div>
                   </div>
-               </div>
+               </motion.div>
             </div>
          )}
 
-         {/* Identity Verification Terminal Modal */}
+         {/* Identity Verification Modal */}
          {isVerifyingIdentity && (
-            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(12px)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-               <div style={{ width: "100%", maxWidth: "550px", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", padding: "3.5rem", position: "relative", overflow: "hidden" }}>
-                  <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "4px", background: "var(--primary)" }} />
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3rem" }}>
+            <div style={{ position: "fixed", inset: 0, background: "rgba(15, 23, 42, 0.6)", backdropFilter: "blur(8px)", zIndex: 2000, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+               <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} style={{ width: "100%", maxWidth: "600px", background: "white", borderRadius: "24px", overflow: "hidden", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+                  <div style={{ padding: "2rem 2.5rem", borderBottom: "1px solid #f1f5f9", background: "#f8fafc", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                      <div>
-                        <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>IDENTITY PROTOCOL</p>
-                        <h3 style={{ fontSize: "1.25rem", fontWeight: "900" }}>VERIFY IDENTITY</h3>
+                        <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b" }}>Identity Protocol</h2>
+                        <p style={{ fontSize: "0.85rem", fontWeight: "600", color: "#64748b", marginTop: "0.25rem" }}>Complete your profile to proceed</p>
                      </div>
-                     <button onClick={() => setIsVerifyingIdentity(false)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer" }}><X size={20} /></button>
+                     <button onClick={() => setIsVerifyingIdentity(false)} style={{ background: "white", border: "1px solid #e2e8f0", color: "#64748b", cursor: "pointer", width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "10px" }}>
+                        <X size={20} />
+                     </button>
                   </div>
-                  <form onSubmit={handleCommitIdentity} style={{ display: "grid", gap: "2rem" }}>
+                  <form onSubmit={handleCommitIdentity} style={{ padding: "2.5rem", display: "grid", gap: "1.5rem" }}>
                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
                         <div>
-                           <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>FIRST NAME</label>
-                           <input required value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="E.G. JUAN" style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700" }} />
+                           <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>First Name</label>
+                           <input required value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="e.g. Juan" style={{ width: "100%", padding: "1rem", fontSize: "0.95rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", outline: "none", color: "#1e293b" }} />
                         </div>
                         <div>
-                           <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>MIDDLE NAME</label>
-                           <input value={middleName} onChange={e => setMiddleName(e.target.value)} placeholder="E.G. SANTOS" style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700" }} />
+                           <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Middle Name</label>
+                           <input value={middleName} onChange={e => setMiddleName(e.target.value)} placeholder="e.g. Santos" style={{ width: "100%", padding: "1rem", fontSize: "0.95rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", outline: "none", color: "#1e293b" }} />
                         </div>
                      </div>
                      <div>
-                        <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>LAST NAME</label>
-                        <input required value={lastName} onChange={e => setLastName(e.target.value)} placeholder="E.G. DELA CRUZ" style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700" }} />
+                        <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Last Name</label>
+                        <input required value={lastName} onChange={e => setLastName(e.target.value)} placeholder="e.g. Dela Cruz" style={{ width: "100%", padding: "1rem", fontSize: "0.95rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", outline: "none", color: "#1e293b" }} />
                      </div>
                      <div style={{ display: "flex", gap: "1.5rem", marginTop: "1rem" }}>
-                        <button type="button" onClick={() => setIsVerifyingIdentity(false)} style={{ flex: 1, padding: "1.1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>CANCEL</button>
-                        <button type="submit" className="btn-cyan" style={{ flex: 2, padding: "1.1rem" }}>VERIFY & CONTINUE</button>
+                        <button type="button" onClick={() => setIsVerifyingIdentity(false)} style={{ flex: 1, padding: "1.15rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "10px", color: "#475569", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer" }}>Cancel</button>
+                        <button type="submit" style={{ flex: 2, padding: "1.15rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "800", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>Verify & Continue</button>
                      </div>
                   </form>
-               </div>
+               </motion.div>
             </div>
          )}
       </div>
