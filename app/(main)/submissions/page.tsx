@@ -74,7 +74,7 @@ export default function SubmissionsPage() {
             >
               <div style={{ padding: "1.5rem 2rem", background: "#f9fafb", borderBottom: "1px solid #f3f4f6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <FileText size={20} color="var(--primary)" />
+                    <FileText size={20} color="#3b82f6" />
                     <p style={{ fontWeight: "800", fontSize: "0.9rem", color: "#111827" }}>Document Preview</p>
                  </div>
                  <button onClick={() => setActiveTemplate(null)} style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", display: "flex", alignItems: "center" }}><X size={20} /></button>
@@ -95,7 +95,7 @@ export default function SubmissionsPage() {
                 </button>
                 <button 
                   onClick={() => { uploadToVault(templateName); setActiveTemplate(null); }}
-                  style={{ padding: "0.85rem 1.5rem", background: "var(--primary)", color: "white", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
+                  style={{ padding: "0.85rem 1.5rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
                 >
                   Save & Upload <Check size={16} />
                 </button>
@@ -108,9 +108,9 @@ export default function SubmissionsPage() {
       {/* --- HEADER_AND_TELEMETRY --- */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem", flexWrap: "wrap", gap: "2rem" }}>
         <header>
-          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Document Upload Center</p>
+          <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Document Upload Center</p>
           <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
-            My <span style={{ color: "var(--primary)" }}>Documents</span>
+            My <span style={{ color: "#3b82f6" }}>Documents</span>
           </h1>
           <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Upload and manage your required documents for OSAS processing.</p>
         </header>
@@ -120,20 +120,20 @@ export default function SubmissionsPage() {
             <motion.a 
               href="/submissions/verify"
               whileHover={{ x: 5 }}
-              style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "flex-end", color: "var(--primary)", fontSize: "0.85rem", fontWeight: "700", marginBottom: "1.5rem", textDecoration: "none" }}
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "flex-end", color: "#3b82f6", fontSize: "0.85rem", fontWeight: "700", marginBottom: "1.5rem", textDecoration: "none" }}
             >
               Go to Document Verification <ArrowRight size={16} />
             </motion.a>
           )}
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", fontSize: "0.85rem", fontWeight: "700" }}>
             <span style={{ color: "#6b7280" }}>Upload Progress</span>
-            <span style={{ color: "var(--primary)" }}>{progress}% Complete</span>
+            <span style={{ color: "#3b82f6" }}>{progress}% Complete</span>
           </div>
           <div style={{ height: "6px", background: "#f3f4f6", borderRadius: "3px", overflow: "hidden" }}>
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              style={{ height: "100%", background: "var(--primary)" }}
+              style={{ height: "100%", background: "#3b82f6" }}
             />
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function SubmissionsPage() {
       {/* --- GRID_HEADER --- */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <FileStack size={22} color="var(--primary)" />
+            <FileStack size={22} color="#3b82f6" />
             <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#111827" }}>Required Documents</h2>
          </div>
           <div style={{ position: "relative", width: "100%", maxWidth: "320px" }}>
@@ -231,8 +231,8 @@ export default function SubmissionsPage() {
                 <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "2rem", lineHeight: "1.5" }}>{doc.desc}</p>
                 
                 {isUploaded && uploadInfo.remarks && (
-                  <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "#f8fafc", borderRadius: "8px", borderLeft: "3px solid var(--primary)", fontSize: "0.8rem", display: "flex", gap: "0.75rem" }}>
-                     <Info size={16} color="var(--primary)" style={{ flexShrink: 0, marginTop: "0.1rem" }} />
+                  <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "#f8fafc", borderRadius: "8px", borderLeft: "3px solid #3b82f6", fontSize: "0.8rem", display: "flex", gap: "0.75rem" }}>
+                     <Info size={16} color="#3b82f6" style={{ flexShrink: 0, marginTop: "0.1rem" }} />
                      <div>
                         <p style={{ fontWeight: "700", color: "#1e293b", marginBottom: "0.2rem" }}>Staff Feedback</p>
                         <p style={{ color: "#475569", lineHeight: "1.4" }}>{uploadInfo.remarks}</p>
@@ -245,7 +245,7 @@ export default function SubmissionsPage() {
                 {doc.type === "Template" && !isUploaded ? (
                   <button 
                     onClick={() => handleGenerateTemplate(doc.name)}
-                    style={{ flex: 1, padding: "0.85rem", background: "var(--primary)", color: "white", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", border: "none", cursor: "pointer" }}
+                    style={{ flex: 1, padding: "0.85rem", background: "#3b82f6", color: "white", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", border: "none", cursor: "pointer" }}
                   >
                     Create Form
                   </button>
@@ -255,7 +255,7 @@ export default function SubmissionsPage() {
                     style={{ 
                       flex: 1, 
                       padding: "0.85rem", 
-                      background: isUploaded ? "#f9fafb" : "var(--primary)", 
+                      background: isUploaded ? "#f9fafb" : "#3b82f6", 
                       color: isUploaded ? "#374151" : "white", 
                       borderRadius: "8px",
                       fontSize: "0.85rem", 
