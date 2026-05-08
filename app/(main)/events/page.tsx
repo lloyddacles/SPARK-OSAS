@@ -59,12 +59,13 @@ export default function EventsPage() {
     <div style={{ width: "100%" }}>
       
       {/* Institutional Header */}
-      <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>NETWORK: INSTITUTIONAL FEED</p>
-          <h1 style={{ fontSize: "3rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-            BROADCAST <span style={{ color: "var(--primary)" }}>COMMAND</span>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Communication</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>Announcements</span>
           </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "450px", lineHeight: "1.5" }}>Stay updated with the latest news, events, and alerts from the OSAS office.</p>
         </div>
         <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
           {["Feed", "Admin"].map((tab, i) => (
@@ -84,7 +85,7 @@ export default function EventsPage() {
                   letterSpacing: "0.1em"
                 }}
               >
-                0{i+1}_ {tab === "Feed" ? "CENTRAL STREAM" : "COMMAND CONSOLE"}
+                {tab === "Feed" ? "All Announcements" : "Create New"}
               </button>
             )
           ))}
@@ -98,7 +99,7 @@ export default function EventsPage() {
               {announcements.length === 0 ? (
                 <div className="sapphire-card" style={{ padding: "8rem", textAlign: "center" }}>
                    <Radio size={48} color="var(--primary)" style={{ opacity: 0.1, margin: "0 auto 2rem" }} />
-                   <p style={{ fontSize: "0.75rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>NO_ACTIVE_BROADCASTS</p>
+                   <p style={{ fontSize: "0.85rem", fontWeight: "600", color: "var(--text-dim)" }}>No announcements yet.</p>
                 </div>
               ) : announcements.map((ann, i) => (
                 <motion.div 
@@ -140,7 +141,7 @@ export default function EventsPage() {
                       </span>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-dim)" }}>
                          <Clock size={12} />
-                         <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>STAMPED: {ann.date}</span>
+                         <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>{ann.date}</span>
                       </div>
                     </div>
                   </div>
@@ -150,14 +151,14 @@ export default function EventsPage() {
                   
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: "2rem", borderTop: "1px solid var(--border-dim)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "1rem", color: "var(--text-dim)", fontSize: "0.65rem", fontWeight: "900" }}>
-                      <User size={14} color="var(--primary)" /> ORIGIN: <span style={{ color: "var(--text-main)" }}>{ann.author.toUpperCase()}</span>
+                      <User size={14} color="var(--primary)" /> Posted by: <span style={{ color: "var(--text-main)" }}>{ann.author}</span>
                     </div>
                     {isOSAS && (
                       <button 
                         onClick={() => deleteAnnouncement(ann.id)}
                         style={{ padding: "0.5rem 1rem", background: "rgba(239, 68, 68, 0.05)", border: "1px solid rgba(239, 68, 68, 0.2)", color: "#ef4444", fontSize: "0.6rem", fontWeight: "900", cursor: "pointer", letterSpacing: "0.1em" }}
                       >
-                        TERMINATE BROADCAST
+                        Delete
                       </button>
                     )}
                   </div>
@@ -168,27 +169,27 @@ export default function EventsPage() {
         ) : (
           <motion.div key="admin" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}>
             <ProcessGuide 
-                title="Institutional Broadcasting Protocol"
+                title="How to Post an Announcement"
                 steps={[
-                   { title: "Select Category", desc: "Define the broadcast type (Urgent, News, Academic) to set the priority level and visual signature.", icon: <Filter size={14} /> },
-                   { title: "Draft Headline", desc: "Create a high-clarity title that immediately informs the campus community.", icon: <Megaphone size={14} /> },
-                   { title: "Compose Payload", desc: "Provide detailed information, links, or instructions within the transmission body.", icon: <Info size={14} /> },
-                   { title: "Execute Broadcast", desc: "Transmit the announcement to the central stream for immediate institutional visibility.", icon: <Radio size={14} /> }
+                   { title: "Pick a Category", desc: "Choose the type: News, Event, Academic, Alert, etc.", icon: <Filter size={14} /> },
+                   { title: "Write a Title", desc: "Create a clear, descriptive title for your announcement.", icon: <Megaphone size={14} /> },
+                   { title: "Add Details", desc: "Write the full message with any relevant details.", icon: <Info size={14} /> },
+                   { title: "Post It", desc: "Hit the post button to publish it for everyone to see.", icon: <Radio size={14} /> }
                 ]}
              />
             <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "3rem", alignItems: "start" }}>
               {/* COMPOSER */}
               <div className="sapphire-card" style={{ padding: "4rem" }}>
-                <div style={{ marginBottom: "3.5rem" }}>
-                   <p style={{ color: "var(--primary)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>PROTOCOL: BROADCAST_INIT</p>
+                <div style={{ marginBottom: "2.5rem" }}>
                    <h2 style={{ fontSize: "1.25rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                      INITIALIZE TRANSMISSION
+                      New Announcement
                    </h2>
+                   <p style={{ fontSize: "0.8rem", color: "var(--text-dim)", marginTop: "0.5rem" }}>Fill out the form below and post it for everyone to see.</p>
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ display: "grid", gap: "2.5rem" }}>
                   <div>
-                    <label style={{ display: "block", marginBottom: "1.25rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>SELECT TRANSMISSION CATEGORY</label>
+                    <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.8rem", fontWeight: "700", color: "var(--text-dim)" }}>Category</label>
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
                       {["News", "Event", "Academic", "System", "Alert", "Urgent"].map((cat) => (
                         <button 
@@ -214,25 +215,25 @@ export default function EventsPage() {
                   </div>
                   
                   <div>
-                    <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>TRANSMISSION HEADLINE</label>
+                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.8rem", fontWeight: "700", color: "var(--text-dim)" }}>Title</label>
                     <input 
                       required value={title} onChange={e => setTitle(e.target.value)} 
-                      placeholder="ENTER BROADCAST TITLE..."
-                      style={{ width: "100%", padding: "1.25rem", fontSize: "0.9rem", fontWeight: "700", background: "var(--bg-accent)" }} 
+                      placeholder="Enter a title..."
+                      style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "700", background: "var(--bg-accent)" }} 
                     />
                   </div>
 
                   <div>
-                    <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>TRANSMISSION PAYLOAD</label>
+                    <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.8rem", fontWeight: "700", color: "var(--text-dim)" }}>Message</label>
                     <textarea 
                       required value={content} onChange={e => setContent(e.target.value)} 
-                      placeholder="ENTER BROADCAST DETAILS..." rows={8}
-                      style={{ width: "100%", padding: "1.25rem", fontSize: "0.9rem", fontWeight: "700", background: "var(--bg-accent)", lineHeight: "1.8" }} 
+                      placeholder="Write your announcement details here..." rows={8}
+                      style={{ width: "100%", padding: "1rem", fontSize: "0.9rem", fontWeight: "700", background: "var(--bg-accent)", lineHeight: "1.8" }} 
                     />
                   </div>
 
-                  <button type="submit" className="btn-cyan" style={{ padding: "1.5rem", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "1.5rem" }}>
-                    EXECUTE BROADCAST TRANSMISSION <ArrowRight size={20} />
+                  <button type="submit" className="btn-cyan" style={{ padding: "1.25rem", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
+                    Post Announcement <ArrowRight size={18} />
                   </button>
                 </form>
               </div>
@@ -240,16 +241,16 @@ export default function EventsPage() {
               {/* ACTIVE TRANSMISSIONS MONITOR */}
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
-                   <h3 style={{ fontSize: "0.8rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.1em" }}>ACTIVE BROADCAST NODES</h3>
-                   <span style={{ fontSize: "0.55rem", fontWeight: "900", color: "#10b981", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <Activity size={10} /> LIVE_STREAM_ACTIVE
+                   <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "var(--text-dim)" }}>Published Announcements</h3>
+                   <span style={{ fontSize: "0.7rem", fontWeight: "700", color: "#10b981", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <Activity size={10} /> Live
                    </span>
                 </div>
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
                   {announcements.length === 0 ? (
                     <div style={{ padding: "4rem", textAlign: "center", background: "var(--bg-surface)" }}>
-                       <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)", letterSpacing: "0.2em" }}>NO_NODES_DETECTED</p>
+                       <p style={{ fontSize: "0.8rem", fontWeight: "600", color: "var(--text-dim)" }}>No announcements posted yet.</p>
                     </div>
                   ) : announcements.map(ann => (
                     <div key={ann.id} style={{ background: "var(--bg-surface)", padding: "1.5rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -257,7 +258,7 @@ export default function EventsPage() {
                          <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: getCategoryColor(ann.category), boxShadow: `0 0 10px ${getCategoryColor(ann.category)}` }} />
                          <div>
                             <h4 style={{ fontWeight: "900", fontSize: "0.85rem", color: "var(--text-main)" }}>{ann.title.toUpperCase()}</h4>
-                            <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.25rem", letterSpacing: "0.05em" }}>{ann.date} • TYPE: {ann.category.toUpperCase()}</p>
+                            <p style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--text-dim)", marginTop: "0.25rem" }}>{ann.date} · {ann.category}</p>
                          </div>
                       </div>
                       <button 
@@ -271,9 +272,9 @@ export default function EventsPage() {
                 </div>
 
                 <div className="sapphire-card" style={{ marginTop: "3rem", background: "rgba(255, 255, 255, 0.02)" }}>
-                   <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "1rem" }}>TRANSMISSION_PROTOCOL</p>
-                   <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.8" }}>
-                      All broadcasts are cryptographically signed by the originating administrator. Urgent alerts bypass normal notification filters.
+                   <p style={{ fontSize: "0.65rem", fontWeight: "700", color: "var(--primary)", marginBottom: "0.75rem" }}>Note</p>
+                   <p style={{ fontSize: "0.75rem", color: "var(--text-dim)", fontWeight: "600", lineHeight: "1.8" }}>
+                      All announcements are visible to the entire campus community. Urgent alerts are highlighted with a red badge.
                    </p>
                 </div>
               </div>

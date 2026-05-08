@@ -356,18 +356,18 @@ export default function ScholarshipsClient() {
          {/* Sapphire Header */}
          <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
             <div>
-               <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>SCHOLARSHIP PORTAL</p>
+               <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>Scholarships</p>
                <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
                   SCHOLAR <span style={{ color: "var(--primary)" }}>SHIPS</span>
                </h1>
             </div>
             <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
                <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Student" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Student" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Student" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-                  STUDENT PORTAL
+                  For Students
                </button>
                {isStaff && (
                   <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "OSAS" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "OSAS" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "OSAS" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-                     OSAS ADMIN
+                     For Staff
                   </button>
                )}
             </div>
@@ -490,7 +490,7 @@ export default function ScholarshipsClient() {
 
                            <form onSubmit={handleApply} style={{ display: "grid", gap: "2.5rem" }}>
                               <div>
-                                 <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>APPLICANT IDENTITY</label>
+                                 <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Your Name</label>
                                  <input required value={studentName} onChange={e => setStudentName(e.target.value)} placeholder="ENTER YOUR FULL NAME..." style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700" }} />
                               </div>
 
@@ -510,7 +510,7 @@ export default function ScholarshipsClient() {
                                              </div>
                                              {isVerified && (
                                                 <div style={{ background: "rgba(16, 185, 129, 0.1)", color: "#10b981", fontSize: "0.5rem", fontWeight: "900", padding: "0.25rem 0.5rem", borderRadius: "2px" }}>
-                                                   VAULT SYNCED
+                                                   Verified
                                                 </div>
                                              )}
                                           </div>
@@ -550,7 +550,7 @@ export default function ScholarshipsClient() {
                </div>
 
                <ProcessGuide
-                  title="OSAS Scholarship Administration Protocol"
+                  title="How Scholarship Review Works"
                   steps={[
                      { title: "Configure Batches", desc: "Define the scholarship cycle timeline (Start/End dates) in 'MANAGE BATCHES' to enable student applications.", icon: <Calendar size={14} color="var(--text-main)" /> },
                      { title: "Manage Programs", desc: "Update scholarship providers and specific program requirements in 'MANAGE PROGRAMS'.", icon: <Database size={14} color="var(--text-main)" /> },
@@ -708,7 +708,7 @@ export default function ScholarshipsClient() {
                            {selectedApps.length > 0 && (
                               <div style={{ marginTop: "2rem" }}>
                                  <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)", background: "rgba(0, 229, 255, 0.02)" }}>
-                                    <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>BATCH COMMAND CENTER</h3>
+                                    <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>Batch Actions</h3>
                                     <div style={{ display: "grid", gap: "1rem" }}>
                                        <div style={{ display: "flex", gap: "1rem" }}>
                                           <select
@@ -743,7 +743,7 @@ export default function ScholarshipsClient() {
                            <div style={{ marginTop: "2rem" }}>
                               <div className="sapphire-card">
                                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
-                                    <h3 style={{ fontSize: "0.75rem", fontWeight: "900" }}>SCHOLARSHIP AUDIT LOG</h3>
+                                    <h3 style={{ fontSize: "0.75rem", fontWeight: "900" }}>Recent Activity</h3>
                                     <Activity size={14} color="var(--primary)" />
                                  </div>
                                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxHeight: "300px", overflowY: "auto", paddingRight: "0.5rem" }}>
@@ -771,7 +771,7 @@ export default function ScholarshipsClient() {
                {osasView === "Programs" && (
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem" }}>
                      <div>
-                        <h2 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>OFFICIAL PROGRAMS</h2>
+                        <h2 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem" }}>All Programs</h2>
                         <div style={{ display: "grid", gap: "1.5rem" }}>
                            {scholarshipPrograms.map(prog => (
                               <div key={prog.id} className="sapphire-card" style={{ borderLeft: prog.status === "Archived" ? "4px solid var(--text-dim)" : "4px solid var(--primary)" }}>

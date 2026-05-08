@@ -184,23 +184,24 @@ export default function OrganizationsPage() {
       {/* Sapphire Header */}
       <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>ORGANIZATION COMMAND</p>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-            CLUBS & <span style={{ color: "var(--primary)" }}>GUILDS</span>
+          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Life</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
+            <span style={{ color: "var(--primary)" }}>Organizations</span>
           </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Manage student clubs, propose activities, and track approvals.</p>
         </div>
         <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
           <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Student" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Student" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Student" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-            GUILD STATION
+            My Organization
           </button>
           {isAdviser && (
             <button onClick={() => setActiveTab("Adviser")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Adviser" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Adviser" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Adviser" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-              ADVISER PORTAL
+              Adviser View
             </button>
           )}
           {isOSAS && (
             <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "OSAS" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "OSAS" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "OSAS" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
-              OSAS COMMAND
+              OSAS Review
             </button>
           )}
         </div>
@@ -210,18 +211,18 @@ export default function OrganizationsPage() {
         {activeTab === "Student" && (
           <motion.div key="student" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
              <ProcessGuide 
-                title="Guild Leadership Roadmap"
+                title="How Activity Proposals Work"
                 steps={[
-                   { title: "Select Guild", desc: "Access your recognized organization's command station to manage operations.", icon: <Building2 size={14} /> },
-                   { title: "Draft Proposal", desc: "Define project objectives, budget, and timeline for your upcoming activity.", icon: <FileText size={14} /> },
-                   { title: "Faculty Endorsement", desc: "Transmit your proposal for review and endorsement by your faculty adviser.", icon: <ShieldCheck size={14} /> },
-                   { title: "OSAS Finalization", desc: "Monitor your activity registry until official OSAS Executive approval is granted.", icon: <CheckCircle2 size={14} /> }
+                   { title: "View Your Org", desc: "Access your organization's page to see activities and propose new ones.", icon: <Building2 size={14} /> },
+                   { title: "Submit a Proposal", desc: "Fill in the activity details — title, date, budget, and venue.", icon: <FileText size={14} /> },
+                   { title: "Adviser Review", desc: "Your faculty adviser reviews and endorses the proposal.", icon: <ShieldCheck size={14} /> },
+                   { title: "OSAS Approval", desc: "OSAS gives the final approval for your activity to proceed.", icon: <CheckCircle2 size={14} /> }
                 ]}
              />
              {!userOrg ? (
                <div className="sapphire-card" style={{ padding: "4rem", textAlign: "center" }}>
                   <Building2 size={48} style={{ margin: "0 auto 2rem", opacity: 0.1 }} />
-                  <h3 style={{ fontSize: "1.1rem", fontWeight: "900" }}>NO ACTIVE GUILD AFFILIATION</h3>
+                  <h3 style={{ fontSize: "1.1rem", fontWeight: "900" }}>No organization found</h3>
                   <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", marginTop: "1rem" }}>You are not registered as a president of any recognized organization.</p>
                </div>
              ) : (
@@ -241,7 +242,7 @@ export default function OrganizationsPage() {
                            )}
                            <div>
                               <h2 style={{ fontSize: "1.5rem", fontWeight: "900" }}>{userOrg.name.toUpperCase()}</h2>
-                              <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.3em" }}>{userOrg.acronym} | {userOrg.category.toUpperCase()} UNIT</p>
+                              <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em" }}>{userOrg.acronym} | {userOrg.category} Organization</p>
                            </div>
                         </div>
                         <div style={{ textAlign: "right" }}>
@@ -253,9 +254,9 @@ export default function OrganizationsPage() {
                      {/* Activity Timeline */}
                      <div className="sapphire-card">
                         <div style={{ padding: "2rem", borderBottom: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                           <h3 style={{ fontSize: "0.85rem", fontWeight: "900" }}>ACTIVITY REGISTRY</h3>
+                           <h3 style={{ fontSize: "0.85rem", fontWeight: "900" }}>Activity History</h3>
                            <button onClick={() => setIsProposing(true)} className="btn-cyan" style={{ padding: "0.5rem 1.25rem", fontSize: "0.65rem" }}>
-                              <Plus size={14} /> PROPOSE PROJECT
+                              <Plus size={14} /> New Activity
                            </button>
                         </div>
                         <div style={{ padding: "1rem" }}>
@@ -291,20 +292,20 @@ export default function OrganizationsPage() {
                   <div style={{ display: "grid", gap: "2.5rem", alignContent: "start" }}>
                      <div className="sapphire-card" style={{ padding: "2rem" }}>
                         <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                           <Award size={18} color="var(--primary)" /> CREDENTIALS
+                           <Award size={18} color="var(--primary)" /> Recognition
                         </h3>
                         <div style={{ display: "grid", gap: "1.5rem" }}>
                            <div style={{ padding: "1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", borderRadius: "4px" }}>
-                              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.5rem" }}>RECOGNITION STATUS</p>
-                              <p style={{ fontSize: "0.85rem", fontWeight: "900" }}>CERTIFIED RSO</p>
-                              <button onClick={() => setViewingCert(true)} style={{ marginTop: "1.5rem", width: "100%", padding: "0.75rem", background: "none", border: "1px solid var(--primary)", color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>VIEW CERTIFICATE</button>
+                              <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", marginBottom: "0.5rem" }}>Status</p>
+                              <p style={{ fontSize: "0.85rem", fontWeight: "900" }}>Recognized Student Org</p>
+                              <button onClick={() => setViewingCert(true)} style={{ marginTop: "1.5rem", width: "100%", padding: "0.75rem", background: "none", border: "1px solid var(--primary)", color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>View Certificate</button>
                            </div>
                         </div>
                      </div>
 
                      <div className="sapphire-card" style={{ padding: "2rem" }}>
                         <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                           <Activity size={18} color="var(--primary)" /> GUILD HEALTH
+                           <Activity size={18} color="var(--primary)" /> Activity Stats
                         </h3>
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                            <div style={{ textAlign: "center", padding: "1.5rem", background: "var(--bg-accent)" }}>
@@ -327,7 +328,7 @@ export default function OrganizationsPage() {
           <motion.div key="osas" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
              <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", borderBottom: "1px solid var(--border-dim)" }}>
                 <button onClick={() => setOsasSubTab("Activities")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Activities" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Activities" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>ACTIVITY REVIEW</button>
-                <button onClick={() => setOsasSubTab("Manage")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Manage" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Manage" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>GUILD DIRECTORY</button>
+                <button onClick={() => setOsasSubTab("Manage")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Manage" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Manage" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>ALL ORGANIZATIONS</button>
              </div>
 
              <ProcessGuide 
@@ -376,7 +377,7 @@ export default function OrganizationsPage() {
                           {selectedAct ? (
                             <div className="sapphire-card" style={{ padding: "2.5rem", position: "sticky", top: "2rem" }}>
                                <div style={{ marginBottom: "2.5rem" }}>
-                                  <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>PROPOSAL ANALYSIS</p>
+                                  <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.2em", marginBottom: "0.5rem" }}>Proposal Details</p>
                                   <h3 style={{ fontSize: "1.25rem", fontWeight: "900" }}>{selectedAct.title}</h3>
                                   <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", fontWeight: "700", marginTop: "0.5rem" }}>Submitted by {proposingOrg?.name}</p>
                                </div>
@@ -400,7 +401,7 @@ export default function OrganizationsPage() {
                                </div>
 
                                <div style={{ marginBottom: "2.5rem" }}>
-                                  <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>OSAS EXECUTIVE REMARKS</label>
+                                  <label style={{ display: "block", marginBottom: "1rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Your feedback</label>
                                   <textarea 
                                      id="osas-remarks"
                                      placeholder="ENTER FEEDBACK FOR THE ORGANIZATION..."
@@ -467,14 +468,14 @@ export default function OrganizationsPage() {
                        <div style={{ position: "relative", flex: 1 }}>
                           <Search size={18} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-dim)" }} />
                           <input 
-                            placeholder="SEARCH GUILD NODES (NAME OR ACRONYM)..." 
+                            placeholder="Search organizations by name or acronym..." 
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                             style={{ width: "100%", padding: "1rem 1rem 1rem 3.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.75rem", fontWeight: "900" }} 
                           />
                        </div>
                        <button onClick={() => { setIsAddingOrg(true); resetOrgForm(); }} className="btn-cyan" style={{ padding: "1rem 2rem", whiteSpace: "nowrap" }}>
-                          <Plus size={16} /> REGISTER UNIT
+                          <Plus size={16} /> Add Organization
                        </button>
                     </div>
 
@@ -482,12 +483,12 @@ export default function OrganizationsPage() {
                     {(isAddingOrg || editingOrgId) && (
                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="sapphire-card" style={{ padding: "3rem", marginBottom: "3rem", border: "1px solid var(--primary)" }}>
                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3rem" }}>
-                            <h3 style={{ fontSize: "1rem", fontWeight: "900" }}>{editingOrgId ? "MODIFY UNIT DEFINITION" : "REGISTER NEW UNIT"}</h3>
+                            <h3 style={{ fontSize: "1rem", fontWeight: "900" }}>{editingOrgId ? "Edit Organization" : "Add New Organization"}</h3>
                             <button onClick={() => { setIsAddingOrg(false); setEditingOrgId(null); }} style={{ color: "var(--text-dim)", background: "none", border: "none", cursor: "pointer" }}><X size={20} /></button>
                          </div>
                          <form onSubmit={editingOrgId ? (e) => { e.preventDefault(); handleSaveEdit(); } : handleAddOrg} style={{ display: "grid", gap: "2.5rem" }}>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "2rem" }}>
-                               <input required placeholder="GUILD NAME..." value={orgName} onChange={e => setOrgName(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
+                               <input required placeholder="Organization name..." value={orgName} onChange={e => setOrgName(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                                <input required placeholder="ACRONYM..." value={orgAcronym} onChange={e => setOrgAcronym(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700" }} />
                                <select value={orgCategory} onChange={e => setOrgCategory(e.target.value as any)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
                                   <option value="Academic">Academic</option>
@@ -505,7 +506,7 @@ export default function OrganizationsPage() {
                                </div>
                             </div>
                             <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.25rem" }}>
-                               <Save size={18} /> {editingOrgId ? "PERSIST UNIT MODIFICATIONS" : "EXECUTE UNIT REGISTRATION"}
+                               <Save size={18} /> {editingOrgId ? "Save Changes" : "Add Organization"}
                             </button>
                          </form>
                        </motion.div>
@@ -633,7 +634,7 @@ export default function OrganizationsPage() {
                   </div>
                   <div style={{ padding: "3rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}>
                      <div>
-                        <h4 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem", color: "var(--text-dim)" }}>OFFICER DEFINTION</h4>
+                        <h4 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem", color: "var(--text-dim)" }}>Leadership</h4>
                         <div style={{ display: "grid", gap: "1rem" }}>
                            <div style={{ padding: "1.25rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)" }}>
                               <p style={{ fontSize: "0.5rem", fontWeight: "900", color: "var(--text-dim)" }}>PRESIDENT</p>
@@ -646,7 +647,7 @@ export default function OrganizationsPage() {
                         </div>
                      </div>
                      <div>
-                        <h4 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem", color: "var(--text-dim)" }}>ACTIVITY LEDGER</h4>
+                        <h4 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem", color: "var(--text-dim)" }}>Recent Activities</h4>
                         <div style={{ display: "grid", gap: "0.5rem" }}>
                            {activities.filter(a => a.orgId === viewingOrg.id).slice(0, 4).map(act => (
                               <div key={act.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem", borderBottom: "1px solid var(--border-dim)" }}>
@@ -708,7 +709,7 @@ export default function OrganizationsPage() {
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3.5rem" }}>
                      <div>
                         <p style={{ fontSize: "0.65rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.3em", marginBottom: "0.5rem" }}>ACTIVITY PROPOSAL</p>
-                        <h2 style={{ fontSize: "1.5rem", fontWeight: "900" }}>PROJECT DEFINITION</h2>
+                        <h2 style={{ fontSize: "1.5rem", fontWeight: "900" }}>Propose a New Activity</h2>
                      </div>
                      <button onClick={() => setIsProposing(false)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer" }}><X size={24} /></button>
                   </div>
@@ -716,7 +717,7 @@ export default function OrganizationsPage() {
                   {isSuccess ? (
                      <div style={{ textAlign: "center", padding: "4rem" }}>
                         <CheckCircle2 size={64} color="#10b981" style={{ margin: "0 auto 2rem" }} />
-                        <h3 style={{ fontSize: "1.25rem", fontWeight: "900" }}>PROPOSAL TRANSMITTED</h3>
+                        <h3 style={{ fontSize: "1.25rem", fontWeight: "900" }}>Proposal Submitted!</h3>
                         <p style={{ color: "var(--text-dim)", marginTop: "1rem", fontSize: "0.8rem" }}>Your activity has been sent for Adviser and OSAS review.</p>
                      </div>
                   ) : (
@@ -731,7 +732,7 @@ export default function OrganizationsPage() {
                            <input required placeholder="TARGET VENUE..." value={actVenue} onChange={e => setActVenue(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem" }} />
                            <input required placeholder="EXPECTED PARTICIPANTS..." value={actParticipants} onChange={e => setActParticipants(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.8rem" }} />
                         </div>
-                        <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.5rem", marginTop: "1rem" }}>TRANSMIT PROPOSAL</button>
+                        <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.5rem", marginTop: "1rem" }}>Submit Proposal</button>
                      </form>
                   )}
                </motion.div>
