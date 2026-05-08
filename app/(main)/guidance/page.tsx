@@ -90,9 +90,9 @@ export default function GuidancePortal() {
       
       {/* Header */}
       <div style={{ marginBottom: "4rem" }}>
-        <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Guidance Office</p>
+        <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Guidance Office</p>
         <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
-          <span style={{ color: "var(--primary)" }}>Guidance Office</span>
+          Guidance <span style={{ color: "#3b82f6" }}>Office</span>
         </h1>
         <p style={{ marginTop: "0.5rem", fontSize: "0.95rem", color: "#6b7280", maxWidth: "600px", lineHeight: "1.6" }}>Manage counseling sessions, Good Moral clearances, and student referrals to ensure student well-being.</p>
       </div>
