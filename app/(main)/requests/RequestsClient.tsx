@@ -7,8 +7,6 @@ import {
   Plus, 
   Clock, 
   CheckCircle2, 
-  AlertCircle, 
-  ArrowRight, 
   ArrowLeft, 
   UploadCloud, 
   Settings, 
@@ -18,7 +16,6 @@ import {
   FileSearch,
   CheckSquare,
   Activity,
-  Layers,
   X,
   Edit2,
   Trash2,
@@ -75,7 +72,6 @@ export default function RequestsClient() {
 
   // Issuance State
   const [isIssuing, setIsIssuing] = useState(false);
-  const [uploadingCert, setUploadingCert] = useState<string | null>(null);
 
   const [confirmConfig, setConfirmConfig] = useState<{
     isOpen: boolean;
@@ -172,26 +168,25 @@ export default function RequestsClient() {
   const selectedService = (serviceTypes || []).find(s => s.id === selectedServiceId);
   const selectedRequest = (serviceRequests || []).find(r => r.id === selectedRequestId);
   const isGoodMoralReq = selectedRequest?.type.toLowerCase().includes("good moral");
-  const issuedCert = (issuedCertificates || []).find(c => c.requestId === selectedRequestId);
 
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
       
-      {/* Sapphire Header */}
-      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+      {/* Analytics Header */}
+      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Services</p>
-          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
-            <span style={{ color: "var(--primary)" }}>Service Requests</span>
+          <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Services</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
+            Service <span style={{ color: "#3b82f6" }}>Requests</span>
           </h1>
           <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Request documents like Good Moral certificates, clearances, and other OSAS services.</p>
         </div>
-        <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)", padding: "1px" }}>
-          <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "Student" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "Student" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "Student" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
+        <div style={{ display: "flex", gap: "0.5rem", background: "#f1f5f9", padding: "0.5rem", borderRadius: "12px" }}>
+          <button onClick={() => setActiveTab("Student")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", background: activeTab === "Student" ? "white" : "transparent", color: activeTab === "Student" ? "#3b82f6" : "#64748b", border: "none", borderRadius: "8px", boxShadow: activeTab === "Student" ? "0 2px 4px rgba(0,0,0,0.05)" : "none", cursor: "pointer", transition: "all 0.2s" }}>
             For Students
           </button>
           {isStaff && (
-            <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.65rem", fontWeight: "900", background: activeTab === "OSAS" ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)", color: activeTab === "OSAS" ? "var(--primary)" : "var(--text-dim)", border: "none", borderBottom: activeTab === "OSAS" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>
+            <button onClick={() => setActiveTab("OSAS")} style={{ padding: "0.75rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", background: activeTab === "OSAS" ? "white" : "transparent", color: activeTab === "OSAS" ? "#3b82f6" : "#64748b", border: "none", borderRadius: "8px", boxShadow: activeTab === "OSAS" ? "0 2px 4px rgba(0,0,0,0.05)" : "none", cursor: "pointer", transition: "all 0.2s" }}>
               For Staff
             </button>
           )}
@@ -200,66 +195,71 @@ export default function RequestsClient() {
 
       <AnimatePresence mode="wait">
         {activeTab === "Student" && (
-          <motion.div key="student" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
+          <motion.div key="student" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
             {!isApplying ? (
               <div>
                 <ProcessGuide 
                   title="How to Request a Document or Service"
                   steps={[
-                    { title: "Start a Request", desc: "Click the 'New Request' button below to begin.", icon: <Plus size={14} color="var(--text-main)" /> },
-                    { title: "Pick a Service", desc: "Choose the document you need (e.g. Good Moral, Clearance) from the dropdown.", icon: <FileText size={14} color="var(--text-main)" /> },
-                    { title: "Check Requirements", desc: "Confirm you have the needed clearances checked off before submitting.", icon: <CheckCircle2 size={14} color="var(--text-main)" /> },
-                    { title: "Wait & Download", desc: "Once OSAS processes your request, you can download the certificate from the list.", icon: <Download size={14} color="var(--text-main)" /> }
+                    { title: "Start a Request", desc: "Click the 'New Request' button below to begin.", icon: <Plus size={16} /> },
+                    { title: "Pick a Service", desc: "Choose the document you need (e.g. Good Moral, Clearance) from the dropdown.", icon: <FileText size={16} /> },
+                    { title: "Check Requirements", desc: "Confirm you have the needed clearances checked off before submitting.", icon: <CheckCircle2 size={16} /> },
+                    { title: "Wait & Download", desc: "Once OSAS processes your request, you can download the certificate from the list.", icon: <Download size={16} /> }
                   ]}
-                  themeColor="var(--primary)"
                 />
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
-                  <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <Activity size={18} color="var(--primary)" /> My Requests
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+                  <h2 style={{ fontSize: "1.1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.75rem", color: "#1e293b" }}>
+                    <Activity size={20} color="#3b82f6" /> My Requests
                   </h2>
-                  <button onClick={() => { setIsApplying(true); setIsSuccess(false); }} className="btn-cyan" style={{ padding: "0.75rem 2rem" }}>
+                  <button onClick={() => { setIsApplying(true); setIsSuccess(false); }} style={{ padding: "0.75rem 1.5rem", background: "#3b82f6", color: "white", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem", border: "none", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
                     <Plus size={16} /> New Request
                   </button>
                 </div>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
-                  {(serviceRequests || []).filter(r => isStudent ? r.studentName === currentUser?.name : true).reverse().map((req) => {
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {(serviceRequests || []).filter(r => isStudent ? r.studentName === currentUser?.name : true).length === 0 ? (
+                     <div style={{ padding: "4rem", textAlign: "center", background: "white", borderRadius: "16px", border: "1px dashed #cbd5e1" }}>
+                        <FileText size={32} color="#cbd5e1" style={{ margin: "0 auto 1rem" }} />
+                        <p style={{ fontSize: "0.9rem", fontWeight: "600", color: "#64748b" }}>You haven't made any requests yet.</p>
+                     </div>
+                  ) : (serviceRequests || []).filter(r => isStudent ? r.studentName === currentUser?.name : true).reverse().map((req) => {
                     const cert = (issuedCertificates || []).find(c => c.requestId === req.id);
                     return (
-                      <div key={req.id} style={{ background: "var(--bg-surface)", padding: "1.5rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-                          <div style={{ width: "40px", height: "40px", background: "var(--bg-accent)", borderRadius: "0px", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)", border: "1px solid var(--border-dim)" }}>
-                            <FileText size={18} />
+                      <div key={req.id} style={{ background: "white", padding: "1.5rem 2rem", borderRadius: "12px", border: "1px solid #f3f4f6", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                          <div style={{ width: "48px", height: "48px", background: "#eff6ff", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6", border: "1px solid #bfdbfe" }}>
+                            <FileText size={20} />
                           </div>
                           <div>
-                            <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.25rem" }}>#{req.id.slice(0, 6)}</p>
-                            <h3 style={{ fontSize: "0.9rem", fontWeight: "900", color: "var(--text-main)" }}>{req.type.toUpperCase()}</h3>
+                            <h3 style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.25rem" }}>{req.type}</h3>
+                            <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#64748b" }}>ID: {req.id.slice(0, 8)}</p>
                           </div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "4rem" }}>
-                          {cert && (
-                            <button className="btn-cyan" style={{ padding: "0.5rem 1rem", fontSize: "0.6rem" }}>
-                              <Download size={14} /> DOWNLOAD CERTIFICATE
-                            </button>
-                          )}
+                        <div style={{ display: "flex", alignItems: "center", gap: "3rem" }}>
                           <div style={{ textAlign: "right" }}>
-                            <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginBottom: "0.25rem" }}>Date</p>
-                            <p style={{ fontSize: "0.75rem", fontWeight: "800" }}>{req.date}</p>
+                            <p style={{ fontSize: "0.7rem", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase", marginBottom: "0.25rem" }}>Date Requested</p>
+                            <p style={{ fontSize: "0.85rem", fontWeight: "700", color: "#1e293b" }}>{req.date}</p>
                           </div>
                           <div style={{ 
                             display: "flex", 
                             alignItems: "center", 
-                            gap: "0.75rem",
-                            color: req.status === "Completed" ? "#10b981" : req.status === "Ready for Pickup" ? "var(--primary)" : "#f59e0b",
-                            fontSize: "0.65rem",
-                            fontWeight: "900",
-                            letterSpacing: "0.05em",
-                            minWidth: "160px",
-                            justifyContent: "flex-end"
+                            gap: "0.5rem",
+                            color: req.status === "Completed" ? "#10b981" : req.status === "Ready for Pickup" ? "#3b82f6" : "#f59e0b",
+                            background: req.status === "Completed" ? "#f0fdf4" : req.status === "Ready for Pickup" ? "#eff6ff" : "#fffbeb",
+                            border: `1px solid ${req.status === "Completed" ? "#bbf7d0" : req.status === "Ready for Pickup" ? "#bfdbfe" : "#fde68a"}`,
+                            padding: "0.5rem 1rem",
+                            borderRadius: "20px",
+                            fontSize: "0.75rem",
+                            fontWeight: "800",
                           }}>
-                            {req.status === "Completed" ? <CheckCircle2 size={14} /> : <Clock size={14} />}
-                            {req.status.toUpperCase()}
+                            {req.status === "Completed" ? <CheckCircle2 size={16} /> : <Clock size={16} />}
+                            {req.status}
                           </div>
+                          {cert && (
+                            <button style={{ padding: "0.5rem 1rem", background: "#3b82f6", color: "white", borderRadius: "8px", border: "none", fontSize: "0.75rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                              <Download size={14} /> Download Certificate
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
@@ -268,26 +268,28 @@ export default function RequestsClient() {
               </div>
             ) : (
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
-                <button onClick={() => setIsApplying(false)} style={{ color: "var(--text-dim)", background: "none", border: "none", marginBottom: "2rem", fontWeight: "900", fontSize: "0.65rem", display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer" }}>
-                  <ArrowLeft size={14} /> RETURN TO LIST
+                <button onClick={() => setIsApplying(false)} style={{ color: "#64748b", background: "none", border: "none", marginBottom: "2rem", fontWeight: "700", fontSize: "0.85rem", display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                  <ArrowLeft size={16} /> Return to list
                 </button>
 
                 {isSuccess ? (
-                  <div className="sapphire-card" style={{ padding: "6rem", textAlign: "center" }}>
-                    <CheckCircle2 size={64} color="#10b981" style={{ margin: "0 auto 2.5rem" }} />
-                    <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "var(--text-main)" }}>Request Submitted!</h2>
-                    <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", fontWeight: "700", marginTop: "1.5rem", maxWidth: "600px", margin: "1.5rem auto 0", lineHeight: "1.8" }}>
-                      Your request has been submitted. You will be notified when it is ready for pickup.
+                  <div style={{ background: "white", borderRadius: "16px", padding: "6rem 3rem", textAlign: "center", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                    <div style={{ width: "80px", height: "80px", background: "#f0fdf4", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 2rem" }}>
+                       <CheckCircle2 size={40} color="#10b981" />
+                    </div>
+                    <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "#1e293b", marginBottom: "1rem" }}>Request Submitted!</h2>
+                    <p style={{ color: "#64748b", fontSize: "1rem", fontWeight: "500", maxWidth: "500px", margin: "0 auto", lineHeight: "1.6" }}>
+                      Your request has been successfully submitted. You will be notified when it is ready for pickup or download.
                     </p>
                   </div>
                 ) : (
-                  <div className="sapphire-card" style={{ maxWidth: "800px", margin: "0 auto", padding: "3rem" }}>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: "900", marginBottom: "0.5rem" }}>Submit a Service Request</h2>
-                    <p style={{ color: "var(--text-dim)", fontSize: "0.7rem", fontWeight: "700", marginBottom: "3rem" }}>Choose the service you need and check off the requirements.</p>
+                  <div style={{ background: "white", borderRadius: "16px", maxWidth: "800px", margin: "0 auto", padding: "3.5rem", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                    <h2 style={{ fontSize: "1.5rem", fontWeight: "900", marginBottom: "0.5rem", color: "#1e293b" }}>Submit a Service Request</h2>
+                    <p style={{ color: "#64748b", fontSize: "0.9rem", fontWeight: "500", marginBottom: "3rem" }}>Choose the service you need and verify the requirements below.</p>
                     
                     <form onSubmit={handleApply}>
                       <div style={{ marginBottom: "2.5rem" }}>
-                        <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>Service Type</label>
+                        <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Service Type</label>
                         <select 
                           required 
                           value={selectedServiceId} 
@@ -295,35 +297,35 @@ export default function RequestsClient() {
                             setSelectedServiceId(e.target.value);
                             setFormRequirements({});
                           }}
-                          style={{ width: "100%", padding: "1rem", fontSize: "0.8rem", fontWeight: "700", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}
+                          style={{ width: "100%", padding: "1.25rem", fontSize: "0.95rem", fontWeight: "600", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", color: "#1e293b", outline: "none" }}
                         >
-                          <option value="">-- Choose a service --</option>
-                          {(serviceTypes || []).map(s => <option key={s.id} value={s.id}>{s.name.toUpperCase()}</option>)}
+                          <option value="">-- Select a service --</option>
+                          {(serviceTypes || []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                         </select>
                       </div>
 
                       {selectedService && (
-                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
-                          <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem", color: "var(--primary)" }}>Required Documents</h3>
-                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--border-dim)", marginBottom: "3rem" }}>
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden" }}>
+                          <h3 style={{ fontSize: "0.9rem", fontWeight: "800", marginBottom: "1.5rem", color: "#1e293b" }}>Required Documents Verification</h3>
+                          <div style={{ display: "grid", gap: "0.75rem", marginBottom: "3rem" }}>
                             {selectedService.requiredDocs.map((doc) => (
-                              <label key={doc} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "var(--bg-surface)", cursor: "pointer" }}>
+                              <label key={doc} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", cursor: "pointer", transition: "all 0.2s" }} className="hover:border-blue-300">
                                 <input 
                                   type="checkbox" 
                                   required
                                   checked={formRequirements[doc] || false} 
                                   onChange={(e) => setFormRequirements({ ...formRequirements, [doc]: e.target.checked })}
-                                  style={{ width: "16px", height: "16px", accentColor: "var(--primary)" }}
+                                  style={{ width: "18px", height: "18px", accentColor: "#3b82f6", cursor: "pointer" }}
                                 />
-                                <span style={{ fontWeight: "700", fontSize: "0.75rem" }}>{doc.toUpperCase()}</span>
+                                <span style={{ fontWeight: "600", fontSize: "0.9rem", color: "#1e293b" }}>{doc}</span>
                               </label>
                             ))}
                           </div>
                         </motion.div>
                       )}
 
-                      <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.25rem" }}>
-                        <UploadCloud size={18} /> Submit Request
+                      <button type="submit" style={{ width: "100%", padding: "1.25rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "12px", fontSize: "1rem", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
+                        <UploadCloud size={20} /> Submit Request
                       </button>
                     </form>
                   </div>
@@ -334,80 +336,86 @@ export default function RequestsClient() {
         )}
 
         {activeTab === "OSAS" && (
-          <motion.div initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             
-            <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", borderBottom: "1px solid var(--border-dim)" }}>
-               <button onClick={() => setOsasSubTab("Queue")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Queue" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Queue" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>Pending Requests</button>
-               {isGuidance && <button onClick={() => setOsasSubTab("Protocol")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Protocol" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Protocol" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>Good Moral Certificate</button>}
-               {!isGuidance && <button onClick={() => setOsasSubTab("Definitions")} style={{ padding: "1rem 2rem", fontSize: "0.7rem", fontWeight: "900", background: "none", border: "none", color: osasSubTab === "Definitions" ? "var(--primary)" : "var(--text-dim)", borderBottom: osasSubTab === "Definitions" ? "2px solid var(--primary)" : "2px solid transparent", cursor: "pointer" }}>Service TypeS</button>}
+            <div style={{ display: "flex", gap: "1rem", marginBottom: "3rem", borderBottom: "1px solid #e2e8f0" }}>
+               <button onClick={() => setOsasSubTab("Queue")} style={{ padding: "1rem 1.5rem", fontSize: "0.9rem", fontWeight: "700", background: "none", border: "none", color: osasSubTab === "Queue" ? "#3b82f6" : "#64748b", borderBottom: osasSubTab === "Queue" ? "2px solid #3b82f6" : "2px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>Pending Requests</button>
+               {isGuidance && <button onClick={() => setOsasSubTab("Protocol")} style={{ padding: "1rem 1.5rem", fontSize: "0.9rem", fontWeight: "700", background: "none", border: "none", color: osasSubTab === "Protocol" ? "#3b82f6" : "#64748b", borderBottom: osasSubTab === "Protocol" ? "2px solid #3b82f6" : "2px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>Good Moral Certificates</button>}
+               {!isGuidance && <button onClick={() => setOsasSubTab("Definitions")} style={{ padding: "1rem 1.5rem", fontSize: "0.9rem", fontWeight: "700", background: "none", border: "none", color: osasSubTab === "Definitions" ? "#3b82f6" : "#64748b", borderBottom: osasSubTab === "Definitions" ? "2px solid #3b82f6" : "2px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>Service Types</button>}
             </div>
 
             <AnimatePresence mode="wait">
                {osasSubTab === "Queue" ? (
-                 <motion.div key="queue" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 350px", gap: "3rem", alignItems: "start" }}>
+                 <motion.div key="queue" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "2.5rem", alignItems: "start" }}>
                        {/* QUEUE */}
-                       <div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-                             <Clock size={18} color="var(--primary)" />
-                             <h2 style={{ fontSize: "0.85rem", fontWeight: "900" }}>ACTIVE Pending Requests</h2>
+                       <div style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", overflow: "hidden" }}>
+                          <div style={{ padding: "2rem", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>
+                             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                <Clock size={18} color="#3b82f6" /> Active Pending Requests
+                             </h3>
                           </div>
-                          <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)" }}>
-                             {(serviceRequests || []).filter(r => r.status !== "Completed").reverse().map(req => (
+                          <div style={{ display: "flex", flexDirection: "column" }}>
+                             {(serviceRequests || []).filter(r => r.status !== "Completed").length === 0 ? (
+                               <div style={{ padding: "4rem", textAlign: "center" }}>
+                                  <CheckSquare size={32} color="#cbd5e1" style={{ margin: "0 auto 1rem" }} />
+                                  <p style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: "500" }}>No pending requests in the queue.</p>
+                               </div>
+                             ) : (serviceRequests || []).filter(r => r.status !== "Completed").reverse().map((req, index) => (
                                <div 
                                  key={req.id} 
                                  onClick={() => setSelectedRequestId(req.id)}
                                  style={{ 
                                    padding: "1.5rem 2rem", 
-                                   background: selectedRequestId === req.id ? "rgba(0, 229, 255, 0.05)" : "var(--bg-surface)",
+                                   background: selectedRequestId === req.id ? "#eff6ff" : "white",
                                    cursor: "pointer", 
-                                   borderLeft: selectedRequestId === req.id ? "2px solid var(--primary)" : "2px solid transparent",
+                                   borderBottom: index !== (serviceRequests || []).filter(r => r.status !== "Completed").length - 1 ? "1px solid #f1f5f9" : "none",
+                                   borderLeft: selectedRequestId === req.id ? "4px solid #3b82f6" : "4px solid transparent",
                                    transition: "all 0.2s"
                                  }}
                                >
-                                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem" }}>
-                                   <h4 style={{ fontWeight: "900", fontSize: "0.9rem" }}>{req.type.toUpperCase()}</h4>
-                                   <span style={{ fontSize: "0.6rem", fontWeight: "900", padding: "0.2rem 0.5rem", background: "var(--bg-accent)", color: "var(--primary)", border: "1px solid var(--border-dim)" }}>
-                                     {req.status.toUpperCase()}
+                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                                   <h4 style={{ fontWeight: "800", fontSize: "1rem", color: "#1e293b" }}>{req.type}</h4>
+                                   <span style={{ fontSize: "0.75rem", fontWeight: "800", padding: "0.3rem 0.8rem", borderRadius: "20px", background: req.status === "Ready for Pickup" ? "#eff6ff" : "#fffbeb", color: req.status === "Ready for Pickup" ? "#3b82f6" : "#d97706", border: `1px solid ${req.status === "Ready for Pickup" ? "#bfdbfe" : "#fde68a"}` }}>
+                                     {req.status}
                                    </span>
                                  </div>
-                                 <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700" }}>{req.studentName} • {req.date}</p>
+                                 <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "600" }}>{req.studentName} • {req.date}</p>
                                </div>
                              ))}
-                             {(serviceRequests || []).filter(r => r.status !== "Completed").length === 0 && (
-                               <p style={{ padding: "4rem", textAlign: "center", fontSize: "0.7rem", color: "var(--text-dim)", background: "var(--bg-surface)" }}>No pending requests in the queue.</p>
-                             )}
                           </div>
                        </div>
 
                        {/* CONTROL PANEL */}
                        <div>
                           {selectedRequestId ? (
-                            <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)", position: "sticky", top: "2rem" }}>
-                               <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "1.5rem" }}>Update Status</h3>
+                            <div style={{ background: "white", padding: "2.5rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", position: "sticky", top: "2rem" }}>
+                               <h3 style={{ fontSize: "1rem", fontWeight: "800", marginBottom: "2rem", color: "#1e293b" }}>Request Processing</h3>
                                
                                {isGoodMoralReq && isGuidance && (
-                                 <div style={{ marginBottom: "2rem", padding: "1.5rem", background: "rgba(0, 229, 255, 0.05)", border: "1px solid var(--primary)" }}>
-                                    <p style={{ fontSize: "0.6rem", fontWeight: "900", marginBottom: "1rem", color: "var(--primary)" }}>Good Moral Actions</p>
-                                    <button onClick={() => {}} className="btn-cyan" style={{ width: "100%", padding: "0.75rem", fontSize: "0.6rem", marginBottom: "0.5rem" }}>
-                                       <Download size={14} /> DOWNLOAD DRAFT
-                                    </button>
-                                    <button onClick={() => setIsIssuing(true)} className="btn-cyan" style={{ width: "100%", padding: "0.75rem", fontSize: "0.6rem", background: "var(--text-main)", color: "var(--bg-surface)" }}>
-                                       <FileUp size={14} /> UPLOAD SIGNED PDF
-                                    </button>
+                                 <div style={{ marginBottom: "2.5rem", padding: "1.5rem", background: "#eff6ff", borderRadius: "12px", border: "1px solid #bfdbfe" }}>
+                                    <p style={{ fontSize: "0.85rem", fontWeight: "800", marginBottom: "1rem", color: "#1e293b" }}>Good Moral Workflow</p>
+                                    <div style={{ display: "grid", gap: "0.75rem" }}>
+                                      <button onClick={() => {}} style={{ width: "100%", padding: "1rem", background: "white", border: "1px solid #3b82f6", color: "#3b82f6", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", cursor: "pointer" }}>
+                                         <Download size={16} /> Download Draft PDF
+                                      </button>
+                                      <button onClick={() => setIsIssuing(true)} style={{ width: "100%", padding: "1rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", cursor: "pointer" }}>
+                                         <FileUp size={16} /> Upload Signed PDF
+                                      </button>
+                                    </div>
                                  </div>
                                )}
 
-                               <div style={{ padding: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", marginBottom: "2rem" }}>
-                                 <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)" }}>Current Status</p>
-                                 <p style={{ fontWeight: "900", color: "var(--primary)", fontSize: "0.8rem", marginTop: "0.4rem" }}>{((serviceRequests || []).find(r => r.id === selectedRequestId)?.status || "Unknown").toUpperCase()}</p>
+                               <div style={{ padding: "1.5rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", marginBottom: "2.5rem" }}>
+                                 <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#64748b", textTransform: "uppercase", marginBottom: "0.5rem" }}>Current Status</p>
+                                 <p style={{ fontWeight: "800", color: "#3b82f6", fontSize: "1.1rem" }}>{((serviceRequests || []).find(r => r.id === selectedRequestId)?.status || "Unknown")}</p>
                                </div>
 
-                               <div style={{ display: "grid", gap: "0.5rem" }}>
+                               <div style={{ display: "grid", gap: "0.75rem" }}>
                                  {[
-                                   { status: "In Progress", icon: <FileSearch size={14} />, label: "Start Processing" },
-                                   { status: "Ready for Pickup", icon: <PackageCheck size={14} />, label: "Ready for Pickup" },
-                                   { status: "Completed", icon: <CheckCircle2 size={14} />, label: "Mark Completed" }
+                                   { status: "In Progress", icon: <FileSearch size={16} />, label: "Mark In Progress" },
+                                   { status: "Ready for Pickup", icon: <PackageCheck size={16} />, label: "Mark Ready for Pickup" },
+                                   { status: "Completed", icon: <CheckCircle2 size={16} />, label: "Mark Completed" }
                                  ].map((btn) => (
                                    <button 
                                      key={btn.status}
@@ -415,43 +423,43 @@ export default function RequestsClient() {
                                        updateRequestStatus(selectedRequestId, btn.status as any);
                                        setSelectedRequestId(null);
                                      }}
-                                     style={{ width: "100%", padding: "1rem", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontSize: "0.65rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer" }}
+                                     style={{ width: "100%", padding: "1.25rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "12px", color: "#1e293b", fontSize: "0.9rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "1rem", cursor: "pointer", transition: "all 0.2s" }}
+                                     className="hover:border-blue-300 hover:bg-slate-50"
                                    >
-                                     <span style={{ color: "var(--primary)" }}>{btn.icon}</span> {btn.label}
+                                     <span style={{ color: "#3b82f6" }}>{btn.icon}</span> {btn.label}
                                    </button>
                                  ))}
-                                 <button onClick={() => setSelectedRequestId(null)} style={{ width: "100%", padding: "1rem", background: "none", border: "none", color: "var(--text-dim)", fontSize: "0.65rem", fontWeight: "900", cursor: "pointer" }}>Cancel</button>
+                                 <button onClick={() => setSelectedRequestId(null)} style={{ width: "100%", padding: "1rem", background: "none", border: "none", color: "#64748b", fontSize: "0.85rem", fontWeight: "700", cursor: "pointer", marginTop: "0.5rem" }}>Cancel</button>
                                </div>
                             </div>
                           ) : (
-                            <div className="sapphire-card" style={{ textAlign: "center", padding: "4rem", color: "var(--text-dim)" }}>
-                               <CheckSquare size={40} style={{ margin: "0 auto 1.5rem", opacity: 0.1 }} />
-                               <p style={{ fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.1em" }}>Select a request from the queue to process it.</p>
+                            <div style={{ background: "white", padding: "4rem", borderRadius: "16px", border: "1px dashed #cbd5e1", textAlign: "center", color: "#64748b" }}>
+                               <CheckSquare size={48} style={{ margin: "0 auto 1.5rem", opacity: 0.3 }} />
+                               <p style={{ fontSize: "0.9rem", fontWeight: "600" }}>Select a request from the queue to process it.</p>
                             </div>
                           )}
                        </div>
                     </div>
                  </motion.div>
                ) : osasSubTab === "Protocol" ? (
-                 <motion.div key="protocol" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "3rem" }}>
+                 <motion.div key="protocol" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "2.5rem" }}>
                        {/* TEMPLATE EDITOR */}
-                       <div className="sapphire-card" style={{ padding: "3rem" }}>
-                          <h3 style={{ fontSize: "0.9rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                             <Printer size={18} color="var(--primary)" /> Certificate Template
+                       <div style={{ background: "white", padding: "3rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                          <h3 style={{ fontSize: "1.25rem", fontWeight: "800", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.75rem", color: "#1e293b" }}>
+                             <Printer size={20} color="#3b82f6" /> Certificate Template
                           </h3>
-                          <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", marginBottom: "2.5rem" }}>
-                             Edit the body text of the Good Moral certificate. Use <span style={{ color: "var(--primary)" }}>[STUDENT_NAME]</span> as a placeholder for the student name.
+                          <p style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: "500", marginBottom: "2.5rem", lineHeight: "1.6" }}>
+                             Edit the body text of the Good Moral certificate. Use <strong style={{ color: "#3b82f6" }}>[STUDENT_NAME]</strong> as a placeholder for the student name.
                           </p>
                           <textarea 
                              value={gmContent}
                              onChange={e => setGmContent(e.target.value)}
-                             style={{ width: "100%", minHeight: "300px", padding: "2rem", fontSize: "0.9rem", lineHeight: "1.8", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)", fontWeight: "600", fontFamily: "serif" }}
+                             style={{ width: "100%", minHeight: "350px", padding: "2rem", fontSize: "0.95rem", lineHeight: "1.8", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", color: "#1e293b", fontWeight: "500", fontFamily: "Georgia, serif", outline: "none", resize: "vertical" }}
                           />
                           <button 
                              onClick={() => updateGoodMoralConfig({ content: gmContent, signatories })}
-                             className="btn-cyan" 
-                             style={{ width: "100%", marginTop: "2rem", padding: "1.25rem" }}
+                             style={{ width: "100%", marginTop: "2rem", padding: "1.25rem", background: "#3b82f6", color: "white", borderRadius: "12px", border: "none", fontSize: "1rem", fontWeight: "800", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}
                           >
                              <Save size={18} /> Save Template
                           </button>
@@ -459,34 +467,37 @@ export default function RequestsClient() {
 
                        {/* SIGNATORIES */}
                        <div>
-                          <div className="sapphire-card" style={{ marginBottom: "2rem" }}>
-                             <h3 style={{ fontSize: "0.85rem", fontWeight: "900", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "1rem" }}>
-                                <UserCheck size={18} color="var(--primary)" /> Signatories
+                          <div style={{ background: "white", padding: "2.5rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", marginBottom: "2.5rem" }}>
+                             <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "2rem", display: "flex", alignItems: "center", gap: "0.75rem", color: "#1e293b" }}>
+                                <UserCheck size={20} color="#3b82f6" /> Signatories
                              </h3>
                              <div style={{ display: "grid", gap: "1rem", marginBottom: "2rem" }}>
                                 {signatories.map(s => (
-                                  <div key={s.id} style={{ padding: "1rem", background: "var(--bg-surface)", border: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                  <div key={s.id} style={{ padding: "1.25rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                      <div>
-                                        <p style={{ fontSize: "0.75rem", fontWeight: "900" }}>{s.name}</p>
-                                        <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>{s.position.toUpperCase()}</p>
+                                        <p style={{ fontSize: "0.9rem", fontWeight: "800", color: "#1e293b" }}>{s.name}</p>
+                                        <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#3b82f6", marginTop: "0.25rem" }}>{s.position}</p>
                                      </div>
-                                     <button onClick={() => handleRemoveSignatory(s.id)} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer" }}><Trash2 size={14} /></button>
+                                     <button onClick={() => handleRemoveSignatory(s.id)} style={{ color: "#ef4444", background: "none", border: "none", cursor: "pointer", padding: "0.5rem" }}><Trash2 size={16} /></button>
                                   </div>
                                 ))}
+                                {signatories.length === 0 && (
+                                  <p style={{ fontSize: "0.85rem", color: "#64748b", textAlign: "center", padding: "1rem" }}>No signatories added.</p>
+                                )}
                              </div>
-                             <div style={{ display: "grid", gap: "0.75rem", padding: "1.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)" }}>
-                                <input placeholder="NAME..." value={newSignName} onChange={e => setNewSignName(e.target.value)} style={{ fontSize: "0.7rem", padding: "0.75rem" }} />
-                                <input placeholder="POSITION..." value={newSignPos} onChange={e => setNewSignPos(e.target.value)} style={{ fontSize: "0.7rem", padding: "0.75rem" }} />
-                                <button onClick={handleAddSignatory} className="btn-cyan" style={{ fontSize: "0.6rem", padding: "0.75rem" }}>Add Signatory</button>
+                             <div style={{ display: "grid", gap: "0.75rem", padding: "1.5rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "12px" }}>
+                                <input placeholder="Full Name..." value={newSignName} onChange={e => setNewSignName(e.target.value)} style={{ fontSize: "0.85rem", padding: "1rem", borderRadius: "8px", border: "1px solid #cbd5e1", outline: "none" }} />
+                                <input placeholder="Position / Title..." value={newSignPos} onChange={e => setNewSignPos(e.target.value)} style={{ fontSize: "0.85rem", padding: "1rem", borderRadius: "8px", border: "1px solid #cbd5e1", outline: "none" }} />
+                                <button onClick={handleAddSignatory} style={{ padding: "1rem", background: "#1e293b", color: "white", borderRadius: "8px", border: "none", fontSize: "0.85rem", fontWeight: "700", cursor: "pointer", marginTop: "0.5rem" }}>Add Signatory</button>
                              </div>
                           </div>
 
-                          <div className="sapphire-card" style={{ background: "rgba(0, 229, 255, 0.02)", border: "1px solid var(--primary)" }}>
-                             <h4 style={{ fontSize: "0.7rem", fontWeight: "900", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                <Award size={14} color="var(--primary)" /> Preview
+                          <div style={{ background: "white", padding: "2.5rem", borderRadius: "16px", border: "1px solid #bfdbfe", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.05)" }}>
+                             <h4 style={{ fontSize: "0.9rem", fontWeight: "800", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem", color: "#1e293b" }}>
+                                <Award size={18} color="#3b82f6" /> Template Preview
                              </h4>
-                             <div style={{ padding: "1rem", border: "1px dashed var(--primary)", opacity: 0.7 }}>
-                                <p style={{ fontSize: "0.55rem", textAlign: "center", fontWeight: "700" }}>
+                             <div style={{ padding: "1.5rem", border: "1px dashed #cbd5e1", borderRadius: "12px", background: "#f8fafc" }}>
+                                <p style={{ fontSize: "0.8rem", color: "#475569", lineHeight: "1.6", fontStyle: "italic", fontFamily: "Georgia, serif" }}>
                                    {gmContent.replace("[STUDENT_NAME]", "JUAN DELA CRUZ").substring(0, 150)}...
                                 </p>
                              </div>
@@ -495,45 +506,56 @@ export default function RequestsClient() {
                     </div>
                  </motion.div>
                ) : (
-                 <motion.div key="definitions" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }}>
+                 <motion.div key="definitions" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem" }}>
-                       <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                          <Database size={18} color="var(--primary)" /> Service Type CATALOG
+                       <h2 style={{ fontSize: "1.25rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.75rem", color: "#1e293b" }}>
+                          <Database size={20} color="#3b82f6" /> Service Type Catalog
                        </h2>
-                       <button onClick={() => setIsAddingType(true)} className="btn-cyan" style={{ padding: "0.75rem 2rem" }}>
-                          <Plus size={16} /> Add Service Type
+                       <button onClick={() => setIsAddingType(true)} style={{ padding: "0.85rem 1.5rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "10px", fontSize: "0.9rem", fontWeight: "700", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem", boxShadow: "0 2px 4px rgba(59, 130, 246, 0.2)" }}>
+                          <Plus size={16} /> Add Service
                        </button>
                     </div>
 
                     {isAddingType && (
-                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="sapphire-card" style={{ padding: "3rem", marginBottom: "3rem", border: "1px solid var(--primary)" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2.5rem" }}>
-                             <h3 style={{ fontSize: "1rem", fontWeight: "900" }}>{editingTypeId ? "Edit Service Type" : "Add New Service Type"}</h3>
-                             <button onClick={resetServiceForm} style={{ color: "var(--text-dim)", background: "none", border: "none", cursor: "pointer" }}><X size={20} /></button>
-                          </div>
-                          <form onSubmit={editingTypeId ? (e) => { e.preventDefault(); handleSaveServiceEdit(); } : handleCreateServiceType} style={{ display: "grid", gap: "2rem" }}>
-                             <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem" }}>
-                                <input required placeholder="Service name..." value={newTypeName} onChange={e => setNewTypeName(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "900" }} />
-                                <input required placeholder="Requirements (comma separated)..." value={newTypeDocs} onChange={e => setNewTypeDocs(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700" }} />
+                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} style={{ overflow: "hidden", marginBottom: "3rem" }}>
+                          <div style={{ background: "white", padding: "3rem", borderRadius: "16px", border: "1px solid #bfdbfe", boxShadow: "0 10px 25px rgba(59, 130, 246, 0.05)" }}>
+                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
+                                <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b" }}>{editingTypeId ? "Edit Service Type" : "Add New Service Type"}</h3>
+                                <button onClick={resetServiceForm} style={{ color: "#64748b", background: "#f8fafc", border: "1px solid #e2e8f0", width: "40px", height: "40px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><X size={20} /></button>
                              </div>
-                             <textarea required placeholder="Brief description of this service..." value={newTypeDesc} onChange={e => setNewTypeDesc(e.target.value)} style={{ width: "100%", padding: "1rem", fontSize: "0.85rem", fontWeight: "700", minHeight: "100px" }} />
-                             <button type="submit" className="btn-cyan" style={{ width: "100%", padding: "1.25rem" }}>
-                                <Save size={18} /> {editingTypeId ? "Save Changes" : "Add Service Type"}
-                             </button>
-                          </form>
+                             <form onSubmit={editingTypeId ? (e) => { e.preventDefault(); handleSaveServiceEdit(); } : handleCreateServiceType} style={{ display: "grid", gap: "2rem" }}>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "2rem" }}>
+                                   <div>
+                                      <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Service Name</label>
+                                      <input required placeholder="e.g. Good Moral Certificate" value={newTypeName} onChange={e => setNewTypeName(e.target.value)} style={{ width: "100%", padding: "1.25rem", fontSize: "0.95rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", outline: "none" }} />
+                                   </div>
+                                   <div>
+                                      <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Requirements (comma separated)</label>
+                                      <input required placeholder="e.g. ID, Clearance Form" value={newTypeDocs} onChange={e => setNewTypeDocs(e.target.value)} style={{ width: "100%", padding: "1.25rem", fontSize: "0.95rem", fontWeight: "500", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", outline: "none" }} />
+                                   </div>
+                                </div>
+                                <div>
+                                   <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "700", color: "#475569" }}>Description</label>
+                                   <textarea required placeholder="Brief description of this service..." value={newTypeDesc} onChange={e => setNewTypeDesc(e.target.value)} style={{ width: "100%", padding: "1.25rem", fontSize: "0.95rem", fontWeight: "500", minHeight: "120px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "10px", outline: "none", resize: "vertical" }} />
+                                </div>
+                                <button type="submit" style={{ width: "100%", padding: "1.25rem", background: "#3b82f6", color: "white", borderRadius: "10px", border: "none", fontSize: "1rem", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
+                                   <Save size={18} /> {editingTypeId ? "Save Changes" : "Add Service Type"}
+                                </button>
+                             </form>
+                          </div>
                        </motion.div>
                     )}
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))", gap: "2rem" }}>
                        {(serviceTypes || []).map(type => (
-                         <div key={type.id} className="sapphire-card">
+                         <div key={type.id} style={{ background: "white", padding: "2rem", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", display: "flex", flexDirection: "column" }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
                                <div>
-                                  <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em", marginBottom: "0.5rem" }}>ID: {type.id.toUpperCase()}</p>
-                                  <h3 style={{ fontSize: "1.1rem", fontWeight: "900" }}>{type.name.toUpperCase()}</h3>
+                                  <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.25rem" }}>{type.name}</h3>
+                                  <p style={{ fontSize: "0.7rem", fontWeight: "700", color: "#94a3b8", letterSpacing: "0.05em", textTransform: "uppercase" }}>ID: {type.id}</p>
                                </div>
                                <div style={{ display: "flex", gap: "0.5rem" }}>
-                                  <button onClick={() => startServiceEdit(type)} style={{ padding: "0.5rem", background: "var(--bg-accent)", color: "var(--primary)", border: "1px solid var(--border-dim)", cursor: "pointer" }}><Edit2 size={14} /></button>
+                                  <button onClick={() => startServiceEdit(type)} style={{ width: "32px", height: "32px", borderRadius: "8px", background: "white", color: "#64748b", border: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s" }}><Edit2 size={14} /></button>
                                   <button onClick={() => {
                                      setConfirmConfig({
                                         isOpen: true,
@@ -542,15 +564,15 @@ export default function RequestsClient() {
                                         type: "danger",
                                         onConfirm: () => deleteServiceType(type.id)
                                      });
-                                  }} style={{ padding: "0.5rem", background: "rgba(239, 68, 68, 0.05)", color: "#ef4444", border: "1px solid rgba(239, 68, 68, 0.2)", cursor: "pointer" }}><Trash2 size={14} /></button>
+                                  }} style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#fef2f2", color: "#ef4444", border: "1px solid #fecaca", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "all 0.2s" }}><Trash2 size={14} /></button>
                                </div>
                             </div>
-                            <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.6", marginBottom: "2rem" }}>{type.description}</p>
-                            <div>
-                               <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "1rem" }}>Requirements:</p>
+                            <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500", lineHeight: "1.6", marginBottom: "2rem", flex: 1 }}>{type.description}</p>
+                            <div style={{ paddingTop: "1.5rem", borderTop: "1px solid #f1f5f9" }}>
+                               <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#1e293b", marginBottom: "1rem" }}>Required Documents:</p>
                                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                                   {type.requiredDocs.map(doc => (
-                                    <span key={doc} style={{ fontSize: "0.55rem", fontWeight: "900", padding: "0.25rem 0.6rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", borderRadius: "2px" }}>{doc.toUpperCase()}</span>
+                                    <span key={doc} style={{ fontSize: "0.75rem", fontWeight: "600", padding: "0.4rem 0.8rem", background: "#f8fafc", border: "1px solid #e2e8f0", color: "#475569", borderRadius: "20px" }}>{doc}</span>
                                   ))}
                                </div>
                             </div>
@@ -567,24 +589,24 @@ export default function RequestsClient() {
       {/* ISSUANCE MODAL */}
       <AnimatePresence>
          {isIssuing && (
-           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(10px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
-              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="sapphire-card" style={{ maxWidth: "600px", width: "100%", padding: "3rem" }}>
-                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem" }}>
-                    <h3 style={{ fontSize: "1.25rem", fontWeight: "900" }}>Upload Signed Certificate</h3>
-                    <button onClick={() => setIsIssuing(false)} style={{ color: "var(--text-dim)", background: "none", border: "none", cursor: "pointer" }}><X size={24} /></button>
+           <div style={{ position: "fixed", inset: 0, background: "rgba(15, 23, 42, 0.6)", backdropFilter: "blur(8px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} style={{ background: "white", borderRadius: "24px", maxWidth: "600px", width: "100%", padding: "3rem", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+                    <h3 style={{ fontSize: "1.5rem", fontWeight: "900", color: "#1e293b" }}>Upload Certificate</h3>
+                    <button onClick={() => setIsIssuing(false)} style={{ color: "#64748b", background: "#f8fafc", border: "1px solid #e2e8f0", width: "40px", height: "40px", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}><X size={20} /></button>
                  </div>
-                 <p style={{ fontSize: "0.8rem", color: "var(--text-dim)", fontWeight: "700", marginBottom: "3rem" }}>
-                    Upload the signed Good Moral certificate for <span style={{ color: "var(--primary)" }}>{selectedRequest?.studentName.toUpperCase()}</span>.
+                 <p style={{ fontSize: "0.95rem", color: "#64748b", fontWeight: "500", marginBottom: "3rem", lineHeight: "1.6" }}>
+                    Upload the signed Good Moral certificate for <strong style={{ color: "#3b82f6" }}>{selectedRequest?.studentName}</strong>.
                  </p>
                  
-                 <div style={{ border: "2px dashed var(--border-dim)", padding: "4rem", textAlign: "center", marginBottom: "3rem", cursor: "pointer" }}>
-                    <FileUp size={48} style={{ margin: "0 auto 1.5rem", color: "var(--primary)" }} />
-                    <p style={{ fontSize: "0.75rem", fontWeight: "900" }}>Select signed PDF file</p>
-                    <p style={{ fontSize: "0.55rem", fontWeight: "700", color: "var(--text-dim)", marginTop: "0.5rem" }}>Drag and drop or click to browse</p>
+                 <div style={{ border: "2px dashed #cbd5e1", borderRadius: "16px", padding: "4rem", textAlign: "center", marginBottom: "3rem", background: "#f8fafc", cursor: "pointer", transition: "all 0.2s" }} className="hover:border-blue-400 hover:bg-blue-50">
+                    <FileUp size={48} style={{ margin: "0 auto 1.5rem", color: "#3b82f6" }} />
+                    <p style={{ fontSize: "1rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.5rem" }}>Select signed PDF file</p>
+                    <p style={{ fontSize: "0.85rem", fontWeight: "500", color: "#64748b" }}>Drag and drop or click to browse</p>
                  </div>
 
-                 <button onClick={handleIssueCertificate} className="btn-cyan" style={{ width: "100%", padding: "1.25rem" }}>
-                    <CheckCircle2 size={18} /> FINALIZE AND RELEASE CERTIFICATE
+                 <button onClick={handleIssueCertificate} style={{ width: "100%", padding: "1.25rem", background: "#10b981", color: "white", borderRadius: "12px", border: "none", fontSize: "1rem", fontWeight: "800", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer", boxShadow: "0 4px 6px rgba(16, 185, 129, 0.2)" }}>
+                    <CheckCircle2 size={18} /> Finalize and Release
                  </button>
               </motion.div>
            </div>
