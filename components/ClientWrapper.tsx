@@ -32,8 +32,8 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
         router.push("/dashboard");
         // Simulate Native Push Notification on Entry
         setTimeout(() => {
-          new Notification("SENTINEL_NODE_ACTIVE", {
-            body: "BIOMETRIC_IDENTITY_SCAN: SUCCESSFUL. ACCESS_GRANTED.",
+          new Notification("Welcome to SPARK", {
+            body: "You're now logged in. Have a great day!",
             icon: "/favicon.ico"
           });
         }, 1500);
@@ -112,12 +112,12 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
       }}>
         {!isLoginPage && !showLoginGate && <TopNav />}
         
-        {/* MOBILE STATUS BAR (PHASE 14) */}
+        {/* MOBILE STATUS BAR */}
         {isMobile && !isLoginPage && !showLoginGate && (
           <div style={{ padding: "1rem 1.5rem", borderBottom: "1px solid var(--border-dim)", background: "rgba(0, 229, 255, 0.02)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                 <Zap size={14} color="var(--primary)" />
-                <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em" }}>SENTINEL_ACTIVE</span>
+                <span style={{ fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.2em" }}>ONLINE</span>
              </div>
              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                 <Signal size={12} color="#10b981" />

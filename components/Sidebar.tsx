@@ -41,38 +41,38 @@ export default function Sidebar() {
     {
       group: "MAIN MENU",
       items: [
-        { icon: <LayoutDashboard size={16} />, label: "DASHBOARD", href: "/dashboard", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR"] },
-        { icon: <ShieldCheck size={16} />, label: "ADVISORY COMMAND", href: "/adviser", roles: ["ADVISER", "SYSTEM_ADMIN"] },
-        { icon: <TrendingUp size={16} />, label: "INSTITUTIONAL PULSE", href: "/analytics", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
-        { icon: <Settings size={16} />, label: "ACCOUNT SETTINGS", href: "/settings", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <LayoutDashboard size={16} />, label: "Dashboard", href: "/dashboard", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR"] },
+        { icon: <ShieldCheck size={16} />, label: "My Advisees", href: "/adviser", roles: ["ADVISER", "SYSTEM_ADMIN"] },
+        { icon: <TrendingUp size={16} />, label: "Analytics", href: "/analytics", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <Settings size={16} />, label: "Settings", href: "/settings", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
       ]
     },
     {
       group: "SERVICES",
       items: [
-        { icon: <Cpu size={16} />, label: "SCHOLARSHIPS", href: "/scholarships", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "STUDENT_APPLICANT", "STUDENT_LEADER"] },
-        { icon: <Building2 size={16} />, label: "ORGANIZATIONS", href: "/organizations", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "STUDENT_APPLICANT", "STUDENT_LEADER", "ADVISER"] },
-        { icon: <Globe size={16} />, label: "ANNOUNCEMENTS", href: "/events", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "STUDENT_APPLICANT", "STUDENT_LEADER", "ADVISER"] },
+        { icon: <GraduationCap size={16} />, label: "Scholarships", href: "/scholarships", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "STUDENT_APPLICANT", "STUDENT_LEADER"] },
+        { icon: <Building2 size={16} />, label: "Organizations", href: "/organizations", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "STUDENT_APPLICANT", "STUDENT_LEADER", "ADVISER"] },
+        { icon: <Globe size={16} />, label: "Announcements", href: "/events", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "STUDENT_APPLICANT", "STUDENT_LEADER", "ADVISER"] },
       ]
     },
     {
       group: "ACTIVITIES",
       items: [
-        { icon: <Activity size={16} />, label: "HELP REQUESTS", href: "/requests", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "STUDENT_APPLICANT", "STUDENT_LEADER"] },
-        { icon: <Hash size={16} />, label: "APPOINTMENTS", href: "/appointments", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "STUDENT_APPLICANT", "STUDENT_LEADER"] },
-        { icon: <FileUp size={16} />, label: "SUBMISSIONS", href: "/submissions", roles: ["STUDENT_APPLICANT", "STUDENT_LEADER"] },
+        { icon: <Activity size={16} />, label: "Service Requests", href: "/requests", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "STUDENT_APPLICANT", "STUDENT_LEADER"] },
+        { icon: <Hash size={16} />, label: "Appointments", href: "/appointments", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "STUDENT_APPLICANT", "STUDENT_LEADER"] },
+        { icon: <FileUp size={16} />, label: "My Submissions", href: "/submissions", roles: ["STUDENT_APPLICANT", "STUDENT_LEADER"] },
       ]
     },
     {
-      group: "ADMINISTRATION",
+      group: "ADMIN TOOLS",
       items: [
-        { icon: <Database size={16} />, label: "DOCUMENT CHECK", href: "/guidance/vault-audit", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
-        { icon: <Activity size={16} />, label: "AUDIT COMMAND", href: "/admin/audit", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
-        { icon: <Fingerprint size={16} />, label: "STUDENT PASSPORT", href: "/admin/passport", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
-        { icon: <GraduationCap size={16} />, label: "SCHOLAR INVENTORY", href: "/admin/scholars", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
-        { icon: <Workflow size={16} />, label: "GUIDANCE CENTER", href: "/guidance", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR"] },
-        { icon: <User size={16} />, label: "STUDENT REFERRALS", href: "/referrals", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "ADVISER"] },
-        { icon: <ShieldAlert size={16} />, label: "SYSTEM ADMIN", href: "/admin", roles: ["SYSTEM_ADMIN"] },
+        { icon: <Database size={16} />, label: "Document Check", href: "/guidance/vault-audit", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <Activity size={16} />, label: "Activity Log", href: "/admin/audit", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <Fingerprint size={16} />, label: "Manage Students", href: "/admin/passport", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <GraduationCap size={16} />, label: "Manage Scholars", href: "/admin/scholars", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <Workflow size={16} />, label: "Guidance Office", href: "/guidance", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR"] },
+        { icon: <User size={16} />, label: "Student Referrals", href: "/referrals", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "ADVISER"] },
+        { icon: <ShieldAlert size={16} />, label: "System Admin", href: "/admin", roles: ["SYSTEM_ADMIN"] },
       ]
     }
   ];
@@ -151,7 +151,7 @@ export default function Sidebar() {
               letterSpacing: "0.25em", 
               marginTop: "0.3rem",
               opacity: 0.8
-            }}>INSTITUTIONAL AI</p>
+            }}>OSAS HUB</p>
           </div>
         </div>
       </div>
