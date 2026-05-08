@@ -201,24 +201,26 @@ export default function AuditCenterPage() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="sapphire-card"
-                style={{ padding: "2.5rem", marginBottom: "3rem", border: "1px solid var(--primary)", position: "relative", overflow: "hidden" }}
+                style={{ padding: "2rem", marginBottom: "3rem", background: "linear-gradient(135deg, #f8fafc, #f1f5f9)", border: "1px solid #e2e8f0", borderRadius: "16px", position: "relative", overflow: "hidden", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}
               >
-                <div style={{ position: "absolute", top: 0, right: 0, padding: "0.75rem 1.25rem", background: "var(--primary)", color: "var(--bg-deep)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>
+                <div style={{ position: "absolute", top: 0, right: 0, padding: "0.6rem 1.25rem", background: "#3b82f6", color: "white", fontSize: "0.75rem", fontWeight: "700", borderBottomLeftRadius: "12px" }}>
                   AI Summary
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 250px", gap: "3rem" }}>
-                  <div>
-                    <h3 style={{ fontSize: "1.2rem", fontWeight: "900", color: "var(--text-main)", marginBottom: "1rem" }}>Administrative Intelligence Briefing</h3>
-                    <p style={{ fontSize: "0.9rem", color: "var(--text-dim)", lineHeight: "1.6", fontWeight: "600" }}>{aiAnalysis.summary}</p>
+                  <div style={{ paddingTop: "0.5rem" }}>
+                    <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.75rem" }}>Activity Overview</h3>
+                    <p style={{ fontSize: "0.9rem", color: "#475569", lineHeight: "1.6" }}>{aiAnalysis.summary}</p>
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                    <p style={{ fontSize: "0.6rem", fontWeight: "900", color: "var(--primary)", letterSpacing: "0.1em" }}>Flagged Items</p>
-                    {aiAnalysis.anomalies.map((a: string, i: number) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem", fontSize: "0.7rem", color: a.includes("NO") ? "var(--text-dim)" : "#ef4444", fontWeight: "700" }}>
-                        <ShieldAlert size={14} /> {a}
-                      </div>
-                    ))}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", paddingTop: "0.5rem" }}>
+                    <p style={{ fontSize: "0.75rem", fontWeight: "700", color: "#3b82f6" }}>Flagged Items</p>
+                    {aiAnalysis.anomalies.map((a: string, i: number) => {
+                      const isClear = a.toLowerCase().includes("no issues found") || a.includes("NO_ANOMALIES");
+                      return (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8rem", color: isClear ? "#64748b" : "#ef4444", fontWeight: "600", padding: "0.5rem", background: isClear ? "rgba(255,255,255,0.5)" : "#fef2f2", borderRadius: "8px", border: isClear ? "1px solid transparent" : "1px solid #fecaca" }}>
+                          <ShieldAlert size={16} /> <span style={{ lineHeight: "1.4" }}>{a}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </motion.div>
