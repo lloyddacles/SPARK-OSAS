@@ -65,40 +65,39 @@ export default function SubmissionsPage() {
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
             exit={{ opacity: 0 }}
-            style={{ position: "fixed", inset: 0, background: "rgba(3, 7, 18, 0.98)", backdropFilter: "blur(20px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
+            style={{ position: "fixed", inset: 0, background: "rgba(255, 255, 255, 0.9)", backdropFilter: "blur(20px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem" }}
           >
             <motion.div 
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              style={{ width: "100%", maxWidth: "900px", background: "var(--bg-surface)", border: "1px solid var(--primary)", borderRadius: "2px", boxShadow: "0 0 50px rgba(0, 229, 255, 0.1)", overflow: "hidden", display: "flex", flexDirection: "column" }}
+              style={{ width: "100%", maxWidth: "900px", background: "white", border: "1px solid #e5e7eb", borderRadius: "16px", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.15)", overflow: "hidden", display: "flex", flexDirection: "column" }}
             >
-              <div style={{ padding: "1.5rem 2rem", background: "var(--bg-accent)", borderBottom: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                 <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-                    <Terminal size={18} color="var(--primary)" />
-                    <p style={{ fontWeight: "900", fontSize: "0.7rem", letterSpacing: "0.2em", color: "var(--primary)" }}>Document Preview</p>
+              <div style={{ padding: "1.5rem 2rem", background: "#f9fafb", borderBottom: "1px solid #f3f4f6", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                    <FileText size={20} color="var(--primary)" />
+                    <p style={{ fontWeight: "800", fontSize: "0.9rem", color: "#111827" }}>Document Preview</p>
                  </div>
-                 <button onClick={() => setActiveTemplate(null)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer", display: "flex", alignItems: "center" }}><X size={20} /></button>
+                 <button onClick={() => setActiveTemplate(null)} style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", display: "flex", alignItems: "center" }}><X size={20} /></button>
               </div>
               
-              <div style={{ padding: "3rem", background: "white", color: "#1e293b", margin: "2rem", borderRadius: "2px", maxHeight: "60vh", overflowY: "auto", boxShadow: "inset 0 0 10px rgba(0,0,0,0.05)" }}>
-                <pre style={{ whiteSpace: "pre-wrap", fontFamily: "'IBM Plex Mono', monospace", fontSize: "0.9rem", lineHeight: "1.8", color: "#334155" }}>
+              <div style={{ padding: "3rem", background: "white", color: "#1f2937", margin: "0", maxHeight: "60vh", overflowY: "auto" }}>
+                <pre style={{ whiteSpace: "pre-wrap", fontFamily: "'Inter', sans-serif", fontSize: "0.95rem", lineHeight: "1.8", color: "#374151" }}>
                   {activeTemplate}
                 </pre>
               </div>
 
-              <div style={{ padding: "2rem", background: "var(--bg-accent)", borderTop: "1px solid var(--border-dim)", display: "flex", gap: "1rem" }}>
+              <div style={{ padding: "1.5rem 2rem", background: "#f9fafb", borderTop: "1px solid #f3f4f6", display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
                 <button 
                   onClick={() => { window.print(); }}
-                  style={{ flex: 1, background: "var(--bg-surface)", color: "var(--text-main)", padding: "1.25rem", border: "1px solid var(--border-dim)", fontWeight: "900", fontSize: "0.7rem", letterSpacing: "0.1em", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}
+                  style={{ padding: "0.85rem 1.5rem", background: "white", color: "#374151", border: "1px solid #d1d5db", borderRadius: "8px", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
                 >
-                  <Download size={16} /> PRINT AND SIGN
+                  <Download size={16} /> Print & Sign
                 </button>
                 <button 
                   onClick={() => { uploadToVault(templateName); setActiveTemplate(null); }}
-                  className="btn-cyan"
-                  style={{ flex: 1, padding: "1.25rem", fontWeight: "900", fontSize: "0.7rem", letterSpacing: "0.1em" }}
+                  style={{ padding: "0.85rem 1.5rem", background: "var(--primary)", color: "white", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
                 >
-                  Save & Upload <Check size={18} />
+                  Save & Upload <Check size={16} />
                 </button>
               </div>
             </motion.div>
@@ -107,73 +106,73 @@ export default function SubmissionsPage() {
       </AnimatePresence>
 
       {/* --- HEADER_AND_TELEMETRY --- */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "5rem" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "3rem", flexWrap: "wrap", gap: "2rem" }}>
         <header>
           <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Document Upload Center</p>
-          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "var(--text-main)" }}>
-            <span style={{ color: "var(--primary)" }}>My Documents</span>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
+            My <span style={{ color: "var(--primary)" }}>Documents</span>
           </h1>
           <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Upload and manage your required documents for OSAS processing.</p>
         </header>
 
-        <div style={{ textAlign: "right", width: "340px" }}>
+        <div style={{ width: "340px", maxWidth: "100%" }}>
           {(currentUser.role === "SYSTEM_ADMIN" || currentUser.role === "OSAS_DIRECTOR") && (
             <motion.a 
               href="/submissions/verify"
               whileHover={{ x: 5 }}
-              style={{ display: "flex", alignItems: "center", gap: "0.75rem", justifyContent: "flex-end", color: "var(--primary)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.15em", marginBottom: "2rem", textDecoration: "none" }}
+              style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "flex-end", color: "var(--primary)", fontSize: "0.85rem", fontWeight: "700", marginBottom: "1.5rem", textDecoration: "none" }}
             >
-              Go to Document Verification <ArrowRight size={14} />
+              Go to Document Verification <ArrowRight size={16} />
             </motion.a>
           )}
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.1em" }}>
-            <span style={{ color: "var(--text-dim)" }}>Upload Progress</span>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", fontSize: "0.85rem", fontWeight: "700" }}>
+            <span style={{ color: "#6b7280" }}>Upload Progress</span>
             <span style={{ color: "var(--primary)" }}>{progress}% Complete</span>
           </div>
-          <div style={{ height: "4px", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", overflow: "hidden" }}>
+          <div style={{ height: "6px", background: "#f3f4f6", borderRadius: "3px", overflow: "hidden" }}>
             <motion.div 
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              style={{ height: "100%", background: "var(--primary)", boxShadow: "0 0 10px var(--primary)" }}
+              style={{ height: "100%", background: "var(--primary)" }}
             />
           </div>
         </div>
       </div>
 
       {/* --- PROTOCOL_OVERVIEW --- */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)", marginBottom: "4rem" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem", marginBottom: "4rem" }}>
           {[
-            { icon: <Activity size={18} />, label: "File Tracking", desc: "We check your files to make sure they are correct." },
-            { icon: <ShieldCheck size={18} />, label: "Secure Storage", desc: "Your personal data is kept safe and private." },
-            { icon: <Layers size={18} />, label: "Review Process", desc: "Directly reviewed by the student affairs office." }
+            { icon: <Activity size={20} />, label: "File Tracking", desc: "We check your files to make sure they are correct.", color: "#6366f1" },
+            { icon: <ShieldCheck size={20} />, label: "Secure Storage", desc: "Your personal data is kept safe and private.", color: "#10b981" },
+            { icon: <Layers size={20} />, label: "Review Process", desc: "Directly reviewed by the student affairs office.", color: "#f59e0b" }
           ].map((p) => (
-           <div key={p.label} style={{ background: "var(--bg-surface)", padding: "2rem", display: "flex", gap: "1.5rem" }}>
-              <div style={{ color: "var(--primary)" }}>{p.icon}</div>
+           <div key={p.label} style={{ background: "white", padding: "1.5rem", display: "flex", gap: "1.25rem", borderRadius: "14px", border: "1px solid #f3f4f6", boxShadow: "0 4px 12px rgba(0,0,0,0.02)" }}>
+              <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: `${p.color}15`, display: "flex", alignItems: "center", justifyContent: "center", color: p.color, flexShrink: 0 }}>{p.icon}</div>
               <div>
-                 <p style={{ fontWeight: "900", fontSize: "0.75rem", marginBottom: "0.5rem", color: "var(--text-main)" }}>{p.label}</p>
-                 <p style={{ fontSize: "0.65rem", color: "var(--text-dim)", fontWeight: "700", lineHeight: "1.5" }}>{p.desc.toUpperCase()}</p>
+                 <p style={{ fontWeight: "800", fontSize: "0.95rem", color: "#111827", marginBottom: "0.25rem" }}>{p.label}</p>
+                 <p style={{ fontSize: "0.85rem", color: "#6b7280", lineHeight: "1.4" }}>{p.desc}</p>
               </div>
            </div>
          ))}
       </div>
 
       {/* --- GRID_HEADER --- */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
-         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <FileStack size={18} color="var(--primary)" />
-            <h2 style={{ fontSize: "0.85rem", fontWeight: "900", letterSpacing: "0.1em" }}>Required Documents</h2>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "1rem" }}>
+         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <FileStack size={22} color="var(--primary)" />
+            <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#111827" }}>Required Documents</h2>
          </div>
-          <div style={{ position: "relative", width: "280px" }}>
-            <Search size={14} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-dim)" }} />
+          <div style={{ position: "relative", width: "100%", maxWidth: "320px" }}>
+            <Search size={16} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "#9ca3af" }} />
             <input 
               placeholder="Search documents..." 
-              style={{ width: "100%", padding: "0.75rem 1rem 0.75rem 2.5rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", fontSize: "0.65rem", fontWeight: "900", color: "white" }}
+              style={{ width: "100%", padding: "0.75rem 1rem 0.75rem 2.5rem", background: "white", border: "1px solid #e5e7eb", borderRadius: "8px", fontSize: "0.85rem", color: "#111827", outline: "none" }}
             />
           </div>
       </div>
 
       {/* --- DOCUMENTS_GRID --- */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))", gap: "1px", background: "var(--border-dim)", border: "1px solid var(--border-dim)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "1.5rem" }}>
         {essentialDocs.map((doc, i) => {
           const isUploaded = currentUser?.vault?.[doc.name]?.uploaded;
           const uploadInfo = currentUser?.vault?.[doc.name];
@@ -182,123 +181,127 @@ export default function SubmissionsPage() {
           return (
             <motion.div 
               key={doc.name}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              onHoverStart={() => setIsHovered(doc.name)}
-              onHoverEnd={() => setIsHovered(null)}
+              whileHover={{ y: -4, boxShadow: "0 12px 24px rgba(0,0,0,0.06)" }}
               style={{ 
-                padding: "2.5rem", 
-                background: isHovered === doc.name ? "var(--bg-accent)" : "var(--bg-surface)",
-                position: "relative",
-                transition: "background 0.2s"
+                padding: "2rem", 
+                background: "white",
+                borderRadius: "16px",
+                border: "1px solid #f3f4f6",
+                boxShadow: "0 4px 6px rgba(0,0,0,0.02)",
+                display: "flex",
+                flexDirection: "column",
+                position: "relative"
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem", alignItems: "flex-start" }}>
                  <div style={{ 
-                    width: "48px", 
-                    height: "48px", 
-                    background: isUploaded ? "rgba(0, 229, 255, 0.05)" : "var(--bg-accent)", 
-                    border: isUploaded ? "1px solid var(--primary)" : "1px solid var(--border-dim)",
+                    width: "52px", 
+                    height: "52px", 
+                    borderRadius: "14px",
+                    background: isUploaded ? "rgba(16, 185, 129, 0.1)" : "#f3f4f6", 
                     display: "flex", 
                     alignItems: "center", 
                     justifyContent: "center", 
-                    color: isUploaded ? "var(--primary)" : "var(--text-dim)" 
+                    color: isUploaded ? "#10b981" : "#6b7280" 
                  }}>
                     {doc.icon}
                  </div>
                  
                  {isUploaded && (
                    <div style={{ 
-                     fontSize: "0.55rem", 
-                     fontWeight: "900", 
-                     padding: "0.4rem 1rem", 
-                     background: isVerified ? "rgba(16, 185, 129, 0.05)" : "rgba(0, 229, 255, 0.05)",
-                     border: isVerified ? "1px solid #10b981" : "1px solid var(--primary)",
-                     color: isVerified ? "#10b981" : "var(--primary)",
-                     letterSpacing: "0.1em"
+                     fontSize: "0.7rem", 
+                     fontWeight: "700", 
+                     padding: "0.4rem 0.8rem", 
+                     borderRadius: "20px",
+                     background: isVerified ? "#f0fdf4" : "#fefce8",
+                     color: isVerified ? "#16a34a" : "#ca8a04",
+                     display: "flex",
+                     alignItems: "center"
                    }}>
-                     {uploadInfo.status?.split('_').join(' ').toUpperCase() || "AWAITING REVIEW"}
+                     {uploadInfo.status?.split('_').join(' ') || "Pending Review"}
                    </div>
                  )}
               </div>
               
-              <div>
-                <h3 style={{ fontSize: "0.9rem", fontWeight: "900", marginBottom: "0.75rem", color: "var(--text-main)" }}>{doc.label}</h3>
-                <p style={{ fontSize: "0.7rem", color: "var(--text-dim)", marginBottom: "2.5rem", minHeight: "2rem", lineHeight: "1.6", fontWeight: "700" }}>{doc.desc}</p>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#111827", marginBottom: "0.4rem" }}>{doc.label}</h3>
+                <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "2rem", lineHeight: "1.5" }}>{doc.desc}</p>
                 
                 {isUploaded && uploadInfo.remarks && (
-                  <div style={{ marginBottom: "2rem", padding: "1.25rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", borderLeft: "2px solid var(--primary)", fontSize: "0.65rem", display: "flex", gap: "1rem" }}>
-                     <Info size={16} color="var(--primary)" style={{ flexShrink: 0 }} />
+                  <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "#f8fafc", borderRadius: "8px", borderLeft: "3px solid var(--primary)", fontSize: "0.8rem", display: "flex", gap: "0.75rem" }}>
+                     <Info size={16} color="var(--primary)" style={{ flexShrink: 0, marginTop: "0.1rem" }} />
                      <div>
-                        <p style={{ fontWeight: "900", marginBottom: "0.4rem", color: "var(--primary)" }}>Staff Feedback</p>
-                        <p style={{ color: "var(--text-main)", fontWeight: "700", lineHeight: "1.4" }}>{uploadInfo.remarks.toUpperCase()}</p>
+                        <p style={{ fontWeight: "700", color: "#1e293b", marginBottom: "0.2rem" }}>Staff Feedback</p>
+                        <p style={{ color: "#475569", lineHeight: "1.4" }}>{uploadInfo.remarks}</p>
                      </div>
                   </div>
                 )}
-
-                <div style={{ display: "flex", gap: "1px", background: "var(--border-dim)" }}>
-                  {doc.type === "Template" && !isUploaded ? (
-                    <button 
-                      onClick={() => handleGenerateTemplate(doc.name)}
-                      style={{ flex: 1, padding: "1rem", background: "var(--primary)", color: "var(--text-dark)", fontSize: "0.7rem", fontWeight: "900", border: "none", cursor: "pointer", letterSpacing: "0.1em" }}
-                    >
-                      CREATE FORM
-                    </button>
-                  ) : (
-                    <button 
-                      onClick={() => uploadToVault(doc.name)}
-                      style={{ 
-                        flex: 1, 
-                        padding: "1rem", 
-                        background: isUploaded ? "var(--bg-accent)" : "var(--primary)", 
-                        color: isUploaded ? "var(--primary)" : "var(--text-dark)", 
-                        fontSize: "0.7rem", 
-                        fontWeight: "900", 
-                        border: isUploaded ? "1px solid var(--primary)" : "none",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "0.75rem",
-                        letterSpacing: "0.1em"
-                      }}
-                    >
-                      {isUploaded ? <><Check size={16} /> RE-UPLOAD</> : <><CloudUpload size={16} /> UPLOAD FILE</>}
-                    </button>
-                  )}
-                  <button style={{ width: "48px", background: "var(--bg-accent)", color: "var(--text-dim)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <MoreVertical size={18} />
-                  </button>
-                </div>
-
-                {isUploaded && (
-                  <div style={{ marginTop: "1.5rem", paddingTop: "1rem", borderTop: "1px solid var(--border-dim)", fontSize: "0.55rem", color: "var(--text-dim)", display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: "900" }}>
-                    <span style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><Clock size={12} /> FILED: {uploadInfo.date}</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: isVerified ? "#10b981" : "var(--primary)" }}>
-                       <ShieldCheck size={12} /> {isVerified ? "Complete" : "PENDING REVIEW"}
-                    </div>
-                  </div>
-                )}
               </div>
+
+              <div style={{ display: "flex", gap: "0.5rem", marginTop: "auto" }}>
+                {doc.type === "Template" && !isUploaded ? (
+                  <button 
+                    onClick={() => handleGenerateTemplate(doc.name)}
+                    style={{ flex: 1, padding: "0.85rem", background: "var(--primary)", color: "white", borderRadius: "8px", fontSize: "0.85rem", fontWeight: "700", border: "none", cursor: "pointer" }}
+                  >
+                    Create Form
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => uploadToVault(doc.name)}
+                    style={{ 
+                      flex: 1, 
+                      padding: "0.85rem", 
+                      background: isUploaded ? "#f9fafb" : "var(--primary)", 
+                      color: isUploaded ? "#374151" : "white", 
+                      borderRadius: "8px",
+                      fontSize: "0.85rem", 
+                      fontWeight: "700", 
+                      border: isUploaded ? "1px solid #e5e7eb" : "none",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.5rem"
+                    }}
+                  >
+                    {isUploaded ? <><CloudUpload size={16} /> Update File</> : <><CloudUpload size={16} /> Upload File</>}
+                  </button>
+                )}
+                <button style={{ width: "42px", borderRadius: "8px", background: "white", border: "1px solid #e5e7eb", color: "#6b7280", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <MoreVertical size={18} />
+                </button>
+              </div>
+
+              {isUploaded && (
+                <div style={{ marginTop: "1.25rem", paddingTop: "1rem", borderTop: "1px solid #f3f4f6", fontSize: "0.75rem", color: "#9ca3af", display: "flex", justifyContent: "space-between", alignItems: "center", fontWeight: "600" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}><Clock size={14} /> Filed: {uploadInfo.date}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: isVerified ? "#10b981" : "#f59e0b" }}>
+                     <ShieldCheck size={14} /> {isVerified ? "Complete" : "Under Review"}
+                  </div>
+                </div>
+              )}
             </motion.div>
           );
         })}
       </div>
 
       {/* --- SECURITY_PROTOCOL_NODE --- */}
-      <div style={{ marginTop: "6rem", padding: "3rem", background: "var(--bg-accent)", border: "1px solid var(--primary)", display: "flex", gap: "3rem", alignItems: "center" }}>
-          <div style={{ width: "80px", height: "80px", border: "1px solid var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)", background: "rgba(0, 229, 255, 0.03)" }}>
-            <ShieldCheck size={40} className="status-pulse" />
+      <div style={{ marginTop: "4rem", padding: "2.5rem 3rem", background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", display: "flex", gap: "2.5rem", alignItems: "center", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", flexWrap: "wrap" }}>
+          <div style={{ width: "64px", height: "64px", borderRadius: "16px", background: "rgba(16, 185, 129, 0.1)", display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981", flexShrink: 0 }}>
+            <ShieldCheck size={32} />
          </div>
-         <div style={{ flex: 1 }}>
-            <h3 style={{ fontSize: "1rem", fontWeight: "900", marginBottom: "0.75rem", color: "var(--text-main)", letterSpacing: "0.1em" }}>Your Files Are Secure</h3>
-            <p style={{ color: "var(--text-dim)", fontSize: "0.75rem", fontWeight: "700", lineHeight: "1.6" }}>
+         <div style={{ flex: 1, minWidth: "250px" }}>
+            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", marginBottom: "0.5rem", color: "#111827" }}>Your Files Are Secure</h3>
+            <p style={{ color: "#6b7280", fontSize: "0.9rem", lineHeight: "1.6" }}>
               We use high-security technology to keep your documents safe. 
               Only authorized staff from the OSAS office can view your information.
             </p>
          </div>
-         <button className="btn-cyan" style={{ padding: "1rem 2.5rem", fontSize: "0.7rem", fontWeight: "900" }}>Learn More</button>
+         <button style={{ padding: "0.85rem 2rem", background: "white", color: "#374151", border: "1px solid #d1d5db", borderRadius: "8px", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", whiteSpace: "nowrap" }}>Learn More</button>
       </div>
     </div>
   );
