@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Search, Filter, MessageSquare, History, UserPlus } from "lucide-react";
+import { Users, Search, Filter, MessageSquare, History, UserPlus, HeartHandshake } from "lucide-react";
 
 const students = [
   { id: "2024-0001", name: "Alice Johnson", dept: "BS Computer Science", status: "Active", lastSession: "2 days ago" },
@@ -11,43 +11,42 @@ const students = [
 
 export default function CounselingPage() {
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-      <header style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{ width: "100%", maxWidth: "1400px", margin: "0 auto" }}>
+      
+      {/* Analytics Header */}
+      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem" }}>
         <div>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "0.5rem" }}>Counseling Management</h1>
-          <p style={{ color: "var(--muted-foreground)" }}>Manage student sessions and wellness documentation.</p>
+          <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Wellness</p>
+          <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
+            Coun<span style={{ color: "#3b82f6" }}>seling</span>
+          </h1>
+          <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Manage student sessions, wellness documentation, and guidance records.</p>
         </div>
-        <button style={{ 
-          background: "var(--primary)", 
-          color: "var(--primary-foreground)", 
-          padding: "0.75rem 1.5rem", 
-          borderRadius: "var(--radius)",
-          fontWeight: "600",
-          display: "flex",
-          alignItems: "center",
-          gap: "0.5rem"
-        }}>
-          <UserPlus size={20} /> New Session
+        <button style={{ padding: "1rem 2rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "12px", fontSize: "0.95rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.75rem", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
+          <UserPlus size={18} /> New Session
         </button>
-      </header>
+      </div>
 
-      <div className="glass" style={{ padding: "1rem", marginBottom: "2rem", display: "flex", gap: "1rem" }}>
+      <div style={{ background: "white", padding: "1.25rem", borderRadius: "16px", marginBottom: "2rem", display: "flex", gap: "1rem", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
         <div style={{ flex: 1, position: "relative" }}>
-          <Search size={18} style={{ position: "absolute", left: "1rem", top: "50%", transform: "translateY(-50%)", color: "var(--muted-foreground)" }} />
+          <Search size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
           <input 
             type="text" 
             placeholder="Search students by name or ID..." 
             style={{ 
               width: "100%", 
-              background: "rgba(255,255,255,0.05)", 
-              border: "1px solid var(--border)", 
-              padding: "0.75rem 1rem 0.75rem 3rem", 
-              borderRadius: "8px",
-              color: "white"
+              background: "#f8fafc", 
+              border: "1px solid #e2e8f0", 
+              padding: "1rem 1rem 1rem 3rem", 
+              borderRadius: "10px",
+              color: "#1e293b",
+              fontSize: "0.95rem",
+              fontWeight: "500",
+              outline: "none"
             }} 
           />
         </div>
-        <button className="glass" style={{ padding: "0.75rem 1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <button style={{ padding: "0 1.5rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "10px", display: "flex", alignItems: "center", gap: "0.5rem", color: "#475569", fontWeight: "700", cursor: "pointer" }} className="hover:bg-slate-50">
           <Filter size={18} /> Filters
         </button>
       </div>
@@ -59,59 +58,63 @@ export default function CounselingPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            className="card"
             style={{ 
               display: "flex", 
               alignItems: "center", 
-              justifyContent: "space-between" 
+              justifyContent: "space-between",
+              background: "white",
+              padding: "1.5rem 2rem",
+              borderRadius: "16px",
+              border: "1px solid #f3f4f6",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.02)"
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
               <div style={{ 
-                width: "48px", 
-                height: "48px", 
-                background: "var(--secondary)", 
-                borderRadius: "50%", 
+                width: "56px", 
+                height: "56px", 
+                background: "#eff6ff", 
+                borderRadius: "12px", 
                 display: "flex", 
                 alignItems: "center", 
                 justifyContent: "center",
-                fontSize: "1.25rem",
-                fontWeight: "700",
-                color: "var(--primary)"
+                color: "#3b82f6",
+                border: "1px solid #bfdbfe"
               }}>
-                {student.name.charAt(0)}
+                <HeartHandshake size={24} />
               </div>
               <div>
-                <h3 style={{ fontSize: "1.125rem", fontWeight: "600" }}>{student.name}</h3>
-                <p style={{ fontSize: "0.875rem", color: "var(--muted-foreground)" }}>{student.id} • {student.dept}</p>
+                <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.25rem" }}>{student.name}</h3>
+                <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500" }}>{student.id} • {student.dept}</p>
               </div>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "4rem" }}>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Status</p>
+              <div style={{ textAlign: "right" }}>
+                <p style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: "700", textTransform: "uppercase", marginBottom: "0.25rem" }}>Status</p>
                 <span style={{ 
-                  fontSize: "0.75rem", 
-                  fontWeight: "600",
-                  padding: "0.25rem 0.75rem",
+                  fontSize: "0.8rem", 
+                  fontWeight: "800",
+                  padding: "0.4rem 1rem",
                   borderRadius: "20px",
-                  background: student.status === "Active" ? "rgba(16, 185, 129, 0.1)" : "rgba(245, 158, 11, 0.1)",
-                  color: student.status === "Active" ? "#10b981" : "#f59e0b"
+                  background: student.status === "Active" ? "#f0fdf4" : student.status === "Follow-up" ? "#eff6ff" : "#fffbeb",
+                  color: student.status === "Active" ? "#10b981" : student.status === "Follow-up" ? "#3b82f6" : "#f59e0b",
+                  border: `1px solid ${student.status === "Active" ? "#bbf7d0" : student.status === "Follow-up" ? "#bfdbfe" : "#fde68a"}`
                 }}>
                   {student.status}
                 </span>
               </div>
               
               <div style={{ textAlign: "right" }}>
-                <p style={{ fontSize: "0.75rem", color: "var(--muted-foreground)", marginBottom: "0.25rem" }}>Last Session</p>
-                <p style={{ fontSize: "0.875rem" }}>{student.lastSession}</p>
+                <p style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: "700", textTransform: "uppercase", marginBottom: "0.25rem" }}>Last Session</p>
+                <p style={{ fontSize: "0.95rem", fontWeight: "700", color: "#1e293b" }}>{student.lastSession}</p>
               </div>
 
               <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button title="New Message" style={{ padding: "0.5rem", borderRadius: "8px", background: "rgba(255,255,255,0.05)" }}>
+                <button title="New Message" style={{ padding: "0.75rem", borderRadius: "10px", background: "#f8fafc", border: "1px solid #e2e8f0", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="hover:text-blue-500 hover:border-blue-200">
                   <MessageSquare size={18} />
                 </button>
-                <button title="View History" style={{ padding: "0.5rem", borderRadius: "8px", background: "rgba(255,255,255,0.05)" }}>
+                <button title="View History" style={{ padding: "0.75rem", borderRadius: "10px", background: "#f8fafc", border: "1px solid #e2e8f0", color: "#64748b", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }} className="hover:text-blue-500 hover:border-blue-200">
                   <History size={18} />
                 </button>
               </div>
