@@ -380,7 +380,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   const refreshState = async (priorityOnly = false) => {
     setIsSyncing(true);
     try {
-      // TIER 1: CRITICAL CORE (Session & Identity)
+      // WAVE 1: IDENTITY & SESSION (CRITICAL)
       const session = await dbGetSession();
       if (session) setCurrentUser(session);
       
@@ -388,45 +388,82 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       if (savedTheme) setTheme(savedTheme);
       
       setTelemetryTier(1);
-      setIsLoading(false); // UI is now interactive
+      setIsLoading(false); // UI is now interactive for basic layout
 
-      if (priorityOnly) return;
+      if (priorityOnly || !session) return;
 
-      // TIER 2: INSTITUTIONAL BACKGROUND (Bulk Data)
-      const [dbOrgs, dbAnns, dbRefs, dbProgs, dbApps, dbBatches, dbRequests, dbAppts, dbUsers, dbNotifs, dbLogs, dbTypes, dbGM, dbCerts] = await Promise.all([
+      // WAVE 2: COMMON INSTITUTIONAL DATA (LIGHTWEIGHT)
+      const [dbOrgs, dbAnns, dbActivities] = await Promise.all([
         dbGetOrgs().catch(() => []),
         dbGetAnns().catch(() => []),
-        dbGetRefs().catch(() => []),
-        dbGetProgs().catch(() => []),
-        dbGetApps().catch(() => []),
-        dbGetBatches().catch(() => []),
-        dbGetRequests().catch(() => []),
-        dbGetAppts().catch(() => []),
-        dbGetAllUsers().catch(() => []),
-        dbGetNotifs(session?.id).catch(() => []), 
-        dbGetAuditLogs().catch(() => []),
-        dbGetServiceTypes().catch(() => []),
-        dbGetGMConfig().catch(() => null),
-        dbGetIssuedCerts().catch(() => [])
+        dbGetActivities().catch(() => [])
       ]);
-
-      // Atomic UI Updates
       if (dbOrgs?.length) setOrganizations(dbOrgs as any);
-      const dbActivities = await dbGetActivities().catch(() => []);
-      if (dbActivities?.length) setActivities(dbActivities as any);
       if (dbAnns?.length) setAnnouncements(dbAnns as any);
-      if (dbRefs?.length) setReferrals(dbRefs as any);
-      if (dbProgs?.length) setScholarshipPrograms(dbProgs as any);
-      if (dbApps?.length) setScholarshipApps(dbApps as any);
-      if (dbBatches?.length) setBatchConfigs(dbBatches as any);
-      if (dbRequests?.length) setRequests(dbRequests as any);
-      if (dbAppts?.length) setAppointments(dbAppts as any);
-      if (dbUsers?.length) setUsers(dbUsers as any);
-      if (dbNotifs?.length) setNotifications(dbNotifs.map((n: any) => ({ ...n, time: new Date(n.createdAt).toLocaleTimeString() })));
-      if (dbLogs?.length) setAuditLogs(dbLogs.map((l: any) => ({ ...l, timestamp: new Date(l.timestamp).toLocaleString() })));
-      if (dbTypes?.length) setServiceTypes(dbTypes as any);
-      if (dbGM) setGoodMoralConfig(dbGM as any);
-      if (dbCerts) setIssuedCertificates(dbCerts as any);
+      if (dbActivities?.length) setActivities(dbActivities as any);
+
+      // WAVE 3: ROLE-BASED TELEMETRY (DYNAMIC)
+      const role = session.role;
+      const isAdmin = role === "SYSTEM_ADMIN" || role === "OSAS_DIRECTOR";
+      const isGuidance = role === "GUIDANCE_COUNSELOR";
+      const isStudent = role === "STUDENT_APPLICANT" || role === "STUDENT_LEADER";
+
+      const fetches: Promise<any>[] = [];
+
+      // Always fetch notifications for current user
+      fetches.push(dbGetNotifs(session.id).catch(() => []));
+
+      if (isAdmin) {
+        // Full Institutional Telemetry
+        fetches.push(dbGetRefs().catch(() => []));
+        fetches.push(dbGetProgs().catch(() => []));
+        fetches.push(dbGetApps().catch(() => []));
+        fetches.push(dbGetBatches().catch(() => []));
+        fetches.push(dbGetRequests().catch(() => []));
+        fetches.push(dbGetAppts().catch(() => []));
+        fetches.push(dbGetAllUsers().catch(() => []));
+        fetches.push(dbGetAuditLogs().catch(() => []));
+        fetches.push(dbGetServiceTypes().catch(() => []));
+        fetches.push(dbGetGMConfig().catch(() => null));
+        fetches.push(dbGetIssuedCerts().catch(() => []));
+      } else if (isGuidance) {
+        // Guidance Telemetry
+        fetches.push(dbGetRefs().catch(() => []));
+        fetches.push(dbGetAppts().catch(() => []));
+      } else if (isStudent) {
+        // Personal Student Telemetry
+        fetches.push(dbGetApps().catch(() => []));
+        fetches.push(dbGetRequests().catch(() => []));
+        fetches.push(dbGetAppts().catch(() => []));
+      }
+
+      const results = await Promise.all(fetches);
+      
+      // Map results back to state
+      let cursor = 0;
+      const nextNotifs = results[cursor++];
+      if (nextNotifs) setNotifications(nextNotifs.map((n: any) => ({ ...n, time: new Date(n.createdAt).toLocaleTimeString() })));
+
+      if (isAdmin) {
+        setReferrals(results[cursor++] || []);
+        setScholarshipPrograms(results[cursor++] || []);
+        setScholarshipApps(results[cursor++] || []);
+        setBatchConfigs(results[cursor++] || []);
+        setRequests(results[cursor++] || []);
+        setAppointments(results[cursor++] || []);
+        setUsers(results[cursor++] || []);
+        setAuditLogs((results[cursor++] || []).map((l: any) => ({ ...l, timestamp: new Date(l.timestamp).toLocaleString() })));
+        setServiceTypes(results[cursor++] || []);
+        setGoodMoralConfig(results[cursor++] || null);
+        setIssuedCertificates(results[cursor++] || []);
+      } else if (isGuidance) {
+        setReferrals(results[cursor++] || []);
+        setAppointments(results[cursor++] || []);
+      } else if (isStudent) {
+        setScholarshipApps(results[cursor++] || []);
+        setRequests(results[cursor++] || []);
+        setAppointments(results[cursor++] || []);
+      }
 
       setTelemetryTier(2);
     } catch (error) {

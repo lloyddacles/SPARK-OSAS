@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getPrisma } from "@/lib/prisma";
+
 async function getDB() {
-  const { getPrisma } = await import("@/lib/prisma");
   return getPrisma();
 }
 
