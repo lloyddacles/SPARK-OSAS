@@ -30,7 +30,8 @@ import {
   ChevronRight,
   Info,
   MapPin,
-  Banknote
+  Banknote,
+  FilePlus
 } from "lucide-react";
 import { useGlobalState, StudentOrg } from "@/lib/GlobalStateContext";
 import ConfirmModal from "@/components/ConfirmModal";
