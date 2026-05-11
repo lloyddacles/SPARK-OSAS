@@ -140,9 +140,9 @@ export default function StudentPassportPage() {
       {/* Header */}
       <div style={{ marginBottom: "4rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Records</p>
+          <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Student Records</p>
           <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
-            <span style={{ color: "var(--primary)" }}>Student Profile</span>
+            <span style={{ color: "#3b82f6" }}>Student Profile</span>
           </h1>
           <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>Look up any student's full record — scholarships, requests, appointments, and referral history.</p>
         </div>
@@ -169,7 +169,7 @@ export default function StudentPassportPage() {
           overflow: "hidden" 
         }}
       >
-         <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "4px", background: "var(--primary)" }} />
+         <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: "4px", background: "#3b82f6" }} />
          <form onSubmit={handleSearch} style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "center" }}>
             <div style={{ flex: 1, position: "relative", minWidth: "250px" }}>
                <Search size={20} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "#9ca3af" }} />
@@ -190,7 +190,7 @@ export default function StudentPassportPage() {
                  }}
                />
             </div>
-            <button type="submit" disabled={isSearching} style={{ padding: "1.25rem 3rem", fontSize: "0.95rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.75rem", background: "var(--primary)", color: "white", borderRadius: "12px", border: "none", cursor: isSearching ? "wait" : "pointer" }}>
+            <button type="submit" disabled={isSearching} style={{ padding: "1.25rem 3rem", fontSize: "0.95rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.75rem", background: "#3b82f6", color: "white", borderRadius: "12px", border: "none", cursor: isSearching ? "wait" : "pointer" }}>
                {isSearching ? <Cpu className="animate-spin" size={20} /> : <Search size={20} />}
                {isSearching ? "Searching..." : "Find Student"}
             </button>

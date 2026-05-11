@@ -17,22 +17,38 @@ import {
   ArrowRight,
   Plus,
   Download,
-  X
+  X,
+  Building,
+  CheckCircle,
+  ShieldAlert,
+  Zap,
+  Activity,
+  Layers,
+  FileSearch,
+  Check,
+  AlertTriangle,
+  RotateCcw,
+  Info
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { getAllStudentVaults, VaultStatus } from "@/lib/actions/vaultActions";
 import ProcessGuide from "@/components/ProcessGuide";
 
 export default function VaultAuditPage() {
-  const { verifyDocument, currentUser } = useGlobalState();
+  const { verifyDocument, currentUser, logAudit } = useGlobalState();
   const [students, setStudents] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
   const [remark, setRemark] = useState("");
   const [previewDoc, setPreviewDoc] = useState<{ name: string; content: string; type: string } | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  const isAuth = ["OSAS_DIRECTOR", "SYSTEM_ADMIN"].includes(currentUser?.role || "");
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const isAuth = ["OSAS_DIRECTOR", "SYSTEM_ADMIN", "GUIDANCE_COUNSELOR"].includes(currentUser?.role || "");
 
   const handleOpenPreview = async (docName: string, student: any) => {
     let content = "";
@@ -67,6 +83,7 @@ export default function VaultAuditPage() {
   const handleVerify = async (status: VaultStatus) => {
     if (!selectedStudent || !selectedDoc) return;
     await verifyDocument(selectedStudent.id, selectedDoc, status, remark);
+    logAudit("VAULT_AUDIT_COMPLETED", `Guidance audit for ${selectedDoc} (${selectedStudent.name}) set to ${status}`, "MEDIUM");
     
     const updatedData = await getAllStudentVaults();
     setStudents(updatedData);
@@ -74,249 +91,292 @@ export default function VaultAuditPage() {
     setSelectedStudent(updatedStudent);
     setSelectedDoc(null);
     setRemark("");
+    setPreviewDoc(null);
   };
 
-  if (!isAuth) return <div style={{ padding: "4rem", textAlign: "center", fontWeight: "900" }}>ACCESS DENIED: UNAUTHORIZED USER</div>;
+  if (!isHydrated) {
+    return (
+      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "white" }}>
+         <Activity size={48} className="animate-pulse" color="#3b82f6" />
+      </div>
+    );
+  }
+
+  if (!isAuth) {
+    return (
+      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2rem" }}>
+         <ShieldAlert size={64} color="#ef4444" />
+         <div style={{ textAlign: "center" }}>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "900", color: "#111827", letterSpacing: "-0.02em" }}>Access Restricted</h2>
+            <p style={{ color: "#64748b", fontWeight: "600", marginTop: "0.5rem" }}>Institutional clearance required to access the identity vault audit.</p>
+         </div>
+      </div>
+    );
+  }
 
   const filteredStudents = students.filter(s => 
     s.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    s.studentId?.toLowerCase().includes(searchTerm.toLowerCase())
+    s.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (s.username || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto" }}>
+    <div style={{ width: "100%", maxWidth: "1600px", margin: "0 auto", position: "relative" }}>
       
-      {/* Sapphire Header */}
-      <div style={{ marginBottom: "3rem" }}>
+      {/* ── Page Header ── */}
+      <div style={{ marginBottom: "3rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem" }}>
         <div>
-          <p style={{ color: "var(--primary)", fontSize: "0.65rem", fontWeight: "900", letterSpacing: "0.4em", marginBottom: "0.5rem" }}>NETWORK: IDENTITY AUDIT</p>
-          <h1 style={{ fontSize: "2.5rem", fontWeight: "900", letterSpacing: "-0.04em", color: "var(--text-main)" }}>
-            IDENTITY <span style={{ color: "var(--primary)" }}>VAULT</span>
-          </h1>
+           <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Administrative Audit</p>
+           <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
+             Identity <span style={{ color: "#3b82f6" }}>Vault</span>
+           </h1>
+           <p style={{ marginTop: "0.75rem", fontSize: "1rem", color: "#64748b", maxWidth: "600px", lineHeight: "1.6" }}>
+             Audit student identity dossiers and verify compliance for institutional records. Manage digital signatures and legal documentation.
+           </p>
+        </div>
+        <div style={{ textAlign: "right", background: "#f8fafc", padding: "1.25rem 2rem", borderRadius: "16px", border: "1px solid #f1f5f9" }}>
+           <p style={{ fontSize: "0.75rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.25rem" }}>Vault Statistics</p>
+           <div style={{ display: "flex", alignItems: "baseline", gap: "0.5rem", justifyContent: "flex-end" }}>
+             <span style={{ fontSize: "1.75rem", fontWeight: "900", color: "#1e293b" }}>{students.length}</span>
+             <span style={{ fontSize: "0.85rem", fontWeight: "700", color: "#94a3b8" }}>Indexed Profiles</span>
+           </div>
         </div>
       </div>
 
       <ProcessGuide 
          title="Digital Vault Verification Protocol"
          steps={[
-            { title: "Select Identity", desc: "Locate the student node within the vault repository to access their document index.", icon: <User size={14} /> },
-            { title: "Audit Node", desc: "Select a specific file to enter the secure audit viewport for live verification.", icon: <Eye size={14} /> },
-            { title: "Review Payload", desc: "Analyze the document content for accuracy, clarity, and institutional compliance.", icon: <FileText size={14} /> },
-            { title: "Issue Verdict", desc: "Log institutional remarks and update the verification status in the ledger.", icon: <ShieldCheck size={14} /> }
+            { title: "Identity Selection", desc: "Locate the student node within the repository index to access their dossier.", icon: <User size={16} /> },
+            { title: "Node Audit", desc: "Select a specific document to initialize the secure audit viewport.", icon: <FileSearch size={16} /> },
+            { title: "Data Review", desc: "Analyze payload for authenticity, clarity, and institutional compliance.", icon: <Eye size={16} /> },
+            { title: "Verdict Issuance", desc: "Log administrative remarks and finalize verification in the ledger.", icon: <ShieldCheck size={16} /> }
          ]}
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "2rem", alignItems: "start" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "350px 1fr", gap: "2.5rem", alignItems: "start" }}>
         
-        {/* STUDENT NAVIGATION NODES */}
-        <div className="sapphire-card" style={{ padding: "1.25rem", height: "fit-content" }}>
-           <div style={{ position: "relative", marginBottom: "1.5rem" }}>
-              <Search size={12} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-dim)" }} />
-              <input 
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                placeholder="SEARCH ID..." 
-                style={{ width: "100%", padding: "0.6rem 0.6rem 0.6rem 2.2rem", fontSize: "0.65rem", fontWeight: "800", textTransform: "uppercase", background: "var(--bg-accent)", border: "1px solid var(--border-dim)" }} 
-              />
-           </div>
-
-           <div style={{ display: "flex", flexDirection: "column", gap: "1px", background: "var(--border-dim)", maxHeight: "65vh", overflowY: "auto" }}>
-              {filteredStudents.map(student => (
-                <button 
-                  key={student.id}
-                  onClick={() => setSelectedStudent(student)}
-                  style={{ 
-                    width: "100%", 
-                    textAlign: "left", 
-                    padding: "0.85rem", 
-                    background: selectedStudent?.id === student.id ? "var(--bg-accent)" : "var(--bg-surface)",
-                    border: "none",
-                    borderLeft: selectedStudent?.id === student.id ? "2px solid var(--primary)" : "2px solid transparent",
-                    cursor: "pointer",
-                    transition: "all 0.2s"
-                  }}
-                >
-                  <p style={{ fontSize: "0.75rem", fontWeight: "800", color: selectedStudent?.id === student.id ? "var(--primary)" : "var(--text-main)" }}>{student.name.toUpperCase()}</p>
-                  <p style={{ fontSize: "0.55rem", fontWeight: "800", color: "var(--text-dim)", marginTop: "0.2rem" }}>SID: {student.studentId || "PENDING"}</p>
-                </button>
-              ))}
-           </div>
-        </div>
-
-        {/* DATA AUDIT CONSOLE */}
-        <div style={{ minWidth: 0 }}>
-          {selectedStudent ? (
-            <motion.div 
-              initial={{ opacity: 0, x: 10 }} 
-              animate={{ opacity: 1, x: 0 }} 
-              key={selectedStudent.id}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            >
-              {/* Profile Card */}
-              <div className="sapphire-card" style={{ marginBottom: "1.5rem", padding: "1.5rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: "900", color: "var(--text-main)" }}>{(selectedStudent.name || "Unknown").toUpperCase()}</h2>
-                    <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
-                       <p style={{ color: "var(--primary)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>ROLE: {selectedStudent.role}</p>
-                       <p style={{ color: "var(--text-dim)", fontSize: "0.6rem", fontWeight: "900", letterSpacing: "0.1em" }}>SID: {selectedStudent.studentId || "N/A"}</p>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                     <p style={{ fontSize: "1.1rem", fontWeight: "900", color: "var(--primary)" }}>{Object.keys(selectedStudent.vault || {}).length} FILES</p>
-                     <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)" }}>INDEX STAMPED</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Document List */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100%, 1fr))", gap: "1rem", marginBottom: "2rem" }}>
-                {Object.entries(selectedStudent.vault || {}).map(([name, info]: [string, any]) => (
-                  <div key={name} className="sapphire-card" style={{ padding: "1.25rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ display: "flex", gap: "1.25rem", alignItems: "center" }}>
-                      <div style={{ width: "36px", height: "36px", background: "var(--bg-accent)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--primary)", border: "1px solid var(--border-dim)" }}>
-                        <FileText size={16} />
-                      </div>
-                      <div>
-                        <p style={{ fontWeight: "800", fontSize: "0.8rem", color: "var(--text-main)" }}>{name.toUpperCase()}</p>
-                        <p style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)", marginTop: "0.2rem" }}>
-                          STAMPED: {info.date} • <span style={{ color: info.status === "Verified" ? "#10b981" : "var(--primary)" }}>{(info.status || "PENDING").toUpperCase()}</span>
-                        </p>
-                      </div>
-                    </div>
-                    <button 
-                       onClick={() => handleOpenPreview(name, selectedStudent)}
-                       className="btn-cyan"
-                       style={{ padding: "0.4rem 1.25rem", fontSize: "0.6rem", borderRadius: "4px" }}
-                    >
-                       AUDIT NODE
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              {/* LIVE AUDIT VIEWPORT */}
-              <AnimatePresence>
-                {selectedDoc && previewDoc && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 15 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: 15 }} 
-                    className="sapphire-card" 
+        {/* STUDENT REPOSITORY INDEX */}
+        <aside style={{ background: "white", borderRadius: "24px", border: "1px solid #f1f5f9", overflow: "hidden", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", position: "sticky", top: "2rem" }}>
+            <div style={{ padding: "2.5rem", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>
+               <h3 style={{ fontSize: "1rem", fontWeight: "900", color: "#1e293b", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <Database size={20} color="#3b82f6" /> Identity Index
+               </h3>
+               <div style={{ position: "relative" }}>
+                  <Search size={18} style={{ position: "absolute", left: "1.25rem", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                  <input 
+                    placeholder="Search name or ID..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    style={{ width: "100%", padding: "1.15rem 1rem 1.15rem 3.5rem", background: "white", border: "1px solid #e2e8f0", borderRadius: "12px", fontSize: "0.9rem", fontWeight: "600", color: "#1e293b", outline: "none" }}
+                  />
+               </div>
+            </div>
+            
+            <div style={{ maxHeight: "65vh", overflowY: "auto" }}>
+               {filteredStudents.map(student => (
+                  <button 
+                    key={student.id}
+                    onClick={() => setSelectedStudent(student)}
                     style={{ 
-                      border: "1px solid var(--primary)", 
-                      display: "grid", 
-                      gridTemplateColumns: "1fr 300px", /* Reduced panel width */
-                      gap: "2.5rem", 
-                      padding: "2rem",
-                      background: "var(--bg-surface)",
-                      boxShadow: "0 30px 60px rgba(0,0,0,0.12)"
+                      width: "100%", 
+                      padding: "1.75rem 2.5rem", 
+                      background: selectedStudent?.id === student.id ? "#f8fafc" : "transparent",
+                      border: "none",
+                      borderBottom: "1px solid #f1f5f9",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1.25rem",
+                      transition: "all 0.2s",
+                      position: "relative"
                     }}
                   >
-                    
-                    {/* DOCUMENT PREVIEW AREA */}
-                    <div style={{ 
-                      background: "var(--bg-accent)", 
-                      border: "1px solid var(--border-dim)", 
-                      padding: "2rem", 
-                      color: "var(--text-main)", 
-                      minHeight: "450px", 
-                      position: "relative",
-                      overflow: "hidden" 
-                    }}>
-                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem", borderBottom: "1px solid var(--border-dim)", paddingBottom: "0.75rem" }}>
-                          <span style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--text-dim)" }}>SECURE VIEWPORT: {previewDoc.name.toUpperCase()}</span>
-                          <span style={{ fontSize: "0.55rem", fontWeight: "900", color: "var(--primary)" }}>HEX: {selectedStudent.id.substr(0,8)}</span>
-                       </div>
-                       
-                       <div style={{ overflowY: "auto", maxHeight: "400px" }}>
-                         {previewDoc.type === "Image" ? (
-                           <div style={{ display: "flex", justifyContent: "center", padding: "1rem" }}>
-                             <img src={previewDoc.content} style={{ maxWidth: "200px", border: "1px solid var(--primary)", boxShadow: "0 0 20px var(--primary-glow)" }} />
-                           </div>
-                         ) : (
-                           <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit", fontSize: "0.8rem", lineHeight: "1.8", color: "var(--text-main)" }}>
-                             {previewDoc.content}
-                           </pre>
-                         )}
-                       </div>
-
-                       <div style={{ position: "absolute", bottom: "1.25rem", left: "1.25rem", right: "1.25rem", padding: "0.75rem", background: "rgba(0,0,0,0.05)", border: "1px solid var(--border-dim)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <h2 style={{ fontSize: "0.85rem", fontWeight: "900", display: "flex", alignItems: "center", gap: "1rem" }}>
-                      <Database size={18} color="var(--primary)" /> DOCUMENT REPOSITORY
-                   </h2>
-                       </div>
+                    {selectedStudent?.id === student.id && <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "4px", background: "#3b82f6" }} />}
+                    <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: selectedStudent?.id === student.id ? "#eff6ff" : "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", color: selectedStudent?.id === student.id ? "#3b82f6" : "#94a3b8", border: "1px solid", borderColor: selectedStudent?.id === student.id ? "#dbeafe" : "#f1f5f9" }}>
+                       <User size={20} />
                     </div>
-
-                    {/* FEEDBACK PROTOCOL */}
-                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem" }}>
-                        <h3 style={{ fontSize: "0.75rem", fontWeight: "900", letterSpacing: "0.1em" }}>AUDIT PROTOCOL</h3>
-                        <button onClick={() => setSelectedDoc(null)} style={{ background: "none", border: "none", color: "var(--text-dim)", cursor: "pointer" }}><X size={18} /></button>
-                      </div>
-
-                      <div style={{ marginBottom: "2rem" }}>
-                        <div className="sapphire-card" style={{ borderTop: "4px solid var(--primary)" }}>
-                      <h3 style={{ fontSize: "0.75rem", fontWeight: "900", marginBottom: "2rem" }}>VAULT CONTROLS</h3>
-                      <button className="btn-cyan" style={{ width: "100%", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
-                         <Plus size={16} /> REQUEST DOCUMENT
-                      </button>
-                      <button className="btn-cyan" style={{ width: "100%", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem", background: "var(--bg-accent)", border: "1px solid var(--border-dim)", color: "var(--text-main)" }}>
-                         <Download size={16} color="var(--primary)" /> EXPORT REGISTRY
-                      </button>
-                   </div>
-                        <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.6rem", fontWeight: "900", color: "var(--text-dim)" }}>INSTITUTIONAL REMARKS</label>
-                        <textarea 
-                          value={remark}
-                          onChange={e => setRemark(e.target.value)}
-                          placeholder="ENTER AUDIT LOG..."
-                          rows={4} 
-                          style={{ width: "100%", padding: "0.75rem", fontSize: "0.7rem", fontWeight: "700", border: "1px solid var(--border-dim)", background: "var(--bg-accent)" }} 
-                        />
-                      </div>
-
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                        {[
-                          { status: "Verified", color: "#10b981", icon: <CheckCircle2 size={12} /> },
-                          { status: "For Re-upload", color: "var(--primary)", icon: <Clock size={12} /> },
-                          { status: "Wrong Document", color: "#ef4444", icon: <AlertCircle size={12} /> },
-                        ].map((btn) => (
-                          <button 
-                            key={btn.status}
-                            onClick={() => handleVerify(btn.status as any)}
-                            style={{ 
-                              padding: "0.85rem", 
-                              borderRadius: "4px", 
-                              background: "var(--bg-surface)", 
-                              border: `1px solid ${btn.color}`, 
-                              color: btn.color, 
-                              fontSize: "0.65rem", 
-                              fontWeight: "900",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: "0.5rem",
-                              cursor: "pointer",
-                              transition: "all 0.2s"
-                            }}
-                          >
-                            {btn.icon} {btn.status.toUpperCase()}
-                          </button>
-                        ))}
-                      </div>
+                    <div>
+                       <p style={{ fontSize: "0.9rem", fontWeight: "800", color: selectedStudent?.id === student.id ? "#3b82f6" : "#1e293b", marginBottom: "0.2rem" }}>{student.name}</p>
+                       <p style={{ fontSize: "0.75rem", fontWeight: "600", color: "#64748b" }}>ID: {student.username || student.studentId || "PENDING"}</p>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ) : (
-            <div className="sapphire-card" style={{ height: "400px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "var(--text-dim)" }}>
-               <Database size={40} style={{ opacity: 0.1, marginBottom: "1.5rem" }} />
-               <p style={{ fontSize: "0.7rem", fontWeight: "900", letterSpacing: "0.2em" }}>SELECT_VAULT_NODE_TO_BEGIN</p>
+                  </button>
+               ))}
+               {filteredStudents.length === 0 && (
+                  <div style={{ padding: "4rem 2rem", textAlign: "center" }}>
+                     <p style={{ fontSize: "0.9rem", fontWeight: "600", color: "#94a3b8" }}>No records found.</p>
+                  </div>
+               )}
             </div>
-          )}
-        </div>
+        </aside>
 
+        {/* AUDIT CONSOLE */}
+        <main>
+          <AnimatePresence mode="wait">
+            {selectedStudent ? (
+              <motion.div 
+                key={selectedStudent.id}
+                initial={{ opacity: 0, y: 15 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: -15 }}
+                style={{ display: "grid", gap: "2rem" }}
+              >
+                {/* Profile Overview */}
+                <div style={{ background: "white", borderRadius: "24px", padding: "2.5rem 3rem", border: "1px solid #f1f5f9", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+                         <div style={{ width: "72px", height: "72px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: "16px", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6" }}>
+                            <ShieldCheck size={36} />
+                         </div>
+                         <div>
+                            <h2 style={{ fontSize: "1.5rem", fontWeight: "900", color: "#1e293b", letterSpacing: "-0.02em" }}>{selectedStudent.name}</h2>
+                            <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+                               <p style={{ color: "#3b82f6", fontSize: "0.8rem", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.05em" }}>ROLE: {selectedStudent.role}</p>
+                               <p style={{ color: "#94a3b8", fontSize: "0.8rem", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.05em" }}>SID: {selectedStudent.username || "N/A"}</p>
+                            </div>
+                         </div>
+                      </div>
+                      <div style={{ textAlign: "right" }}>
+                         <p style={{ fontSize: "1.5rem", fontWeight: "900", color: "#1e293b" }}>{Object.keys(selectedStudent.vault || {}).length}</p>
+                         <p style={{ fontSize: "0.75rem", fontWeight: "800", color: "#94a3b8", textTransform: "uppercase" }}>Vault Files</p>
+                      </div>
+                   </div>
+                </div>
+
+                {/* Document Grid */}
+                <div style={{ display: "grid", gap: "1rem" }}>
+                  {Object.entries(selectedStudent.vault || {}).map(([name, info]: [string, any]) => {
+                    const isVerified = info.status === "Verified";
+                    return (
+                      <motion.div 
+                        key={name} 
+                        whileHover={{ x: 4 }}
+                        style={{ background: "white", borderRadius: "20px", border: "1px solid #f1f5f9", padding: "1.5rem 2.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 4px 6px rgba(0,0,0,0.01)" }}
+                      >
+                        <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+                          <div style={{ width: "48px", height: "48px", background: "#f8fafc", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", color: isVerified ? "#10b981" : "#3b82f6", border: "1px solid #e2e8f0" }}>
+                            <FileText size={22} />
+                          </div>
+                          <div>
+                            <p style={{ fontWeight: "900", fontSize: "1rem", color: "#1e293b" }}>{name}</p>
+                            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.25rem" }}>
+                               <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#94a3b8" }}>Stamped: {info.date}</span>
+                               <span style={{ fontSize: "0.7rem", fontWeight: "900", color: isVerified ? "#10b981" : "#f59e0b", background: isVerified ? "#f0fdf4" : "#fff7ed", padding: "0.25rem 0.75rem", borderRadius: "20px", border: "1px solid", borderColor: isVerified ? "#dcfce7" : "#ffedd5" }}>
+                                 {(info.status || "PENDING").toUpperCase()}
+                               </span>
+                            </div>
+                          </div>
+                        </div>
+                        <button 
+                           onClick={() => handleOpenPreview(name, selectedStudent)}
+                           style={{ padding: "0.85rem 1.75rem", fontSize: "0.85rem", fontWeight: "800", background: "#111827", color: "white", border: "none", borderRadius: "12px", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.75rem" }}
+                        >
+                           <Eye size={18} /> Audit Node
+                        </button>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* Audit Viewport (Inline) */}
+                <AnimatePresence>
+                  {selectedDoc && previewDoc && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.98 }} 
+                      animate={{ opacity: 1, scale: 1 }} 
+                      exit={{ opacity: 0, scale: 0.98 }} 
+                      style={{ 
+                        background: "white", 
+                        borderRadius: "32px", 
+                        border: "1px solid #3b82f6", 
+                        display: "grid", 
+                        gridTemplateColumns: "1fr 380px",
+                        gap: "3rem", 
+                        padding: "3rem",
+                        boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.15)",
+                        marginTop: "1rem"
+                      }}
+                    >
+                      {/* Document Preview */}
+                      <div style={{ background: "#f8fafc", borderRadius: "24px", border: "1px solid #f1f5f9", padding: "3rem", color: "#1e293b", minHeight: "500px", position: "relative", overflow: "hidden" }}>
+                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "2rem", borderBottom: "2px solid #e2e8f0", paddingBottom: "1rem" }}>
+                            <span style={{ fontSize: "0.8rem", fontWeight: "900", color: "#3b82f6", textTransform: "uppercase", letterSpacing: "0.1em" }}>Secure Audit: {previewDoc.name}</span>
+                            <span style={{ fontSize: "0.8rem", fontWeight: "900", color: "#94a3b8" }}>#{selectedStudent.id.substr(0,8).toUpperCase()}</span>
+                         </div>
+                         
+                         <div style={{ overflowY: "auto", maxHeight: "400px" }}>
+                           {previewDoc.type === "Image" ? (
+                             <div style={{ display: "flex", justifyContent: "center", padding: "2rem" }}>
+                               <img src={previewDoc.content} style={{ maxWidth: "300px", borderRadius: "12px", boxShadow: "0 10px 25px rgba(0,0,0,0.1)", border: "4px solid white" }} />
+                             </div>
+                           ) : (
+                             <div style={{ whiteSpace: "pre-wrap", fontSize: "1rem", lineHeight: "1.8", color: "#334155", fontWeight: "500", padding: "1rem" }}>
+                               {previewDoc.content}
+                             </div>
+                           )}
+                         </div>
+
+                         <div style={{ position: "absolute", bottom: "2rem", left: "3rem", right: "3rem", padding: "1rem 2rem", background: "white", border: "1px solid #f1f5f9", borderRadius: "16px", display: "flex", alignItems: "center", gap: "1rem", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
+                            <Database size={20} color="#3b82f6" /> 
+                            <p style={{ fontSize: "0.85rem", fontWeight: "800", color: "#1e293b" }}>INSTITUTIONAL REPOSITORY ACCESS</p>
+                         </div>
+                      </div>
+
+                      {/* Feedback Panel */}
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2.5rem" }}>
+                          <h3 style={{ fontSize: "1.1rem", fontWeight: "900", color: "#1e293b", letterSpacing: "-0.01em" }}>Audit Verdict</h3>
+                          <button onClick={() => setSelectedDoc(null)} style={{ background: "#f8fafc", border: "1px solid #f1f5f9", color: "#94a3b8", cursor: "pointer", width: "44px", height: "44px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={22} /></button>
+                        </div>
+
+                        <div style={{ marginBottom: "2.5rem" }}>
+                          <label style={{ display: "block", marginBottom: "0.75rem", fontSize: "0.85rem", fontWeight: "800", color: "#475569" }}>Administrative Remarks</label>
+                          <textarea 
+                            value={remark}
+                            onChange={e => setRemark(e.target.value)}
+                            placeholder="Enter institutional feedback..."
+                            style={{ width: "100%", padding: "1.25rem", fontSize: "1rem", fontWeight: "600", border: "1px solid #f1f5f9", background: "#f8fafc", borderRadius: "16px", outline: "none", resize: "none", lineHeight: "1.6" }}
+                            rows={5}
+                          />
+                        </div>
+
+                        <div style={{ display: "grid", gap: "1rem" }}>
+                          <button 
+                             onClick={() => handleVerify("Verified")}
+                             style={{ padding: "1.25rem", borderRadius: "14px", background: "#10b981", color: "white", border: "none", fontSize: "0.95rem", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer", boxShadow: "0 4px 6px rgba(16, 185, 129, 0.2)" }}
+                          >
+                             <CheckCircle size={20} /> APPROVE & VERIFY
+                          </button>
+                          <button 
+                             onClick={() => handleVerify("For Re-upload")}
+                             style={{ padding: "1.25rem", borderRadius: "14px", background: "white", border: "1px solid #f59e0b", color: "#d97706", fontSize: "0.95rem", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer" }}
+                          >
+                             <RotateCcw size={20} /> REQUEST RE-UPLOAD
+                          </button>
+                          <button 
+                             onClick={() => handleVerify("Wrong Document")}
+                             style={{ padding: "1.25rem", borderRadius: "14px", background: "white", border: "1px solid #fee2e2", color: "#ef4444", fontSize: "0.95rem", fontWeight: "900", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", cursor: "pointer" }}
+                          >
+                             <AlertTriangle size={20} /> WRONG DOCUMENT
+                          </button>
+                        </div>
+                        
+                        <button onClick={() => setSelectedDoc(null)} style={{ width: "100%", marginTop: "2rem", padding: "1rem", background: "transparent", border: "none", color: "#94a3b8", fontSize: "0.85rem", fontWeight: "800", cursor: "pointer" }}>Discard Audit Session</button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <div style={{ height: "60vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "#cbd5e1", background: "white", borderRadius: "32px", border: "1px dashed #e2e8f0" }}>
+                 <div style={{ width: "100px", height: "100px", borderRadius: "50%", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid #f1f5f9", marginBottom: "2rem" }}>
+                    <Layers size={48} />
+                 </div>
+                 <p style={{ fontSize: "1rem", fontWeight: "800", color: "#94a3b8", letterSpacing: "0.1em", textTransform: "uppercase" }}>Select Student Node to Begin Audit</p>
+              </div>
+            )}
+          </AnimatePresence>
+        </main>
       </div>
     </div>
   );

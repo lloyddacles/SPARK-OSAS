@@ -307,7 +307,7 @@ export default function ScholarInventoryPage() {
 
       {isLoading && scholars.length === 0 ? (
         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-           <Loader2 size={48} className="animate-spin" color="var(--primary)" />
+           <Loader2 size={48} className="animate-spin" color="#3b82f6" />
         </div>
       ) : !isAuth ? (
         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2rem" }}>
@@ -322,9 +322,9 @@ export default function ScholarInventoryPage() {
           {/* HEADER SECTION */}
        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "4rem", flexWrap: "wrap", gap: "2rem" }}>
           <div>
-             <p style={{ color: "var(--primary)", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Scholarship Management</p>
+             <p style={{ color: "#3b82f6", fontSize: "0.75rem", fontWeight: "700", letterSpacing: "0.15em", marginBottom: "0.5rem", textTransform: "uppercase" }}>Scholarship Management</p>
              <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)", fontWeight: "900", letterSpacing: "-0.03em", color: "#111827" }}>
-               <span style={{ color: "var(--primary)" }}>Scholar Registry</span>
+               <span style={{ color: "#3b82f6" }}>Scholar Registry</span>
              </h1>
              <p style={{ marginTop: "0.5rem", fontSize: "0.9rem", color: "#6b7280", maxWidth: "500px", lineHeight: "1.5" }}>View, add, update, and manage all scholarship records.</p>
           </div>
@@ -357,7 +357,7 @@ export default function ScholarInventoryPage() {
                  display: "flex", 
                  alignItems: "center", 
                  gap: "0.75rem", 
-                 background: "var(--primary)", 
+                 background: "#3b82f6", 
                  border: "none", 
                  color: "white", 
                  fontSize: "0.9rem", 
@@ -386,7 +386,7 @@ export default function ScholarInventoryPage() {
 
        {/* STATS GRID */}
        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
-          <div style={{ background: "white", borderRadius: "16px", padding: "2rem", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", borderLeft: "4px solid var(--primary)" }}>
+          <div style={{ background: "white", borderRadius: "16px", padding: "2rem", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", borderLeft: "4px solid #3b82f6" }}>
              <p style={{ fontSize: "0.85rem", fontWeight: "700", color: "#64748b", marginBottom: "0.5rem" }}>Total Scholars</p>
              <h2 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#1e293b", lineHeight: "1" }}>{total}</h2>
              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginTop: "1rem" }}>
@@ -633,7 +633,7 @@ export default function ScholarInventoryPage() {
                       display: "flex", 
                       alignItems: "center", 
                       justifyContent: "center",
-                      background: page === p ? "var(--primary)" : "white", 
+                      background: page === p ? "#3b82f6" : "white", 
                       border: page === p ? "none" : "1px solid #e2e8f0", 
                       color: page === p ? "white" : "#475569", 
                       fontSize: "0.85rem", 
@@ -742,7 +742,7 @@ export default function ScholarInventoryPage() {
                          </select>
                       </div>
                       <div style={{ gridColumn: "span 2", marginTop: "1rem" }}>
-                         <button type="submit" style={{ width: "100%", padding: "1.25rem", background: "var(--primary)", color: "white", borderRadius: "12px", border: "none", fontSize: "1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.75rem", justifyContent: "center", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
+                         <button type="submit" style={{ width: "100%", padding: "1.25rem", background: "#3b82f6", color: "white", borderRadius: "12px", border: "none", fontSize: "1rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.75rem", justifyContent: "center", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
                             <ShieldCheck size={20} />
                             {isAddModalOpen ? "Save New Scholar" : "Save Changes"}
                          </button>

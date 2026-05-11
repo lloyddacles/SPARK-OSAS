@@ -45,7 +45,9 @@ import {
    Briefcase,
    Clock,
    Building,
-   CheckCircle
+   CheckCircle,
+   FileSignature,
+   Info
 } from "lucide-react";
 
 export default function ScholarshipsClient() {
@@ -687,8 +689,8 @@ export default function ScholarshipsClient() {
                                                    </div>
                                                    {doc?.uploaded ? (
                                                       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                                                         <span style={{ fontSize: "0.7rem", fontWeight: "900", color: doc.status === "Approved" ? "#10b981" : doc.status === "Rejected" ? "#ef4444" : "#f59e0b", background: "white", padding: "0.3rem 0.75rem", borderRadius: "20px", border: "1px solid #f1f5f9" }}>
-                                                            {doc.status.toUpperCase()}
+                                                         <span style={{ fontSize: "0.7rem", fontWeight: "900", color: doc?.status === "Approved" ? "#10b981" : doc?.status === "Rejected" ? "#ef4444" : "#f59e0b", background: "white", padding: "0.3rem 0.75rem", borderRadius: "20px", border: "1px solid #f1f5f9" }}>
+                                                            {(doc?.status || "Pending").toUpperCase()}
                                                          </span>
                                                          <button
                                                             onClick={() => {
