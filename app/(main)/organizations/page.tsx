@@ -31,7 +31,8 @@ import {
   Info,
   MapPin,
   Banknote,
-  FilePlus
+  FilePlus,
+  Send
 } from "lucide-react";
 import { useGlobalState, StudentOrg } from "@/lib/GlobalStateContext";
 import ConfirmModal from "@/components/ConfirmModal";
