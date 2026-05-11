@@ -47,7 +47,8 @@ import {
    Building,
    CheckCircle,
    FileSignature,
-   Info
+   Info,
+   FilePlus
 } from "lucide-react";
 
 export default function ScholarshipsClient() {
