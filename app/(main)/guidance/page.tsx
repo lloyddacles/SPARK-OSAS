@@ -33,12 +33,14 @@ import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
 import ProcessGuide from "@/components/ProcessGuide";
 import GuidanceCaseManagement from "@/components/GuidanceCaseManagement";
+import DigitalCertificate from "@/components/DigitalCertificate";
 
 export default function GuidancePortal() {
   const router = useRouter();
   const { currentUser, requests: serviceRequests, updateRequestStatus, referrals, endorseReferral } = useGlobalState();
   const [activeTab, setActiveTab] = useState<"Overview" | "Referrals" | "Appointments" | "Case Records">("Overview");
   const [isHydrated, setIsHydrated] = useState(false);
+  const [viewingCert, setViewingCert] = useState<{ name: string; id: string } | null>(null);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -235,13 +237,25 @@ export default function GuidancePortal() {
                           </div>
                         </div>
                         <button 
-                          onClick={() => handleIssueGoodMoral(req.id)} 
+                          onClick={() => {
+                             handleIssueGoodMoral(req.id);
+                             setViewingCert({ name: req.studentName, id: req.id });
+                          }} 
                           style={{ padding: "0.75rem 1.5rem", fontSize: "0.85rem", fontWeight: "700", background: "#f0fdf4", color: "#166534", border: "1px solid #bbf7d0", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}
                         >
                           <Check size={16} /> Clear & Issue
                         </button>
                       </motion.div>
                     ))}
+                    {viewingCert && (
+                       <DigitalCertificate 
+                          type="GOOD_MORAL"
+                          recipientName={viewingCert.name}
+                          dateIssued={new Date().toLocaleDateString()}
+                          referenceId={`GM-${viewingCert.id.slice(-6)}`}
+                          onClose={() => setViewingCert(null)}
+                       />
+                    )}
                     {goodMoralRequests.length === 0 && (
                        <div style={{ padding: "4rem", textAlign: "center" }}>
                           <CheckCircle2 size={48} color="#cbd5e1" style={{ margin: "0 auto 1.5rem" }} />

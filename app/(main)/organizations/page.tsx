@@ -40,6 +40,7 @@ import ProcessGuide from "@/components/ProcessGuide";
 import ActivityCalendar from "@/components/ActivityCalendar";
 import FinancialLedger from "@/components/FinancialLedger";
 import RenewalWizard from "@/components/RenewalWizard";
+import DigitalCertificate from "@/components/DigitalCertificate";
 
 export default function OrganizationsPage() {
   const { 
@@ -83,6 +84,7 @@ export default function OrganizationsPage() {
   const [orgLogo, setOrgLogo] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [viewingOrg, setViewingOrg] = useState<StudentOrg | null>(null);
+  const [isGeneratingCert, setIsGeneratingCert] = useState(false);
 
   const resetOrgForm = () => {
     setOrgName("");
@@ -368,6 +370,12 @@ export default function OrganizationsPage() {
                                <Clock size={32} color="#f59e0b" style={{ opacity: 0.2 }} />
                             </div>
                          </div>
+                         <button 
+                            onClick={() => setIsGeneratingCert(true)}
+                            style={{ width: "100%", padding: "1.25rem", background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#166534", borderRadius: "16px", fontSize: "0.95rem", fontWeight: "900", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", marginTop: "2rem" }}
+                         >
+                            <ShieldCheck size={20} /> Issue Recognition Certificate
+                         </button>
                       </div>
                    </div>
                 </div>
@@ -820,6 +828,12 @@ export default function OrganizationsPage() {
                               <p style={{ fontSize: "1.1rem", fontWeight: "900", color: "#1e293b" }}>{viewingOrg.adviser}</p>
                            </div>
                         </div>
+                        <button 
+                           onClick={() => setIsGeneratingCert(true)}
+                           style={{ width: "100%", padding: "1.25rem", background: "#f0fdf4", border: "1px solid #bbf7d0", color: "#166534", borderRadius: "16px", fontSize: "0.95rem", fontWeight: "900", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", marginTop: "2rem" }}
+                        >
+                           <ShieldCheck size={20} /> Issue Recognition Certificate
+                        </button>
                      </div>
                      <div>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
@@ -980,6 +994,18 @@ export default function OrganizationsPage() {
           }}
         />
       )}
-    </div>
-  );
-}
+
+          {isGeneratingCert && viewingOrg && (
+             <DigitalCertificate 
+                type="ORG_RECOGNITION"
+                recipientName={viewingOrg.president}
+                metadata={{ orgName: viewingOrg.name }}
+                dateIssued={new Date().toLocaleDateString()}
+                referenceId={`RSO-${viewingOrg.id.slice(-6)}`}
+                onClose={() => setIsGeneratingCert(false)}
+             />
+          )}
+        </div>
+      );
+    }
+
