@@ -407,6 +407,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       const isAdmin = role === "SYSTEM_ADMIN" || role === "OSAS_DIRECTOR";
       const isGuidance = role === "GUIDANCE_COUNSELOR";
       const isStudent = role === "STUDENT_APPLICANT" || role === "STUDENT_LEADER";
+      const isAdviser = role === "ADVISER";
 
       const fetches: Promise<any>[] = [];
 
@@ -430,11 +431,16 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
         // Guidance Telemetry
         fetches.push(dbGetRefs().catch(() => []));
         fetches.push(dbGetAppts().catch(() => []));
+      } else if (isAdviser) {
+        // Adviser Telemetry
+        fetches.push(dbGetRefs().catch(() => []));
+        fetches.push(dbGetActivities().catch(() => []));
       } else if (isStudent) {
         // Personal Student Telemetry
         fetches.push(dbGetApps().catch(() => []));
         fetches.push(dbGetRequests().catch(() => []));
         fetches.push(dbGetAppts().catch(() => []));
+        fetches.push(dbGetRefs().catch(() => [])); // Student sees their own referrals
       }
 
       const results = await Promise.all(fetches);
@@ -459,10 +465,14 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       } else if (isGuidance) {
         setReferrals(results[cursor++] || []);
         setAppointments(results[cursor++] || []);
+      } else if (isAdviser) {
+        setReferrals(results[cursor++] || []);
+        setActivities(results[cursor++] || []);
       } else if (isStudent) {
         setScholarshipApps(results[cursor++] || []);
         setRequests(results[cursor++] || []);
         setAppointments(results[cursor++] || []);
+        setReferrals(results[cursor++] || []);
       }
 
       setTelemetryTier(2);

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { summarizeAuditLogs } from "@/lib/actions/aiActions";
+import StudentInstitutionalRecord from "@/components/StudentInstitutionalRecord";
 
 export default function DashboardPage() {
   const {
@@ -195,6 +196,9 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* ── Student Institutional Record (Conditional) ── */}
+      {currentUser.role === "STUDENT_APPLICANT" && <StudentInstitutionalRecord />}
 
       {/* ── Two-Column: AI Summary + Announcements ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
