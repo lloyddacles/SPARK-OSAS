@@ -23,23 +23,18 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
   const [isMobile, setIsMobile] = useState(false);
   const [showSentinel, setShowSentinel] = useState(false);
   
-  // SESSION GUARD: Dual-Direction Routing
+  // SESSION GUARD: Dual-Direction Routing (Hardened)
   useEffect(() => {
-    if (!isLoading) {
-      if (!currentUser && pathname !== "/" && pathname !== "/login") {
-        router.push("/");
-      } else if (currentUser && (pathname === "/" || pathname === "/login")) {
-        router.push("/dashboard");
-        // Simulate Native Push Notification on Entry
-        setTimeout(() => {
-          new Notification("Welcome to SPARK", {
-            body: "You're now logged in. Have a great day!",
-            icon: "/favicon.ico"
-          });
-        }, 1500);
-      }
+    if (isLoading) return; // Wait for hydration to settle
+
+    const isInternal = !["/", "/login"].includes(pathname);
+    
+    if (!currentUser && isInternal) {
+      router.replace("/");
+    } else if (currentUser && !isInternal) {
+      router.replace("/dashboard");
     }
-  }, [currentUser, isLoading, pathname, router]);
+  }, [currentUser?.id, isLoading, pathname]); // Use ID for stable comparison
 
   // PWA & MOBILE DETECTION
   useEffect(() => {
@@ -146,8 +141,8 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
                 animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
                 exit={{ opacity: 0, x: -15, filter: "blur(10px)" }}
                 transition={{ 
-                  duration: 0.5, 
-                  ease: [0.22, 1, 0.36, 1] /* The Liquid 'Quint' Ease */
+                  duration: 0.3, 
+                  ease: [0.23, 1, 0.32, 1] /* Optimized Rapid Ease */
                 }}
                 style={{ height: (isLoginPage || showLoginGate) ? "100%" : "auto" }}
               >

@@ -161,7 +161,8 @@ export default function Sidebar() {
       {/* Navigation Groups */}
       <nav style={{ flex: 1, display: "flex", flexDirection: "column", gap: "2.5rem", overflowY: "auto", position: "relative" }} className="no-scrollbar">
         {navGroups.map((group) => {
-          const filteredItems = group.items.filter(item => !currentUser || item.roles.includes(currentUser.role));
+          const userRole = currentUser?.role;
+          const filteredItems = group.items.filter(item => !userRole || item.roles.includes(userRole));
           if (filteredItems.length === 0) return null;
 
           return (
@@ -175,9 +176,11 @@ export default function Sidebar() {
                       key={item.href} 
                       href={item.href} 
                       style={{ textDecoration: "none" }}
+                      prefetch={true}
                     >
                       <motion.div 
                         whileHover={{ x: 4 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
                         style={{
                           display: "flex",
                           alignItems: "center",
@@ -186,7 +189,7 @@ export default function Sidebar() {
                           color: isActive ? "var(--primary)" : "var(--text-dim)",
                           background: isActive ? "rgba(0, 229, 255, 0.05)" : "transparent",
                           borderRadius: "4px",
-                          transition: "all 0.2s",
+                          transition: "color 0.2s, background 0.2s",
                           position: "relative"
                         }}
                       >
