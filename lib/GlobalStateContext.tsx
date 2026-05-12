@@ -150,6 +150,8 @@ export type Notification = {
 
 export type Appointment = {
   id: string;
+  studentName: string;
+  studentId?: string;
   title: string;
   description: string;
   date: string;
@@ -157,7 +159,6 @@ export type Appointment = {
   endTime: string;
   type: string;
   status: "PENDING" | "APPROVED" | "COMPLETED" | "CANCELLED";
-  studentName: string;
 };
 
 export type DashboardStats = {
@@ -170,10 +171,11 @@ export type DashboardStats = {
 export type Referral = {
   id: string;
   studentName: string;
+  studentId?: string;
   adviserName: string;
   adviserId?: string;
   reason: string;
-  status: "Referred to Guidance" | "Endorsed to OSAS" | "Sanctioned" | "Dismissed";
+  status: "Referred to Guidance" | "Endorsed to OSAS" | "Sanctioned" | "Dismissed" | "Closed";
   counselorFindings?: string;
   osasVerdict?: string;
   dateFiled: string;

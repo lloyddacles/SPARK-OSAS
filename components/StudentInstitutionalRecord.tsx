@@ -100,8 +100,8 @@ export default function StudentInstitutionalRecord() {
                            <span style={{ fontSize: "0.9rem", fontWeight: "900", color: "#1e293b" }}>14</span>
                         </div>
                         <div>
-                           <p style={{ fontSize: "0.9rem", fontWeight: "800", color: "#1e293b" }}>{appt.serviceType || "Guidance Session"}</p>
-                           <p style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: "600", marginTop: "0.25rem" }}>{appt.timeSlot} • Room 204</p>
+                           <p style={{ fontSize: "0.9rem", fontWeight: "800", color: "#1e293b" }}>{appt.type || "Guidance Session"}</p>
+                           <p style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: "600", marginTop: "0.25rem" }}>{appt.startTime} • Room 204</p>
                         </div>
                      </div>
                      <span style={{ 
