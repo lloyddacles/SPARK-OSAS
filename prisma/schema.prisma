@@ -181,3 +181,25 @@ model AuditLog {
   details   String
   severity  String
 }
+
+model SystemConfig {
+  id                      String  @id @default("CURRENT")
+  schoolYear              String  @default("2023-2024")
+  semester                String  @default("First Semester")
+  primaryColor            String  @default("#3b82f6")
+  institutionName         String  @default("SPARK University")
+  directorName            String  @default("Dr. Institutional Director")
+  allowPublicApplications Boolean @default(true)
+}
+
+model InternalMessage {
+  id          String   @id @default(cuid())
+  senderId    String
+  senderName  String
+  recipientId String
+  content     String
+  timestamp   DateTime @default(now())
+  isRead      Boolean  @default(false)
+  priority    String   @default("Medium")
+}
+

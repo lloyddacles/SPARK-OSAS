@@ -44,7 +44,8 @@ export default function Sidebar() {
         { icon: <LayoutDashboard size={16} />, label: "Dashboard", href: "/dashboard", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR"] },
         { icon: <ShieldCheck size={16} />, label: "My Advisees", href: "/adviser", roles: ["ADVISER", "SYSTEM_ADMIN"] },
         { icon: <TrendingUp size={16} />, label: "Analytics", href: "/analytics", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
-        { icon: <Settings size={16} />, label: "Settings", href: "/settings", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
+        { icon: <Bell size={16} />, label: "Alert Center", href: "/admin/messages", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "ADVISER"] },
+        { icon: <Settings size={16} />, label: "Settings", href: "/admin/settings", roles: ["SYSTEM_ADMIN", "OSAS_DIRECTOR"] },
       ]
     },
     {

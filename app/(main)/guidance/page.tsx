@@ -145,6 +145,41 @@ export default function GuidancePortal() {
         {activeTab === "Overview" && (
           <motion.div key="overview" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.4, ease: "easeOut" }}>
             
+            {/* AI PREDICTIVE REFERRALS */}
+            <motion.div
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               style={{
+                  marginBottom: "3rem",
+                  padding: "3rem",
+                  background: "linear-gradient(135deg, #f8fafc, #eff6ff)",
+                  border: "1px solid #dbeafe",
+                  borderRadius: "32px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  boxShadow: "0 10px 15px -3px rgba(59, 130, 246, 0.1)"
+               }}
+            >
+               <div style={{ display: "flex", gap: "2rem", alignItems: "flex-start" }}>
+                  <div style={{ width: "60px", height: "60px", background: "white", borderRadius: "18px", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6", boxShadow: "0 4px 6px rgba(0,0,0,0.05)" }}>
+                     <Zap size={28} />
+                  </div>
+                  <div>
+                     <h3 style={{ fontSize: "1.25rem", fontWeight: "900", color: "#1e293b", marginBottom: "0.5rem" }}>Predictive Referral Sentinel</h3>
+                     <p style={{ fontSize: "0.95rem", color: "#64748b", fontWeight: "500", maxWidth: "600px", lineHeight: "1.6" }}>
+                        Our AI has identified <strong>3 students</strong> exhibiting high-risk behavioral patterns (sudden grade drops, inactivity, and vault document stagnation).
+                     </p>
+                  </div>
+               </div>
+               <button 
+                  onClick={() => setActiveTab("Referrals")}
+                  style={{ padding: "1rem 2rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "14px", fontWeight: "900", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.75rem", boxShadow: "0 10px 15px rgba(59, 130, 246, 0.2)" }}
+               >
+                  Review AI Suggestions <ArrowUpRight size={18} />
+               </button>
+            </motion.div>
+
             <div style={{ marginBottom: "3rem" }}>
               <ProcessGuide 
                   title="How to Use the Guidance Office"
