@@ -10,30 +10,44 @@ async function getDB() {
 export type VaultStatus = "Verified" | "Not Yet Verified" | "For Re-upload" | "Wrong Document" | "Blurred";
 
 export async function uploadToVault(userId: string, docName: string) {
+  console.log(`[VAULT_ACTION] Attempting upload for User: ${userId}, Doc: ${docName}`);
+  
   const db = await getDB();
-  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  if (!db) {
+    console.error("[VAULT_ACTION] Database connection failed");
+    throw new Error("DATABASE_UNAVAILABLE");
+  }
 
-  const user = await db.user.findUnique({ where: { id: userId } });
-  if (!user) return;
-
-  const currentVault = user.vault as any || {};
-  const updatedVault = {
-    ...currentVault,
-    [docName]: {
-      uploaded: true,
-      status: "Not Yet Verified",
-      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      fileType: "application/pdf"
+  try {
+    const user = await db.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      console.error(`[VAULT_ACTION] User ${userId} not found in registry`);
+      return null;
     }
-  };
 
-  const updatedUser = await db.user.update({
-    where: { id: userId },
-    data: { vault: updatedVault }
-  });
+    const currentVault = user.vault as any || {};
+    const updatedVault = {
+      ...currentVault,
+      [docName]: {
+        uploaded: true,
+        status: "Not Yet Verified",
+        date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+        fileType: "application/pdf"
+      }
+    };
 
-  revalidatePath("/submissions");
-  return updatedUser;
+    const updatedUser = await db.user.update({
+      where: { id: userId },
+      data: { vault: updatedVault }
+    });
+
+    console.log(`[VAULT_ACTION] Successfully updated vault for ${user.name}`);
+    revalidatePath("/submissions");
+    return updatedUser;
+  } catch (error) {
+    console.error("[VAULT_ACTION] Critical failure during vault update:", error);
+    throw error;
+  }
 }
 
 export async function verifyDocument(userId: string, docName: string, status: VaultStatus, remarks?: string) {

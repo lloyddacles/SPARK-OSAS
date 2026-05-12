@@ -12,28 +12,39 @@ export async function login(usernameInput: string, passwordInput: string) {
 
   // 1. ABSOLUTE ADMIN BYPASS (Hardcoded Emergency Gateway)
   // This bypasses the database completely to ensure Mr. Dacles never gets locked out.
-  if (username === "admin" && password === "admin") {
-    const adminSession = { id: "ADMIN-MASTER", name: "Administrator", username: "admin", role: "SYSTEM_ADMIN" };
-    cookies().set("session_user", JSON.stringify(adminSession), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
-    return { success: true, user: adminSession };
-  }
+  // We now attempt to sync these with the DB so they have a persistent vault.
+  const testUsers: Record<string, any> = {
+    "admin": { id: "ADMIN-MASTER", name: "Administrator", role: "SYSTEM_ADMIN" },
+    "counselor": { id: "COUNSELOR-TEST", name: "Myael Ursolino", role: "GUIDANCE_COUNSELOR" },
+    "adviser": { id: "ADVISER-TEST", name: "Lloyd Dacles", role: "ADVISER" },
+    "president": { id: "PRESIDENT-TEST", name: "Juan Dela Cruz", role: "STUDENT_APPLICANT" }
+  };
 
-  if (username === "counselor" && password === "counselor") {
-    const session = { id: "COUNSELOR-TEST", name: "Myael Ursolino", username: "counselor", role: "GUIDANCE_COUNSELOR" };
-    cookies().set("session_user", JSON.stringify(session), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
-    return { success: true, user: session };
-  }
-
-  if (username === "adviser" && password === "adviser") {
-    const session = { id: "ADVISER-TEST", name: "Lloyd Dacles", username: "adviser", role: "ADVISER" };
-    cookies().set("session_user", JSON.stringify(session), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
-    return { success: true, user: session };
-  }
-
-  if (username === "president" && password === "president") {
-    const session = { id: "PRESIDENT-TEST", name: "Juan Dela Cruz", username: "president", role: "STUDENT_APPLICANT" };
-    cookies().set("session_user", JSON.stringify(session), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
-    return { success: true, user: session };
+  if (testUsers[username] && password === username) {
+    const baseSession = { ...testUsers[username], username };
+    try {
+      const { getPrisma } = await import("@/lib/prisma");
+      const db = getPrisma();
+      if (db) {
+        // Fetch vault and extra info if exists
+        const dbUser = await db.user.findUnique({ where: { id: baseSession.id } });
+        if (dbUser) {
+          const fullSession = { ...baseSession, vault: dbUser.vault };
+          cookies().set("session_user", JSON.stringify(fullSession), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+          return { success: true, user: fullSession };
+        } else {
+          // Provision on first login
+          await db.user.create({
+            data: { id: baseSession.id, name: baseSession.name, username, password: username, role: baseSession.role, vault: {} }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Test Account DB Sync Failed, proceeding with memory session", e);
+    }
+    
+    cookies().set("session_user", JSON.stringify(baseSession), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+    return { success: true, user: baseSession };
   }
 
   // 2. DATABASE AUTHENTICATION (For Students & Staff)
