@@ -34,7 +34,7 @@ export default function CommandPalette() {
   const [neuralResponse, setNeuralResponse] = useState<any>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
-  const { theme, toggleTheme, logout, currentUser } = useGlobalState();
+  const { theme, toggleTheme, logout, currentUser, users, organizations, scholarshipPrograms } = useGlobalState();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
@@ -99,66 +99,98 @@ export default function CommandPalette() {
     }
   };
 
-  const commands = [
-    { 
-      id: "dashboard", 
-      label: "Go to Dashboard", 
-      icon: <LayoutDashboard size={18} />, 
-      action: () => router.push("/dashboard"),
-      category: "Navigation"
-    },
-    { 
-      id: "admin", 
-      label: "System Admin Terminal", 
-      icon: <ShieldCheck size={18} />, 
-      action: () => router.push("/admin"),
-      category: "Navigation",
-      adminOnly: true
-    },
-    { 
-      id: "passport", 
-      label: "Digital Passport Verification", 
-      icon: <Fingerprint size={18} />, 
-      action: () => router.push("/admin/passport"),
-      category: "Navigation",
-      adminOnly: true
-    },
-    { 
-      id: "vault", 
-      label: "Document Vault", 
-      icon: <Lock size={18} />, 
-      action: () => router.push("/vault"),
-      category: "Navigation"
-    },
-    { 
-      id: "scholarships", 
-      label: "Scholarship Hub", 
-      icon: <GraduationCap size={18} />, 
-      action: () => router.push("/scholarships"),
-      category: "Navigation"
-    },
-    { 
-      id: "organizations", 
-      label: "Student Organizations", 
-      icon: <Users size={18} />, 
-      action: () => router.push("/organizations"),
-      category: "Navigation"
-    },
-    { 
-      id: "theme", 
-      label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`, 
-      icon: theme === "dark" ? <Sun size={18} /> : <Moon size={18} />, 
-      action: toggleTheme,
-      category: "System"
-    },
-    { 
-      id: "logout", 
-      label: "Logout of Session", 
-      icon: <LogOut size={18} />, 
-      action: logout,
-      category: "System"
-    },
-  ];
+  // ── COMMAND RECOGNITION ENGINE ──
+  const getDynamicCommands = () => {
+    const base = [
+      { 
+        id: "dashboard", 
+        label: "Go to Dashboard", 
+        icon: <LayoutDashboard size={18} />, 
+        action: () => router.push("/dashboard"),
+        category: "Navigation"
+      },
+      { 
+        id: "admin", 
+        label: "System Admin Terminal", 
+        icon: <ShieldCheck size={18} />, 
+        action: () => router.push("/admin"),
+        category: "Navigation",
+        adminOnly: true
+      },
+      { 
+        id: "passport", 
+        label: "Digital Passport Verification", 
+        icon: <Fingerprint size={18} />, 
+        action: () => router.push("/admin/passport"),
+        category: "Navigation",
+        adminOnly: true
+      },
+      { 
+        id: "vault", 
+        label: "Document Vault", 
+        icon: <Lock size={18} />, 
+        action: () => router.push("/vault"),
+        category: "Navigation"
+      },
+      { 
+        id: "scholarships", 
+        label: "Scholarship Hub", 
+        icon: <GraduationCap size={18} />, 
+        action: () => router.push("/scholarships"),
+        category: "Navigation"
+      },
+      { 
+        id: "organizations", 
+        label: "Student Organizations", 
+        icon: <Users size={18} />, 
+        action: () => router.push("/organizations"),
+        category: "Navigation"
+      },
+      { 
+        id: "theme", 
+        label: `Switch to ${theme === "dark" ? "Light" : "Dark"} Mode`, 
+        icon: theme === "dark" ? <Sun size={18} /> : <Moon size={18} />, 
+        action: toggleTheme,
+        category: "System"
+      },
+      { 
+        id: "logout", 
+        label: "Logout of Session", 
+        icon: <LogOut size={18} />, 
+        action: logout,
+        category: "System"
+      },
+    ];
+
+    // Search for Students
+    if (query.length > 1) {
+      users.filter(u => u.name.toLowerCase().includes(query.toLowerCase())).slice(0, 3).forEach(u => {
+        base.push({
+          id: `student-${u.id}`,
+          label: `Inspect Student: ${u.name}`,
+          icon: <Fingerprint size={18} />,
+          action: () => router.push(`/admin/passport?search=${u.name}`),
+          category: "Direct Search",
+          adminOnly: true
+        });
+      });
+
+      // Search for Organizations
+      organizations.filter(o => o.name.toLowerCase().includes(query.toLowerCase())).slice(0, 3).forEach(o => {
+        base.push({
+          id: `org-${o.id}`,
+          label: `Manage Organization: ${o.name}`,
+          icon: <Activity size={18} />,
+          action: () => router.push(`/organizations?search=${o.name}`),
+          category: "Direct Search"
+        });
+      });
+    }
+
+    return base;
+  };
+
+  const commands = getDynamicCommands();
 
   const filteredCommands = commands.filter((cmd) => {
     if (cmd.adminOnly && currentUser?.role !== "SYSTEM_ADMIN") return false;

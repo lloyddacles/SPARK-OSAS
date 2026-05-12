@@ -9,12 +9,23 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return Promise.all(
+        ASSETS_TO_CACHE.map(url => {
+          return fetch(url).then(response => {
+            if (response.ok && !response.redirected) {
+              return cache.put(url, response);
+            }
+            return Promise.resolve();
+          }).catch(() => Promise.resolve());
+        })
+      );
     })
   );
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);

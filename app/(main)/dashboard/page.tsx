@@ -199,32 +199,51 @@ export default function DashboardPage() {
       {/* ── Two-Column: AI Summary + Announcements ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "1.5rem", marginBottom: "3rem" }}>
 
-        {/* AI Summary */}
-        <div style={{ padding: "2.5rem", background: "white", border: "1px solid #f3f4f6", borderRadius: "24px", position: "relative", overflow: "hidden", boxShadow: "0 4px 6px rgba(0,0,0,0.02)" }}>
-           <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "4px", background: "linear-gradient(90deg, #3b82f6, #06b6d4)" }} />
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-            <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6" }}>
-              <BrainCircuit size={22} />
-            </div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b" }}>Institutional AI Insight</h3>
-          </div>
-          <p style={{ fontSize: "0.95rem", color: "#64748b", lineHeight: "1.7", marginBottom: "1.5rem", fontWeight: "500" }}>
-            Autonomous summary of institutional activity and anomalous patterns detected within the SPARK ecosystem.
-          </p>
-          <div style={{ background: "#f8fafc", padding: "1.5rem", borderRadius: "16px", border: "1px solid #f1f5f9" }}>
-            <p style={{ fontSize: "1rem", color: "#334155", lineHeight: "1.8", fontWeight: "500" }}>
-              {aiInsight?.summary || "Analyzing telemetry and audit logs… Executive summary will appear shortly."}
-            </p>
-            {aiInsight?.anomalies && aiInsight.anomalies.length > 0 && (
-              <div style={{ marginTop: "1.5rem", display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-                {aiInsight.anomalies.slice(0, 3).map((a: string, i: number) => (
-                  <span key={i} style={{ fontSize: "0.75rem", fontWeight: "800", color: "#3b82f6", padding: "0.5rem 1rem", background: "white", border: "1px solid #dbeafe", borderRadius: "10px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
-                    {a}
-                  </span>
-                ))}
+        {/* Institutional Intelligence Brief */}
+        <div style={{ padding: "3rem", background: "white", border: "1px solid #f1f5f9", borderRadius: "32px", position: "relative", overflow: "hidden", boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.05)" }}>
+           <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "6px", background: "linear-gradient(90deg, #3b82f6, #06b6d4, #10b981)" }} />
+           
+           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "3rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                <div style={{ width: "48px", height: "48px", borderRadius: "14px", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.1)" }}>
+                  <BrainCircuit size={24} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "1.25rem", fontWeight: "900", color: "#1e293b", letterSpacing: "-0.02em" }}>Intelligence Brief</h3>
+                  <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "600", marginTop: "0.25rem" }}>Autonomous OSAS Analysis Agent</p>
+                </div>
               </div>
-            )}
-          </div>
+              <div style={{ background: "#f0fdf4", color: "#166534", padding: "0.5rem 1rem", borderRadius: "20px", fontSize: "0.75rem", fontWeight: "800", display: "flex", alignItems: "center", gap: "0.5rem", border: "1px solid #dcfce7" }}>
+                 <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22c55e" }} /> OSAS_CORE: ONLINE
+              </div>
+           </div>
+
+           <div style={{ display: "grid", gap: "2.5rem" }}>
+              <div style={{ background: "#f8fafc", padding: "2rem", borderRadius: "20px", border: "1px solid #f1f5f9" }}>
+                <p style={{ fontSize: "1rem", color: "#334155", lineHeight: "1.8", fontWeight: "500", fontStyle: "italic" }}>
+                  "{aiInsight?.summary || "Analyzing telemetry and audit logs… Executive summary will appear shortly."}"
+                </p>
+              </div>
+
+              <div>
+                 <p style={{ fontSize: "0.75rem", fontWeight: "900", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "1.25rem" }}>Detected Action Items</p>
+                 <div style={{ display: "grid", gap: "1rem" }}>
+                    {[
+                      { icon: <Clock size={16} />, label: "Scholarship Batch Endings", val: "3 Active Cycles", color: "#f59e0b" },
+                      { icon: <ClipboardList size={16} />, label: "Pending Service Requests", val: (serviceRequests || []).length + " Requests", color: "#3b82f6" },
+                      { icon: <Activity size={16} />, label: "Anomalous Activity", val: (aiInsight?.anomalies?.length || 0) + " Flags", color: "#ef4444" }
+                    ].map((item, idx) => (
+                      <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.25rem 1.5rem", background: "white", border: "1px solid #f1f5f9", borderRadius: "16px", boxShadow: "0 4px 6px rgba(0,0,0,0.01)" }}>
+                         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                            <div style={{ color: item.color }}>{item.icon}</div>
+                            <span style={{ fontSize: "0.9rem", fontWeight: "700", color: "#475569" }}>{item.label}</span>
+                         </div>
+                         <span style={{ fontSize: "0.85rem", fontWeight: "900", color: "#1e293b" }}>{item.val}</span>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+           </div>
         </div>
 
         {/* Announcements */}

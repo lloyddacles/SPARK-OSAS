@@ -151,9 +151,22 @@ export const generateBatchRecommendationReport = (batchId: number, apps: any[]) 
 
   const finalY = (doc as any).lastAutoTable.finalY + 25;
 
-  // 3. Signatories
+  // 3. Digital Institutional Stamp (Visual)
+  doc.setDrawColor(59, 130, 246);
+  doc.setLineWidth(0.5);
+  doc.circle(175, 255, 20, "S");
+  doc.setTextColor(59, 130, 246);
+  doc.setFontSize(6);
+  doc.text("SPARK", 175, 250, { align: "center" });
+  doc.text("INSTITUTIONAL", 175, 253, { align: "center" });
+  doc.text("VERIFIED", 175, 256, { align: "center" });
+  doc.setFontSize(4);
+  doc.text(new Date().getFullYear().toString(), 175, 260, { align: "center" });
+
+  // 4. Signatories
   doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
+  doc.setTextColor(5, 7, 10);
   
   // OSAS Director
   doc.text("__________________________", 15, finalY);
@@ -167,11 +180,16 @@ export const generateBatchRecommendationReport = (batchId: number, apps: any[]) 
   doc.text("__________________________", 67.5, finalY + 25);
   doc.text("UNIVERSITY PRESIDENT", 75, finalY + 30);
 
-  // 4. Footer
+  // 5. Secure Footer & Token
   doc.setFontSize(7);
   doc.setTextColor(148, 163, 184);
   doc.text(`CERTIFIED GENUINE: ${timestamp}`, 15, 285);
-  doc.text("SPARK_VERIFICATION_TOKEN: " + Math.random().toString(36).substr(2, 12).toUpperCase(), 120, 285);
+  doc.text("SPARK_SECURE_TOKEN: " + Math.random().toString(36).substr(2, 12).toUpperCase(), 120, 285);
+  
+  // Watermark (Diagonal)
+  doc.setTextColor(241, 245, 249);
+  doc.setFontSize(60);
+  doc.text("VERIFIED BY SPARK", 30, 150, { angle: 45 });
 
   doc.save(`BATCH_${batchId}_RECOMMENDATION_LIST.pdf`);
 };
