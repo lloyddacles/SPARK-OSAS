@@ -25,6 +25,7 @@ import {
   FileSignature
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
+import AdviserPerformanceMonitor from "@/components/AdviserPerformanceMonitor";
 
 export default function AdviserDashboard() {
   const { currentUser, organizations, activities, referrals, addReferral, updateActivityStatus } = useGlobalState();
@@ -254,6 +255,9 @@ export default function AdviserDashboard() {
               )}
             </div>
           </div>
+
+          {/* ── Advisee Performance Monitor ── */}
+          <AdviserPerformanceMonitor />
         </main>
 
         {/* ── Right Sidebar ── */}

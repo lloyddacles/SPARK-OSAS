@@ -32,11 +32,12 @@ import { useState, useEffect } from "react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { useRouter } from "next/navigation";
 import ProcessGuide from "@/components/ProcessGuide";
+import GuidanceCaseManagement from "@/components/GuidanceCaseManagement";
 
 export default function GuidancePortal() {
   const router = useRouter();
   const { currentUser, requests: serviceRequests, updateRequestStatus, referrals, endorseReferral } = useGlobalState();
-  const [activeTab, setActiveTab] = useState<"Overview" | "Referrals" | "Appointments">("Overview");
+  const [activeTab, setActiveTab] = useState<"Overview" | "Referrals" | "Appointments" | "Case Records">("Overview");
   const [isHydrated, setIsHydrated] = useState(false);
 
   useEffect(() => {

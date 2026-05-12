@@ -13,19 +13,27 @@ export async function login(usernameInput: string, passwordInput: string) {
   // 1. ABSOLUTE ADMIN BYPASS (Hardcoded Emergency Gateway)
   // This bypasses the database completely to ensure Mr. Dacles never gets locked out.
   if (username === "admin" && password === "admin") {
-    const adminSession = { 
-      id: "ADMIN-MASTER", 
-      name: "Administrator", 
-      username: "admin", 
-      role: "SYSTEM_ADMIN" 
-    };
-    cookies().set("session_user", JSON.stringify(adminSession), { 
-      httpOnly: true, 
-      secure: true, 
-      path: "/", 
-      maxAge: 86400 // 24 Hours
-    });
+    const adminSession = { id: "ADMIN-MASTER", name: "Administrator", username: "admin", role: "SYSTEM_ADMIN" };
+    cookies().set("session_user", JSON.stringify(adminSession), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
     return { success: true, user: adminSession };
+  }
+
+  if (username === "counselor" && password === "counselor") {
+    const session = { id: "COUNSELOR-TEST", name: "Myael Ursolino", username: "counselor", role: "GUIDANCE_COUNSELOR" };
+    cookies().set("session_user", JSON.stringify(session), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+    return { success: true, user: session };
+  }
+
+  if (username === "adviser" && password === "adviser") {
+    const session = { id: "ADVISER-TEST", name: "Lloyd Dacles", username: "adviser", role: "ADVISER" };
+    cookies().set("session_user", JSON.stringify(session), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+    return { success: true, user: session };
+  }
+
+  if (username === "president" && password === "president") {
+    const session = { id: "PRESIDENT-TEST", name: "Juan Dela Cruz", username: "president", role: "STUDENT_APPLICANT" };
+    cookies().set("session_user", JSON.stringify(session), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+    return { success: true, user: session };
   }
 
   // 2. DATABASE AUTHENTICATION (For Students & Staff)
