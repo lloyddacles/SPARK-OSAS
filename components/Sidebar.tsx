@@ -27,7 +27,8 @@ import {
   TrendingUp,
   GraduationCap,
   Fingerprint,
-  X
+  X,
+  Bell
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useGlobalState } from "@/lib/GlobalStateContext";
