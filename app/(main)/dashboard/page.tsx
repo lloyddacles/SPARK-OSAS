@@ -16,7 +16,6 @@ import {
   ClipboardList,
   History,
   BrainCircuit,
-  ArrowUpRight,
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { summarizeAuditLogs } from "@/lib/actions/aiActions";
