@@ -37,6 +37,9 @@ import {
 import { useGlobalState, StudentOrg } from "@/lib/GlobalStateContext";
 import ConfirmModal from "@/components/ConfirmModal";
 import ProcessGuide from "@/components/ProcessGuide";
+import ActivityCalendar from "@/components/ActivityCalendar";
+import FinancialLedger from "@/components/FinancialLedger";
+import RenewalWizard from "@/components/RenewalWizard";
 
 export default function OrganizationsPage() {
   const { 
@@ -52,7 +55,7 @@ export default function OrganizationsPage() {
   } = useGlobalState();
   
   const [activeTab, setActiveTab] = useState<"Student" | "OSAS" | "Adviser">("Student");
-  const [osasSubTab, setOsasSubTab] = useState<"Activities" | "Manage">("Activities");
+  const [osasSubTab, setOsasSubTab] = useState<"Activities" | "Manage" | "Calendar">("Activities");
   
   // Student Leader State
   const [isProposing, setIsProposing] = useState(false);
@@ -236,6 +239,9 @@ export default function OrganizationsPage() {
              ) : (
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 400px", gap: "2.5rem" }}>
                    <div style={{ display: "grid", gap: "2.5rem" }}>
+                      {/* RENEWAL WIZARD (PROMINENT) */}
+                      <RenewalWizard organization={userOrg} />
+
                       {/* Org Hero */}
                       <div style={{ background: "white", padding: "3rem", borderRadius: "24px", border: "1px solid #f1f5f9", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                          <div style={{ display: "flex", gap: "2.5rem", alignItems: "center" }}>
@@ -373,6 +379,7 @@ export default function OrganizationsPage() {
           <motion.div key="osas" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
              <div style={{ display: "flex", gap: "2rem", marginBottom: "3rem", borderBottom: "1px solid #f1f5f9" }}>
                 <button onClick={() => setOsasSubTab("Activities")} style={{ padding: "1.25rem 2rem", fontSize: "0.95rem", fontWeight: "800", background: "none", border: "none", color: osasSubTab === "Activities" ? "#3b82f6" : "#64748b", borderBottom: osasSubTab === "Activities" ? "3px solid #3b82f6" : "3px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>Endorsement Queue</button>
+                <button onClick={() => setOsasSubTab("Calendar")} style={{ padding: "1.25rem 2rem", fontSize: "0.95rem", fontWeight: "800", background: "none", border: "none", color: osasSubTab === "Calendar" ? "#3b82f6" : "#64748b", borderBottom: osasSubTab === "Calendar" ? "3px solid #3b82f6" : "3px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>Institutional Calendar</button>
                 <button onClick={() => setOsasSubTab("Manage")} style={{ padding: "1.25rem 2rem", fontSize: "0.95rem", fontWeight: "800", background: "none", border: "none", color: osasSubTab === "Manage" ? "#3b82f6" : "#64748b", borderBottom: osasSubTab === "Manage" ? "3px solid #3b82f6" : "3px solid transparent", cursor: "pointer", transition: "all 0.2s" }}>Institutional Registry</button>
              </div>
 
@@ -387,7 +394,7 @@ export default function OrganizationsPage() {
              />
 
              <AnimatePresence mode="wait">
-               {osasSubTab === "Activities" ? (
+               {osasSubTab === "Activities" && (
                  <motion.div key="acts" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 500px", gap: "2.5rem", alignItems: "start" }}>
                        <div style={{ background: "white", borderRadius: "24px", border: "1px solid #f1f5f9", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", overflow: "hidden" }}>
@@ -565,8 +572,20 @@ export default function OrganizationsPage() {
                        </div>
                     </div>
                  </motion.div>
-               ) : (
+                )}
+
+                {osasSubTab === "Calendar" && (
+                  <motion.div key="calendar" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}>
+                     <ActivityCalendar activities={activities} />
+                  </motion.div>
+                )}
+
+                {osasSubTab === "Manage" && (
                  <motion.div key="manage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                    {/* FINANCIAL INTELLIGENCE LEDGER */}
+                    <div style={{ marginBottom: "3.5rem" }}>
+                       <FinancialLedger activities={activities} />
+                    </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem", gap: "2rem", flexWrap: "wrap" }}>
                        <div style={{ position: "relative", flex: 1, minWidth: "300px" }}>
                           <Search size={20} style={{ position: "absolute", left: "1.5rem", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
