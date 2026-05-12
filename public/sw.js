@@ -26,9 +26,18 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   
+  // Skip caching for chrome extensions, local dev tools, etc.
+  if (event.request.url.startsWith('chrome-extension') || event.request.url.includes('browser-sync')) return;
+
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+      return response || fetch(event.request).catch(() => {
+        // Fallback for offline or failed fetch
+        return new Response('Network error occurred', {
+          status: 408,
+          statusText: 'Network error occurred'
+        });
+      });
     })
   );
 });
