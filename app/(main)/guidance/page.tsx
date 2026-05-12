@@ -20,11 +20,13 @@ import {
   Activity,
   Layers,
   ArrowRight,
+  ArrowUpRight,
   Lock,
   Database,
   ShieldCheck,
   RefreshCw,
-  Check
+  Check,
+  Zap
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
