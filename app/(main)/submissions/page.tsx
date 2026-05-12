@@ -23,7 +23,8 @@ import {
   Terminal,
   Activity,
   Layers,
-  Search
+  Search,
+  RefreshCw
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 
@@ -32,6 +33,7 @@ export default function SubmissionsPage() {
   const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   const [templateName, setTemplateName] = useState("");
   const [isHovered, setIsHovered] = useState<string | null>(null);
+  const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
 
   const handleGenerateTemplate = async (docName: string) => {
     const { generateTemplate } = await import("@/lib/actions/templateActions");
@@ -251,24 +253,38 @@ export default function SubmissionsPage() {
                   </button>
                 ) : (
                   <button 
-                    onClick={() => uploadToVault(doc.name)}
+                    disabled={uploadingDoc === doc.name}
+                    onClick={async () => {
+                      setUploadingDoc(doc.name);
+                      // Simulate File Selection Delay
+                      setTimeout(async () => {
+                        await uploadToVault(doc.name);
+                        setUploadingDoc(null);
+                      }, 1500);
+                    }}
                     style={{ 
                       flex: 1, 
                       padding: "0.85rem", 
-                      background: isUploaded ? "#f9fafb" : "#3b82f6", 
-                      color: isUploaded ? "#374151" : "white", 
+                      background: uploadingDoc === doc.name ? "#f3f4f6" : isUploaded ? "#f9fafb" : "#3b82f6", 
+                      color: uploadingDoc === doc.name ? "#94a3b8" : isUploaded ? "#374151" : "white", 
                       borderRadius: "8px",
                       fontSize: "0.85rem", 
                       fontWeight: "700", 
                       border: isUploaded ? "1px solid #e5e7eb" : "none",
-                      cursor: "pointer",
+                      cursor: uploadingDoc === doc.name ? "not-allowed" : "pointer",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       gap: "0.5rem"
                     }}
                   >
-                    {isUploaded ? <><CloudUpload size={16} /> Update File</> : <><CloudUpload size={16} /> Upload File</>}
+                    {uploadingDoc === doc.name ? (
+                      <><RefreshCw className="animate-spin" size={16} /> Encrypting...</>
+                    ) : isUploaded ? (
+                      <><CloudUpload size={16} /> Update File</>
+                    ) : (
+                      <><CloudUpload size={16} /> Upload File</>
+                    )}
                   </button>
                 )}
                 <button style={{ width: "42px", borderRadius: "8px", background: "white", border: "1px solid #e5e7eb", color: "#6b7280", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>

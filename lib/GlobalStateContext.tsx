@@ -545,6 +545,9 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
         targetId: currentUser.id 
       });
 
+      addNotification("Upload Successful", `${docName} has been securely vaulted.`);
+      await logAudit("DOCUMENT_UPLOADED", `Doc: ${docName}`, "LOW");
+
       // Refresh scholarship state too
       const updatedApps = await dbGetApps();
       if (updatedApps) setScholarshipApps(updatedApps as any);
