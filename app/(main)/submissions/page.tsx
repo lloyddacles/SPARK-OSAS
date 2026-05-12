@@ -255,35 +255,57 @@ export default function SubmissionsPage() {
                   <button 
                     disabled={uploadingDoc === doc.name}
                     onClick={async () => {
-                      setUploadingDoc(doc.name);
-                      // Simulate File Selection Delay
-                      setTimeout(async () => {
+                      try {
+                        setUploadingDoc(doc.name);
+                        // Simulated processing/encryption delay
+                        await new Promise(resolve => setTimeout(resolve, 1800));
                         await uploadToVault(doc.name);
+                      } catch (error) {
+                        console.error("Upload failed:", error);
+                      } finally {
                         setUploadingDoc(null);
-                      }, 1500);
+                      }
                     }}
                     style={{ 
                       flex: 1, 
                       padding: "0.85rem", 
-                      background: uploadingDoc === doc.name ? "#f3f4f6" : isUploaded ? "#f9fafb" : "#3b82f6", 
-                      color: uploadingDoc === doc.name ? "#94a3b8" : isUploaded ? "#374151" : "white", 
+                      background: uploadingDoc === doc.name ? "#f8fafc" : isUploaded ? "#f9fafb" : "#3b82f6", 
+                      color: uploadingDoc === doc.name ? "#3b82f6" : isUploaded ? "#374151" : "white", 
                       borderRadius: "8px",
                       fontSize: "0.85rem", 
                       fontWeight: "700", 
                       border: isUploaded ? "1px solid #e5e7eb" : "none",
                       cursor: uploadingDoc === doc.name ? "not-allowed" : "pointer",
                       display: "flex",
+                      flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      gap: "0.5rem"
+                      gap: "0.25rem",
+                      position: "relative",
+                      overflow: "hidden"
                     }}
                   >
                     {uploadingDoc === doc.name ? (
-                      <><RefreshCw className="animate-spin" size={16} /> Encrypting...</>
+                      <>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                          <RefreshCw className="animate-spin" size={14} /> 
+                          <span>Encrypting...</span>
+                        </div>
+                        <motion.div 
+                          initial={{ x: "-100%" }}
+                          animate={{ x: "0%" }}
+                          transition={{ duration: 1.8, ease: "linear" }}
+                          style={{ position: "absolute", bottom: 0, left: 0, height: "2px", width: "100%", background: "#3b82f6" }}
+                        />
+                      </>
                     ) : isUploaded ? (
-                      <><CloudUpload size={16} /> Update File</>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <CloudUpload size={16} /> Update File
+                      </div>
                     ) : (
-                      <><CloudUpload size={16} /> Upload File</>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <CloudUpload size={16} /> Upload File
+                      </div>
                     )}
                   </button>
                 )}
