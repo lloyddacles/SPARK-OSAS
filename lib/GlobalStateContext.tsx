@@ -70,6 +70,7 @@ import {
   addAuditLog as dbAddAudit
 } from "@/lib/actions/notificationActions";
 import { getAllUsers as dbGetAllUsers } from "@/lib/actions/adminActions";
+import { triageReferral } from "@/lib/actions/aiActions";
 
 // Types
 export type User = {
@@ -84,6 +85,7 @@ export type User = {
   contactNumber?: string | null;
   address?: string | null;
   department?: string | null;
+  program?: string | null;
   advisorySection?: string | null;
   role: "SYSTEM_ADMIN" | "OSAS_DIRECTOR" | "GUIDANCE_COUNSELOR" | "STUDENT_APPLICANT" | "STUDENT_LEADER" | "ADVISER";
   vault: { [key: string]: { uploaded: boolean, date: string, status?: string, remarks?: string } };
@@ -176,6 +178,8 @@ export type Referral = {
   adviserId?: string;
   reason: string;
   status: "Referred to Guidance" | "Endorsed to OSAS" | "Sanctioned" | "Dismissed" | "Closed";
+  severity?: "NORMAL" | "HIGH" | "URGENT";
+  aiAnalysis?: string;
   counselorFindings?: string;
   osasVerdict?: string;
   dateFiled: string;
@@ -667,12 +671,37 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
   };
 
   const addReferral = async (studentName: string, reason: string) => {
-    const ref = await dbAddRef({ studentName, reason, adviserName: currentUser?.name || "Adviser", adviserId: currentUser?.id || "" });
+    // 1. Run Intelligence Triage
+    const triage = await triageReferral(studentName, reason);
     
-    // Notify Guidance
-    await dbAddNotif({ title: "New Referral", desc: `Student ${studentName} referred by ${currentUser?.name}.` });
+    // 2. Submit to DB
+    const ref = await dbAddRef({ 
+      studentName, 
+      reason, 
+      adviserName: currentUser?.name || "Adviser", 
+      adviserId: currentUser?.id || "",
+      severity: triage.severity,
+      aiAnalysis: triage.analysis
+    });
+    
+    // 3. Notify Guidance & Flag if Urgent
+    await dbAddNotif({ 
+      title: triage.severity === "URGENT" ? "🚨 URGENT REFERRAL" : "New Referral", 
+      desc: `Student ${studentName} referred by ${currentUser?.name}. Severity: ${triage.severity}` 
+    });
 
-    setReferrals([{ ...ref, studentName, adviserName: currentUser?.name || "Adviser", dateFiled: new Date(ref.dateFiled).toLocaleDateString() } as any, ...referrals]);
+    setReferrals([{ 
+      ...ref, 
+      studentName, 
+      adviserName: currentUser?.name || "Adviser", 
+      severity: triage.severity,
+      aiAnalysis: triage.analysis,
+      dateFiled: new Date(ref.dateFiled).toLocaleDateString() 
+    } as any, ...referrals]);
+
+    if (triage.severity === "URGENT") {
+      logAudit("URGENT_REFERRAL_TRIAGED", `AI flagged urgent case for ${studentName}: ${triage.analysis}`, "HIGH");
+    }
   };
 
   const endorseReferral = async (id: string, findings: string) => {

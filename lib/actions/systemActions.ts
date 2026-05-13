@@ -43,7 +43,14 @@ export async function getReferrals() {
   return await db.referral.findMany();
 }
 
-export async function addReferral(form: { studentName: string; reason: string; adviserName: string; adviserId: string }) {
+export async function addReferral(form: { 
+  studentName: string; 
+  reason: string; 
+  adviserName: string; 
+  adviserId: string;
+  severity?: string;
+  aiAnalysis?: string;
+}) {
   const db = await getDB();
   if (!db) throw new Error("DATABASE_UNAVAILABLE");
   const newRef = await db.referral.create({

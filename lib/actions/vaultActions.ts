@@ -77,6 +77,40 @@ export async function getAllStudentVaults() {
   const db = await getDB();
   if (!db) return [];
   return await db.user.findMany({
-    where: { role: "STUDENT_APPLICANT" }
+    where: { role: { in: ["STUDENT_APPLICANT", "STUDENT_LEADER"] } }
   });
+}
+
+export async function bulkVerifyDocuments(updates: { userId: string, docName: string }[], status: VaultStatus, remarks?: string) {
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+  // We group updates by userId to minimize database writes
+  const userGroups: { [userId: string]: string[] } = {};
+  updates.forEach(u => {
+    if (!userGroups[u.userId]) userGroups[u.userId] = [];
+    userGroups[u.userId].push(u.docName);
+  });
+
+  const updatePromises = Object.entries(userGroups).map(async ([userId, docs]) => {
+    const user = await db.user.findUnique({ where: { id: userId } });
+    if (!user) return;
+
+    const vault = user.vault as any || {};
+    docs.forEach(docName => {
+      if (vault[docName]) {
+        vault[docName].status = status;
+        vault[docName].remarks = remarks;
+      }
+    });
+
+    return db.user.update({
+      where: { id: userId },
+      data: { vault }
+    });
+  });
+
+  await Promise.all(updatePromises);
+  revalidatePath("/submissions");
+  revalidatePath("/scholarships");
 }

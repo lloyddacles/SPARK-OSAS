@@ -22,6 +22,7 @@ model User {
   contactNumber   String?
   address         String?
   department      String?
+  program         String?
   advisorySection String?
   role            String   @default("STUDENT_APPLICANT")
   status          String   @default("Active") // Active, Archived, Suspended
@@ -114,6 +115,8 @@ model Referral {
   status            String
   counselorFindings String?
   osasVerdict       String?
+  severity          String?   // NORMAL, HIGH, URGENT
+  aiAnalysis        String?
   dateFiled         String
 }
 

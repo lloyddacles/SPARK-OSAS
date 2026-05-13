@@ -30,7 +30,8 @@ import {
   ChevronRight,
   ClipboardCheck,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  RefreshCw
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { getAllStudentVaults, verifyDocument, VaultStatus } from "@/lib/actions/vaultActions";
@@ -54,11 +55,42 @@ export default function VerificationTerminalPage() {
     }
   }, [currentUser]);
 
+  const [selectedDocs, setSelectedDocs] = useState<{ userId: string, docName: string }[]>([]);
+  const [bulkStatus, setBulkStatus] = useState<VaultStatus | "">("");
+
   const isAuth = currentUser?.role === "SYSTEM_ADMIN" || currentUser?.role === "OSAS_DIRECTOR";
 
   const fetchData = async () => {
     const data = await getAllStudentVaults();
     setStudents(data);
+  };
+
+  const toggleDocSelection = (userId: string, docName: string) => {
+    setSelectedDocs(prev => {
+      const exists = prev.find(d => d.userId === userId && d.docName === docName);
+      if (exists) {
+        return prev.filter(d => !(d.userId === userId && d.docName === docName));
+      }
+      return [...prev, { userId, docName }];
+    });
+  };
+
+  const handleBulkAction = async (status: VaultStatus) => {
+    if (selectedDocs.length === 0) return;
+    setIsVerifying(true);
+    try {
+      const { bulkVerifyDocuments } = await import("@/lib/actions/vaultActions");
+      await bulkVerifyDocuments(selectedDocs, status, remarks || "Processed via Institutional Bulk Action.");
+      logAudit("BULK_DOCUMENT_VERIFIED", `Verified ${selectedDocs.length} documents as ${status}.`, "HIGH");
+      
+      await fetchData();
+      setSelectedDocs([]);
+      setRemarks("");
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   if (!isHydrated) {
@@ -256,6 +288,24 @@ export default function VerificationTerminalPage() {
                         <div key={name} style={{ padding: "2.5rem", background: "#f8fafc", borderRadius: "20px", border: "1px solid #f1f5f9", transition: "all 0.2s" }}>
                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "2rem" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+                                 <div 
+                                   onClick={(e) => { e.stopPropagation(); toggleDocSelection(selectedStudent.id, name); }}
+                                   style={{ 
+                                     width: "24px", 
+                                     height: "24px", 
+                                     borderRadius: "6px", 
+                                     border: `2px solid ${selectedDocs.some(d => d.userId === selectedStudent.id && d.docName === name) ? "#3b82f6" : "#cbd5e1"}`,
+                                     background: selectedDocs.some(d => d.userId === selectedStudent.id && d.docName === name) ? "#3b82f6" : "white",
+                                     display: "flex",
+                                     alignItems: "center",
+                                     justifyContent: "center",
+                                     cursor: "pointer",
+                                     color: "white",
+                                     transition: "all 0.2s"
+                                   }}
+                                 >
+                                    {selectedDocs.some(d => d.userId === selectedStudent.id && d.docName === name) && <Check size={14} strokeWidth={4} />}
+                                 </div>
                                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "white", display: "flex", alignItems: "center", justifyContent: "center", color: "#3b82f6", border: "1px solid #e2e8f0" }}>
                                     <FileText size={24} />
                                  </div>
@@ -352,6 +402,71 @@ export default function VerificationTerminalPage() {
         )}
       </AnimatePresence>
 
+      {/* BATCH ACTION BAR */}
+      <AnimatePresence>
+        {selectedDocs.length > 0 && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            style={{ 
+              position: "fixed", 
+              bottom: "2rem", 
+              left: "50%", 
+              transform: "translateX(-50%)", 
+              zIndex: 100,
+              width: "calc(100% - 4rem)",
+              maxWidth: "1000px",
+              background: "#1e293b",
+              borderRadius: "24px",
+              padding: "1.5rem 2.5rem",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: "2rem",
+              border: "1px solid rgba(255,255,255,0.1)"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+               <div style={{ background: "rgba(59, 130, 246, 0.2)", color: "#60a5fa", padding: "0.5rem 1.25rem", borderRadius: "12px", fontSize: "0.85rem", fontWeight: "900", border: "1px solid rgba(59, 130, 246, 0.3)" }}>
+                  {selectedDocs.length} SELECTED
+               </div>
+               <div style={{ flex: 1, minWidth: "300px" }}>
+                  <input 
+                    placeholder="Batch remarks (optional)..."
+                    value={remarks}
+                    onChange={(e) => setRemarks(e.target.value)}
+                    style={{ width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "0.75rem 1rem", color: "white", fontSize: "0.85rem", fontWeight: "600", outline: "none" }}
+                  />
+               </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "0.75rem" }}>
+               <button 
+                 onClick={() => setSelectedDocs([])}
+                 style={{ padding: "0.75rem 1.5rem", background: "transparent", color: "#94a3b8", border: "none", fontSize: "0.8rem", fontWeight: "800", cursor: "pointer" }}
+               >
+                 CLEAR
+               </button>
+               <button 
+                 disabled={isVerifying}
+                 onClick={() => handleBulkAction("Verified")}
+                 style={{ padding: "0.75rem 1.5rem", background: "#10b981", color: "white", border: "none", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "900", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
+               >
+                 {isVerifying ? <RefreshCw className="animate-spin" size={16} /> : <CheckCircle size={16} />} BULK VERIFY
+               </button>
+               <button 
+                 disabled={isVerifying}
+                 onClick={() => handleBulkAction("For Re-upload")}
+                 style={{ padding: "0.75rem 1.5rem", background: "#f59e0b", color: "white", border: "none", borderRadius: "12px", fontSize: "0.8rem", fontWeight: "900", cursor: "pointer" }}
+               >
+                 RE-UPLOAD
+               </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

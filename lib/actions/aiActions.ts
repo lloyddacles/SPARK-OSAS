@@ -79,3 +79,44 @@ export async function processNeuralCommand(query: string) {
     sentiment: "warning" 
   };
 }
+
+/**
+ * INSTITUTIONAL GUIDANCE TRIAGE ENGINE
+ * Analyzes referrals for severity and recommends immediate actions.
+ */
+export async function triageReferral(studentName: string, reason: string) {
+  const r = reason.toLowerCase();
+  
+  let severity: "NORMAL" | "HIGH" | "URGENT" = "NORMAL";
+  let actionPlan = "Schedule a routine consultation session.";
+  let riskFactors: string[] = [];
+
+  // 🚨 URGENT TRIGGERS (Tier 3)
+  const urgentKeywords = ["harm", "fight", "bullying", "suicide", "threat", "danger", "weapon"];
+  if (urgentKeywords.some(k => r.includes(k))) {
+    severity = "URGENT";
+    actionPlan = "IMMEDIATE INTERVENTION REQUIRED. Contact Security and Legal Affairs.";
+    riskFactors.push("Safety / Welfare Concern");
+  }
+
+  // ⚠️ HIGH TRIGGERS (Tier 2)
+  const highKeywords = ["cheat", "plagiarism", "theft", "drunk", "drug", "vandalism", "fraud"];
+  if (severity !== "URGENT" && highKeywords.some(k => r.includes(k))) {
+    severity = "HIGH";
+    actionPlan = "Escalate to Disciplinary Committee. Require a formal written statement.";
+    riskFactors.push("Institutional Integrity / Misconduct");
+  }
+
+  // 📋 NORMAL TRIGGERS (Tier 1)
+  if (r.includes("absent") || r.includes("tardy") || r.includes("noise") || r.includes("dress code")) {
+    riskFactors.push("Administrative / Policy Violation");
+  }
+
+  return {
+    studentName,
+    severity,
+    analysis: `Case analyzed as ${severity}. Identified risk factors: ${riskFactors.join(", ") || "General Behavioral"}.`,
+    actionPlan,
+    timestamp: new Date().toISOString()
+  };
+}

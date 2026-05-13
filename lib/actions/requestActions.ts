@@ -74,13 +74,22 @@ export async function deleteServiceType(id: string) {
 }
 
 export async function getGoodMoralConfig() {
-  return {
-    content: "This is to certify that [STUDENT_NAME] is a student of good moral character.",
-    signatories: []
-  };
+  const db = await getDB();
+  if (!db) return { content: "", signatories: [] };
+  const config = await db.goodMoralConfig.findUnique({
+    where: { id: "CURRENT" }
+  });
+  return config || { content: "This is to certify that [STUDENT_NAME] is a student of good moral character.", signatories: [] };
 }
 
 export async function updateGoodMoralConfig(config: any) {
+  const db = await getDB();
+  if (!db) throw new Error("DATABASE_UNAVAILABLE");
+  await db.goodMoralConfig.upsert({
+    where: { id: "CURRENT" },
+    update: config,
+    create: { id: "CURRENT", ...config }
+  });
   revalidatePath("/requests");
 }
 
