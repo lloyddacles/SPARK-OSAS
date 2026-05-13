@@ -42,6 +42,7 @@ export default function UserManagementPage() {
     username: "",
     email: "",
     role: "STUDENT_APPLICANT",
+    program: "",
     password: "Password123!" // Default
   });
 
@@ -171,6 +172,7 @@ export default function UserManagementPage() {
           <thead>
             <tr style={{ textAlign: "left", background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
               <th style={{ padding: "1.5rem 2rem", fontSize: "0.75rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em" }}>User Identity</th>
+              <th style={{ padding: "1.5rem 2rem", fontSize: "0.75rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em" }}>Program</th>
               <th style={{ padding: "1.5rem 2rem", fontSize: "0.75rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em" }}>Access Role</th>
               <th style={{ padding: "1.5rem 2rem", fontSize: "0.75rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em" }}>Status</th>
               <th style={{ padding: "1.5rem 2rem", fontSize: "0.75rem", fontWeight: "800", color: "#64748b", textTransform: "uppercase", letterSpacing: "0.1em" }}>Actions</th>
@@ -201,6 +203,33 @@ export default function UserManagementPage() {
                             <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "500" }}>{user.email || user.username}</p>
                          </div>
                       </div>
+                    </td>
+                    <td style={{ padding: "1.5rem 2rem" }}>
+                       {user.program ? (
+                         <span style={{ 
+                           fontSize: "0.75rem", 
+                           fontWeight: "900", 
+                           padding: "0.4rem 0.8rem", 
+                           background: user.program === "BSE" ? "#7f1d1d15" : 
+                                      user.program === "BSIS" ? "#1e3a8a15" :
+                                      user.program === "BSTM" ? "#581c8715" :
+                                      user.program === "BSCRIM" ? "#7c2d1215" :
+                                      (user.program === "BSA" || user.program === "BSAIS") ? "#713f1215" :
+                                      user.program === "SHS" ? "#064e3b15" : "#f1f5f9",
+                           color: user.program === "BSE" ? "#7f1d1d" : 
+                                  user.program === "BSIS" ? "#1e3a8a" :
+                                  user.program === "BSTM" ? "#581c87" :
+                                  user.program === "BSCRIM" ? "#7c2d12" :
+                                  (user.program === "BSA" || user.program === "BSAIS") ? "#713f12" :
+                                  user.program === "SHS" ? "#064e3b" : "#64748b",
+                           borderRadius: "6px",
+                           border: "1px solid currentColor"
+                         }}>
+                           {user.program}
+                         </span>
+                       ) : (
+                         <span style={{ fontSize: "0.75rem", color: "#94a3b8", fontWeight: "600" }}>No Program</span>
+                       )}
                     </td>
                     <td style={{ padding: "1.5rem 2rem" }}>
                        <span style={{ 
@@ -288,6 +317,19 @@ export default function UserManagementPage() {
                     </div>
                   </div>
                   <div>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "800", color: "#475569" }}>Institutional Program (for Students)</label>
+                    <select value={newUser.program} onChange={e => setNewUser({...newUser, program: e.target.value})} style={{ width: "100%", padding: "1rem", borderRadius: "10px", border: "1px solid #e2e8f0", background: "#f8fafc", outline: "none" }}>
+                       <option value="">None / Not Applicable</option>
+                       <option value="BSIS">BSIS (Information Systems)</option>
+                       <option value="BSE">BSE (Education)</option>
+                       <option value="BSTM">BSTM (Tourism Management)</option>
+                       <option value="BSCRIM">BSCRIM (Criminology)</option>
+                       <option value="BSA">BSA (Accountancy)</option>
+                       <option value="BSAIS">BSAIS (Accounting IS)</option>
+                       <option value="SHS">SHS (Senior High)</option>
+                    </select>
+                  </div>
+                  <div>
                     <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.85rem", fontWeight: "800", color: "#475569" }}>Email Address</label>
                     <input required type="email" value={newUser.email} onChange={e => setNewUser({...newUser, email: e.target.value})} placeholder="juan@university.edu" style={{ width: "100%", padding: "1rem", borderRadius: "10px", border: "1px solid #e2e8f0", background: "#f8fafc", outline: "none" }} />
                   </div>
@@ -342,8 +384,8 @@ export default function UserManagementPage() {
                         <p style={{ fontWeight: "700", color: "#1e293b" }}>{selectedUser.username || "—"}</p>
                      </div>
                      <div style={{ padding: "1.5rem", background: "#f8fafc", borderRadius: "16px", border: "1px solid #e2e8f0" }}>
-                        <p style={{ fontSize: "0.75rem", fontWeight: "800", color: "#64748b", marginBottom: "0.5rem" }}>Department</p>
-                        <p style={{ fontWeight: "700", color: "#1e293b" }}>{selectedUser.department || "—"}</p>
+                        <p style={{ fontSize: "0.75rem", fontWeight: "800", color: "#64748b", marginBottom: "0.5rem" }}>Institutional Program</p>
+                        <p style={{ fontWeight: "700", color: selectedUser.program ? "#3b82f6" : "#1e293b" }}>{selectedUser.program || "General Records"}</p>
                      </div>
                   </div>
 
