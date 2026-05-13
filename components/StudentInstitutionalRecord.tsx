@@ -10,14 +10,17 @@ import {
   ChevronRight,
   UserCheck,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  FileDown,
+  ExternalLink
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
+import { generateInstitutionalPassport } from "@/lib/utils/pdfGenerator";
 
 export default function StudentInstitutionalRecord() {
-  const { referrals, appointments, currentUser } = useGlobalState();
+  const { referrals, appointments, currentUser, scholarshipApps, requests } = useGlobalState();
 
-  // Filter referrals specifically for this student
+  // Filter institutional telemetry for this student
   const myReferrals = (referrals || []).filter(ref => 
     ref.studentName.toLowerCase() === currentUser?.name?.toLowerCase() ||
     ref.studentId === currentUser?.id
@@ -25,6 +28,14 @@ export default function StudentInstitutionalRecord() {
 
   const myAppointments = (appointments || []).filter(appt => 
     appt.studentId === currentUser?.id || appt.studentName === currentUser?.name
+  );
+
+  const myScholarships = (scholarshipApps || []).filter(app => 
+    app.studentName.toLowerCase() === currentUser?.name?.toLowerCase()
+  );
+
+  const myRequests = (requests || []).filter(req => 
+    req.studentName.toLowerCase() === currentUser?.name?.toLowerCase()
   );
 
   if (myReferrals.length === 0 && myAppointments.length === 0) return null;
@@ -35,14 +46,37 @@ export default function StudentInstitutionalRecord() {
       animate={{ opacity: 1, y: 0 }}
       style={{ marginBottom: "3rem" }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem" }}>
-         <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center", color: "#ef4444" }}>
-            <ShieldAlert size={22} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "2rem" }}>
+         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: "#fef2f2", display: "flex", alignItems: "center", justifyContent: "center", color: "#ef4444" }}>
+               <ShieldAlert size={22} />
+            </div>
+            <div>
+               <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b" }}>My Institutional Guidance Record</h3>
+               <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "600" }}>Referrals and active counseling interventions</p>
+            </div>
          </div>
-         <div>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1e293b" }}>My Institutional Guidance Record</h3>
-            <p style={{ fontSize: "0.85rem", color: "#64748b", fontWeight: "600" }}>Referrals and active counseling interventions</p>
-         </div>
+
+         <button 
+            onClick={() => generateInstitutionalPassport(currentUser, myScholarships, myRequests, myReferrals)}
+            style={{
+               display: "flex",
+               alignItems: "center",
+               gap: "0.75rem",
+               padding: "0.85rem 1.5rem",
+               background: "#1e293b",
+               color: "white",
+               borderRadius: "12px",
+               fontSize: "0.85rem",
+               fontWeight: "800",
+               cursor: "pointer",
+               border: "none",
+               boxShadow: "0 10px 15px -3px rgba(30, 41, 59, 0.2)"
+            }}
+         >
+            <FileDown size={18} color="#00e5ff" />
+            DOWNLOAD OFFICIAL RECORD
+         </button>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))", gap: "1.5rem" }}>

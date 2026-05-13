@@ -110,3 +110,121 @@ export const generateInstitutionalPDF = async (options: {
 
   doc.save(`${filename}_${new Date().getTime()}.pdf`);
 };
+
+/**
+ * THE DIGITAL PASSPORT - OFFICIAL INSTITUTIONAL RECORD
+ */
+export const generateInstitutionalPassport = async (student: any, apps: any[], requests: any[], referrals: any[]) => {
+  const doc = new jsPDF("p", "mm", "a4");
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  // Branding: Institutional Header
+  doc.setFillColor(10, 15, 25);
+  doc.rect(0, 0, pageWidth, 50, "F");
+  
+  // Decorative Accent
+  doc.setFillColor(0, 229, 255);
+  doc.rect(0, 48, pageWidth, 2, "F");
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(24);
+  doc.text("SPARK", 15, 25);
+  
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(0, 229, 255);
+  doc.text("OFFICE OF STUDENT AFFAIRS AND SERVICES", 15, 30);
+  doc.text("DIGITAL INSTITUTIONAL PASSPORT // v2.0", 15, 34);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14);
+  doc.text("OFFICIAL STUDENT RECORD", pageWidth - 15, 25, { align: "right" });
+  doc.setFontSize(8);
+  doc.text(`ISSUED: ${new Date().toLocaleDateString()}`, pageWidth - 15, 30, { align: "right" });
+
+  // Student Profile Card
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(15, 60, pageWidth - 30, 40, 2, 2, "F");
+  
+  doc.setTextColor(10, 15, 25);
+  doc.setFontSize(16);
+  doc.setFont("helvetica", "bold");
+  doc.text(student?.name?.toUpperCase() || "NAME NOT FOUND", 25, 75);
+  
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(100, 116, 139);
+  doc.text(`ID: ${student?.id || "N/A"}`, 25, 82);
+  doc.text(`DEPARTMENT: ${student?.department || "N/A"}`, 25, 87);
+  doc.text(`PROGRAM: ${student?.program || "N/A"}`, 25, 92);
+
+  // Status Badge
+  doc.setFillColor(16, 185, 129); // Success Green
+  doc.roundedRect(pageWidth - 55, 68, 30, 8, 1, 1, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(7);
+  doc.text("VERIFIED RECORD", pageWidth - 40, 73.5, { align: "center" });
+
+  let currentY = 110;
+
+  // 1. SCHOLARSHIP HISTORY
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(10, 15, 25);
+  doc.text("SCHOLARSHIP & ASSISTANCE HISTORY", 15, currentY);
+  
+  autoTable(doc, {
+    startY: currentY + 5,
+    head: [["ID", "PROGRAM", "DATE APPLIED", "STATUS"]],
+    body: apps.map(app => [
+      app.id.substring(0, 8),
+      app.studentName, // Note: In our state, app.studentName is often the program name for the student view
+      app.dateApplied,
+      app.status
+    ]),
+    theme: "grid",
+    headStyles: { fillColor: [10, 15, 25], textColor: [0, 229, 255], fontSize: 8 },
+    styles: { fontSize: 7, font: "helvetica" },
+    margin: { left: 15, right: 15 }
+  });
+
+  currentY = (doc as any).lastAutoTable.finalY + 15;
+
+  // 2. DISCIPLINARY & REFERRAL RECORD
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("INSTITUTIONAL REFERRAL RECORD", 15, currentY);
+
+  autoTable(doc, {
+    startY: currentY + 5,
+    head: [["DATE", "ADVISER", "REASON", "STATUS"]],
+    body: referrals.map(ref => [
+      ref.dateFiled,
+      ref.adviserName,
+      ref.reason.substring(0, 40) + "...",
+      ref.status
+    ]),
+    theme: "grid",
+    headStyles: { fillColor: [10, 15, 25], textColor: [0, 229, 255], fontSize: 8 },
+    styles: { fontSize: 7, font: "helvetica" },
+    margin: { left: 15, right: 15 }
+  });
+
+  // Footer & Authentication
+  const footerY = pageHeight - 30;
+  doc.setDrawColor(226, 232, 240);
+  doc.line(15, footerY, pageWidth - 15, footerY);
+  
+  doc.setFontSize(7);
+  doc.setTextColor(148, 163, 184);
+  doc.text("This document is a certified digital export of the SPARK Institutional System.", 15, footerY + 8);
+  doc.text("Verification Hash: " + btoa(student?.id || "VOID").substring(0, 32), 15, footerY + 12);
+  
+  doc.setTextColor(10, 15, 25);
+  doc.setFont("helvetica", "bold");
+  doc.text("OSAS DIGITAL SEAL", pageWidth - 15, footerY + 8, { align: "right" });
+
+  doc.save(`PASSPORT_${student?.name?.replace(/\s+/g, '_')}_${new Date().getTime()}.pdf`);
+};

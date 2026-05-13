@@ -592,7 +592,7 @@ export default function OrganizationsPage() {
                  <motion.div key="manage" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                     {/* FINANCIAL INTELLIGENCE LEDGER */}
                     <div style={{ marginBottom: "3.5rem" }}>
-                       <FinancialLedger activities={activities} />
+                       <FinancialLedger data={activities} />
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3rem", gap: "2rem", flexWrap: "wrap" }}>
                        <div style={{ position: "relative", flex: 1, minWidth: "300px" }}>

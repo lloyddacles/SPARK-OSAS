@@ -20,6 +20,7 @@ import {
   Cpu
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
+import ReferralAnalytics from "@/components/ReferralAnalytics";
 
 export default function StudentReferralsPage() {
   const { referrals, addReferral, endorseReferral, verdictReferral, currentUser } = useGlobalState();
@@ -29,7 +30,7 @@ export default function StudentReferralsPage() {
   const isOSAS = currentUser?.role === "OSAS_DIRECTOR" || currentUser?.role === "SYSTEM_ADMIN";
   const isStaff = isGuidance || isOSAS;
 
-  const [activeTab, setActiveTab] = useState<"Adviser" | "Guidance" | "OSAS">(
+  const [activeTab, setActiveTab] = useState<"Adviser" | "Guidance" | "OSAS" | "Insights">(
     isOSAS ? "OSAS" : isGuidance ? "Guidance" : "Adviser"
   );
 
@@ -107,11 +108,12 @@ export default function StudentReferralsPage() {
 
       {/* Role Navigation Nodes */}
       <div style={{ display: "flex", gap: "0.5rem", background: "#f8fafc", marginBottom: "3rem", width: "fit-content", padding: "0.5rem", borderRadius: "12px", border: "1px solid #f1f5f9" }}>
-        {["Adviser", "Guidance", "OSAS"].map((tab) => {
+        {["Adviser", "Guidance", "OSAS", "Insights"].map((tab) => {
           const isVisible = 
             (tab === "Adviser") || 
             (tab === "Guidance" && isStaff) || 
-            (tab === "OSAS" && isStaff);
+            (tab === "OSAS" && isStaff) ||
+            (tab === "Insights" && isStaff);
           
           if (!isVisible) return null;
 
@@ -139,6 +141,13 @@ export default function StudentReferralsPage() {
       </div>
 
       <AnimatePresence mode="wait">
+        
+        {/* INSIGHTS Step */}
+        {activeTab === "Insights" && (
+          <motion.div key="insights" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
+             <ReferralAnalytics />
+          </motion.div>
+        )}
         
         {/* ADVISER Step */}
         {activeTab === "Adviser" && (
