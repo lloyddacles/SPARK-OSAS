@@ -24,17 +24,20 @@ import {
   Zap,
   CheckCircle,
   Eye,
-  Check
+  Check,
+  X
 } from "lucide-react";
 import { getStudentPassport } from "@/lib/actions/adminActions";
 import { useGlobalState } from "@/lib/GlobalStateContext";
 import { generateInstitutionalPDF } from "@/lib/utils/pdfGenerator";
+import DigitalPassport from "@/components/DigitalPassport";
 
 export default function StudentPassportPage() {
   const { logAudit } = useGlobalState();
   const [identifier, setIdentifier] = useState("");
   const [passport, setPassport] = useState<any>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [showDossier, setShowDossier] = useState(false);
   const [error, setError] = useState("");
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -339,12 +342,38 @@ export default function StudentPassportPage() {
                             </div>
                          </div>
                       </div>
+                      <button onClick={() => setShowDossier(true)} style={{ padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.75rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", boxShadow: "0 4px 6px rgba(59, 130, 246, 0.2)" }}>
+                         <Eye size={18} /> Review Institutional Dossier
+                      </button>
                       <button onClick={exportPassport} style={{ padding: "1rem 2rem", fontSize: "0.85rem", fontWeight: "700", display: "flex", alignItems: "center", gap: "0.75rem", background: "white", color: "#166534", border: "1px solid #bbf7d0", borderRadius: "8px", cursor: "pointer", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" }}>
-                         <Download size={18} /> Export Profile PDF
+                         <Download size={18} /> Export Profile Summary
                       </button>
                   </div>
                </div>
             </div>
+
+            {/* DOSSIER MODAL */}
+            <AnimatePresence>
+               {showDossier && (
+                 <motion.div 
+                   initial={{ opacity: 0 }} 
+                   animate={{ opacity: 1 }} 
+                   exit={{ opacity: 0 }}
+                   style={{ position: "fixed", inset: 0, background: "rgba(15, 23, 42, 0.6)", backdropFilter: "blur(12px)", zIndex: 1001, padding: "2rem", overflowY: "auto" }}
+                 >
+                    <div style={{ maxWidth: "1000px", margin: "0 auto", position: "relative" }}>
+                       <button 
+                         onClick={() => setShowDossier(false)}
+                         style={{ position: "absolute", right: "1rem", top: "1rem", background: "#f1f5f9", border: "none", width: "40px", height: "40px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", zIndex: 10, color: "#475569" }}
+                         className="no-print"
+                       >
+                         <X size={24} />
+                       </button>
+                       <DigitalPassport student={passport.identity} />
+                    </div>
+                 </motion.div>
+               )}
+            </AnimatePresence>
 
             {/* LOWER SECTION: HISTORY */}
             <div style={{ background: "white", borderRadius: "16px", border: "1px solid #f3f4f6", boxShadow: "0 4px 6px rgba(0,0,0,0.02)", overflow: "hidden" }}>

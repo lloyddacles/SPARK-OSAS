@@ -37,8 +37,10 @@ function getSeverityColor(sev: string) {
   }
 }
 
+import DirectorInsights from "@/components/admin/DirectorInsights";
+
 export default function AdminCenterPage() {
-  const { currentUser, organizations, activities, announcements, referrals, auditLogs, users } = useGlobalState();
+  const { currentUser, organizations, activities, announcements, referrals, auditLogs, users, scholarshipApps } = useGlobalState();
   const [isLoaded, setIsLoaded] = useState(false);
   const router = useRouter();
 
@@ -114,6 +116,13 @@ export default function AdminCenterPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* PHASE 1: EXECUTIVE ANALYTICS */}
+      <DirectorInsights 
+        users={users} 
+        referrals={referrals} 
+        scholarshipApps={scholarshipApps} 
+      />
 
       {/* SYSTEM LOGS & TELEMETRY */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))", gap: "1.5rem" }}>

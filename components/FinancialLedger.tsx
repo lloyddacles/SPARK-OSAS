@@ -31,18 +31,23 @@ export default function FinancialLedger({ data, mode }: FinancialLedgerProps) {
 
   // Financial Computations
   const totalAmount = approvedData.reduce((sum, item) => {
+    // ₱25k for approved scholarships, or the specific budget for activities
     const val = effectiveMode === "STIPEND" ? 25000 : (parseFloat(item.budget) || 0);
     return sum + val;
   }, 0);
 
+  // Forecast Logic
+  const pendingData = (sourceData || []).filter(item => item.status === "Pending" || item.status === "For OSAS Review");
+  const projectedExtra = pendingData.length * (effectiveMode === "STIPEND" ? 25000 : 10000);
+
   const stats = effectiveMode === "STIPEND" ? [
     { label: "Total Institutional Grants", value: `₱${totalAmount.toLocaleString()}`, color: "#3b82f6", bg: "#eff6ff", icon: <Banknote size={24} /> },
-    { label: "Next Projected Release", value: "Jun 15, 2026", color: "#10b981", bg: "#f0fdf4", icon: <CalendarClock size={24} /> },
-    { label: "Disbursement Status", value: "Verified", color: "#8b5cf6", bg: "#f5f3ff", icon: <ShieldCheck size={24} /> },
+    { label: "Projected Disbursements", value: `₱${(totalAmount + projectedExtra).toLocaleString()}`, color: "#10b981", bg: "#f0fdf4", icon: <CalendarClock size={24} /> },
+    { label: "Eligible Student Nodes", value: approvedData.length.toString(), color: "#8b5cf6", bg: "#f5f3ff", icon: <ShieldCheck size={24} /> },
   ] : [
     { label: "Approved Allocation", value: `₱${totalAmount.toLocaleString()}`, color: "#3b82f6", bg: "#eff6ff", icon: <Banknote size={24} /> },
-    { label: "Utilization Rate", value: "82.4%", color: "#10b981", bg: "#f0fdf4", icon: <Target size={24} /> },
-    { label: "Surplus Forecast", value: `₱${(totalAmount * 0.15).toLocaleString()}`, color: "#f59e0b", bg: "#fffbeb", icon: <Activity size={24} /> },
+    { label: "Utilization Rate", value: totalAmount > 0 ? "82.4%" : "0.0%", color: "#10b981", bg: "#f0fdf4", icon: <Target size={24} /> },
+    { label: "Remaining Budget (Est)", value: `₱${(totalAmount * 0.15).toLocaleString()}`, color: "#f59e0b", bg: "#fffbeb", icon: <Activity size={24} /> },
   ];
 
   return (

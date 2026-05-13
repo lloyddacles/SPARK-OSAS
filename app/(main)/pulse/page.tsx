@@ -15,31 +15,50 @@ import {
   Search
 } from "lucide-react";
 import { useGlobalState } from "@/lib/GlobalStateContext";
+import { logGateEntry } from "@/lib/actions/systemActions";
 
 export default function PulseMobileStation() {
-  const { currentUser, referrals } = useGlobalState();
+  const { currentUser, referrals, addNotification } = useGlobalState();
   const [activeView, setActiveView] = useState<"SCAN" | "PASS" | "LOG">("SCAN");
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState<any>(null);
 
   const isStaff = ["SYSTEM_ADMIN", "OSAS_DIRECTOR", "GUIDANCE_COUNSELOR", "ADVISER"].includes(currentUser?.role || "");
 
-  const simulateScan = () => {
+  const handleScan = async (studentId: string) => {
     setIsScanning(true);
     setScanResult(null);
-    setTimeout(() => {
+    
+    try {
+      // Small delay for "High-Velocity Scanning" aesthetic
+      await new Promise(r => setTimeout(r, 800));
+      
+      const res = await logGateEntry(studentId);
+      
+      if (res.success) {
+        setScanResult({
+          name: res.studentName,
+          id: studentId,
+          department: res.program || "General Studentry",
+          status: res.isFlagged ? "FLAGGED" : "CLEARED",
+          referralReason: res.isFlagged ? "SECURITY ALERT: INSTITUTIONAL FLAG DETECTED" : null
+        });
+        
+        if (res.isFlagged) {
+          addNotification("Security Alert", `Flagged student detected at gate: ${res.studentName}`);
+        }
+      } else {
+        addNotification("Error", "Could not resolve institutional identity.");
+      }
+    } catch (e) {
+      addNotification("Error", "Security link interrupted.");
+    } finally {
       setIsScanning(false);
-      // Simulate finding a student
-      const hasReferral = Math.random() > 0.7;
-      setScanResult({
-        name: "Juan Dela Cruz",
-        id: "2024-8842",
-        department: "College of Engineering",
-        status: hasReferral ? "FLAGGED" : "CLEARED",
-        referralReason: hasReferral ? "Academic Integrity Violation (Pending)" : null
-      });
-    }, 2000);
+    }
   };
+
+  // For testing, we simulate a scan with a real action
+  const simulateScan = () => handleScan("2024-8842");
 
   return (
     <div style={{ 

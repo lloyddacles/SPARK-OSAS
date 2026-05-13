@@ -81,7 +81,7 @@ export default function UserManagementPage() {
       const res = await createUser(newUser);
       if (res.success) {
         setIsAddingUser(false);
-        setNewUser({ name: "", username: "", email: "", role: "STUDENT_APPLICANT", password: "Password123!" });
+        setNewUser({ name: "", username: "", email: "", role: "STUDENT_APPLICANT", program: "", password: "Password123!" });
         addNotification("Success", "User account provisioned successfully.");
         logAudit("USER_CREATED", `Created new user: ${newUser.name} (${newUser.role})`, "MEDIUM");
       } else {

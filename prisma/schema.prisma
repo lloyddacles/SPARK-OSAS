@@ -12,6 +12,7 @@ datasource db {
 
 model User {
   id              String   @id @default(cuid())
+  studentId       String?  @unique
   name            String
   firstName       String?
   middleName      String?
@@ -204,5 +205,15 @@ model InternalMessage {
   timestamp   DateTime @default(now())
   isRead      Boolean  @default(false)
   priority    String   @default("Medium")
+}
+
+model GateLog {
+  id           String   @id @default(cuid())
+  studentId    String
+  studentName  String
+  timestamp    DateTime @default(now())
+  gateLocation String   @default("Main Entrance")
+  entryType    String   @default("IN") // IN, OUT
+  status       String   @default("SUCCESS") // SUCCESS, DENIED
 }
 

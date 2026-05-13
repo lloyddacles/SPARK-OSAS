@@ -73,3 +73,54 @@ export async function updateReferralStatus(id: string, updates: any) {
   });
   revalidatePath("/referrals");
 }
+
+/**
+ * PULSE GATEKEEPER - SECURITY LOGGING
+ */
+export async function logGateEntry(studentId: string, type: "IN" | "OUT" = "IN") {
+  const db = await getDB();
+  if (!db) return { success: false, message: "DB_OFFLINE" };
+
+  try {
+    // 1. Resolve Student Identity
+    const student = await (db as any).user.findFirst({
+      where: { 
+        OR: [
+          { id: studentId },
+          { studentId: studentId }
+        ]
+      }
+    });
+
+    if (!student) return { success: false, message: "IDENTITY_NOT_FOUND" };
+
+    // 2. Check Institutional Status
+    // We search for URGENT referrals or suspicious patterns
+    const urgentReferrals = await (db as any).referral.findMany({
+      where: { studentId: student.id, severity: "URGENT", status: { not: "Closed" } }
+    });
+
+    const isFlagged = urgentReferrals.length > 0 || student.status === "Suspended";
+
+    // 3. Record the Transaction
+    const log = await (db as any).gateLog.create({
+      data: {
+        studentId: student.id,
+        studentName: student.name,
+        entryType: type,
+        status: isFlagged ? "DENIED" : "SUCCESS"
+      }
+    });
+
+    return { 
+      success: true, 
+      isFlagged, 
+      studentName: student.name, 
+      program: (student as any).program,
+      timestamp: log.timestamp 
+    };
+  } catch (e) {
+    console.error("GATE_LOG_FAIL", e);
+    return { success: false, message: "LOGGING_ERROR" };
+  }
+}
