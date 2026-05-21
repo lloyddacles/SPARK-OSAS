@@ -77,7 +77,7 @@ export default function LivePulse() {
           color: "var(--text-dim)", 
           letterSpacing: "0.1em" 
         }}>
-          {isSyncing ? "TELEMETRY_SYNCING..." : "SYSTEM_IDLE"}
+          {isSyncing ? "TELEMETRY_SYNCING..." : "SYSTEM_ONLINE"}
         </span>
       </div>
 
