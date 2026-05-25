@@ -36,6 +36,8 @@ export async function login(usernameInput: string, passwordInput: string) {
     };
 
     const token = await signSession(JSON.stringify(session));
+    if (!token) return { success: false, message: "SESSION_CONFIG_ERROR" };
+
     cookies().set("session_user", token, { 
       httpOnly: true, 
       secure: true, 
@@ -129,6 +131,8 @@ export async function updateProfile(userId: string, updates: any) {
 
     if (updatedUser) {
       const token = await signSession(JSON.stringify(updatedUser));
+      if (!token) return null;
+
       cookies().set("session_user", token, {
         httpOnly: true,
         secure: true,

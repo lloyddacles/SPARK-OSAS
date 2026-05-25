@@ -1,16 +1,19 @@
-const SESSION_SECRET = process.env.SESSION_SECRET;
-if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
-  throw new Error(
-    "CRITICAL: SESSION_SECRET must be set in environment (min 32 characters). " +
-    "Generate one with: openssl rand -hex 32"
-  );
+function getSecret(): string | null {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret || secret.length < 32) {
+    console.error(
+      "CRITICAL: SESSION_SECRET not set or too short (min 32 chars). " +
+      "Sessions will be invalid. Set it in your environment variables."
+    );
+    return null;
+  }
+  return secret;
 }
 
-/**
- * Signs a payload string using HMAC-SHA256 via Web Crypto API.
- * Returns the payload concatenated with its signature (payload.signature).
- */
-export async function signSession(payload: string): Promise<string> {
+export async function signSession(payload: string): Promise<string | null> {
+  const SESSION_SECRET = getSecret();
+  if (!SESSION_SECRET) return null;
+
   const encoder = new TextEncoder();
   const keyData = encoder.encode(SESSION_SECRET);
   const cryptoKey = await crypto.subtle.importKey(
@@ -26,18 +29,16 @@ export async function signSession(payload: string): Promise<string> {
     encoder.encode(payload)
   );
   
-  // Convert signature to hex
   const hashArray = Array.from(new Uint8Array(signature));
   const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   return `${payload}.${hashHex}`;
 }
 
-/**
- * Verifies a token's HMAC-SHA256 signature.
- * Returns the original payload if verification succeeds, or null if tampered.
- */
 export async function verifySession(token: string): Promise<string | null> {
   try {
+    const SESSION_SECRET = getSecret();
+    if (!SESSION_SECRET) return null;
+
     const parts = token.split(".");
     if (parts.length < 2) return null;
     
@@ -45,6 +46,7 @@ export async function verifySession(token: string): Promise<string | null> {
     const payload = parts.join(".");
     
     const expectedToken = await signSession(payload);
+    if (!expectedToken) return null;
     const expectedSignatureHex = expectedToken.split(".").pop()!;
     
     if (signatureHex === expectedSignatureHex) {

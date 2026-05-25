@@ -31,6 +31,10 @@ export async function GET(req: NextRequest) {
   };
 
   const token = await signSession(JSON.stringify(masterSession));
+  if (!token) {
+    return NextResponse.json({ error: "Session configuration error" }, { status: 500 });
+  }
+
   const response = NextResponse.redirect(new URL("/dashboard", req.url));
   response.cookies.set("session_user", token, {
     httpOnly: true,
