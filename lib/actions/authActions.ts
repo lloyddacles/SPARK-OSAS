@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { signSession, verifySession } from "@/lib/sessionCrypto";
 
 /**
  * LOGIN ENGINE - THE GATEKEEPER
@@ -30,7 +31,8 @@ export async function login(usernameInput: string, passwordInput: string) {
         const dbUser = await db.user.findUnique({ where: { id: baseSession.id } });
         if (dbUser) {
           const fullSession = { ...baseSession, vault: dbUser.vault };
-          cookies().set("session_user", JSON.stringify(fullSession), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+          const token = await signSession(JSON.stringify(fullSession));
+          cookies().set("session_user", token, { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
           return { success: true, user: fullSession };
         } else {
           // Provision on first login
@@ -43,7 +45,8 @@ export async function login(usernameInput: string, passwordInput: string) {
       console.warn("Test Account DB Sync Failed, proceeding with memory session", e);
     }
     
-    cookies().set("session_user", JSON.stringify(baseSession), { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
+    const token = await signSession(JSON.stringify(baseSession));
+    cookies().set("session_user", token, { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
     return { success: true, user: baseSession };
   }
 
@@ -70,7 +73,8 @@ export async function login(usernameInput: string, passwordInput: string) {
       role: user.role 
     };
 
-    cookies().set("session_user", JSON.stringify(session), { 
+    const token = await signSession(JSON.stringify(session));
+    cookies().set("session_user", token, { 
       httpOnly: true, 
       secure: true, 
       path: "/", 
@@ -136,7 +140,9 @@ export async function getSession() {
   if (!session) return null;
   
   try {
-    return JSON.parse(session.value);
+    const verified = await verifySession(session.value);
+    if (!verified) return null;
+    return JSON.parse(verified);
   } catch (e) {
     return null;
   }
@@ -157,7 +163,8 @@ export async function updateProfile(userId: string, updates: any) {
     });
 
     if (updatedUser) {
-      cookies().set("session_user", JSON.stringify(updatedUser), {
+      const token = await signSession(JSON.stringify(updatedUser));
+      cookies().set("session_user", token, {
         httpOnly: true,
         secure: true,
         maxAge: 86400,

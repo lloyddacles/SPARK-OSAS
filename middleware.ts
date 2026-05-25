@@ -1,27 +1,39 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifySession } from './lib/sessionCrypto';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const session = request.cookies.get('session_user');
   const { pathname } = request.nextUrl;
 
   // 1. Redirect logged-in users away from the landing page
   if (pathname === '/' && session) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    const verified = await verifySession(session.value);
+    if (verified) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
   }
 
   // 2. Protect all internal routes
   const protectedRoutes = ['/dashboard', '/referrals', '/scholarships', '/events', '/organizations', '/guidance', '/submissions', '/admin', '/passport', '/vault'];
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  if (isProtectedRoute && !session) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  if (isProtectedRoute) {
+    if (!session) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
 
-  // 3. Role-Based Access Control (RBAC) - Institutional Hardening
-  if (session) {
+    const verified = await verifySession(session.value);
+    if (!verified) {
+      // Tampered/invalid session -> clear cookie and redirect
+      const response = NextResponse.redirect(new URL('/', request.url));
+      response.cookies.delete('session_user');
+      return response;
+    }
+
+    // 3. Role-Based Access Control (RBAC) - Institutional Hardening
     try {
-      const userData = JSON.parse(session.value);
+      const userData = JSON.parse(verified);
       
       // ELITE PROTECTION: Only SYSTEM_ADMIN can access /admin
       if (pathname.startsWith('/admin') && userData.role !== 'SYSTEM_ADMIN') {
@@ -33,8 +45,10 @@ export function middleware(request: NextRequest) {
          return NextResponse.redirect(new URL('/dashboard', request.url));
       }
     } catch (e) {
-      // If cookie is malformed, force logout
-      return NextResponse.redirect(new URL('/', request.url));
+      // If cookie payload is malformed, force logout
+      const response = NextResponse.redirect(new URL('/', request.url));
+      response.cookies.delete('session_user');
+      return response;
     }
   }
 
@@ -57,3 +71,4 @@ export const config = {
     '/vault/:path*'
   ],
 };
+

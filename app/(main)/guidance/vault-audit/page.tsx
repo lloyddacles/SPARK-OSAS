@@ -51,14 +51,25 @@ export default function VaultAuditPage() {
   const isAuth = ["OSAS_DIRECTOR", "SYSTEM_ADMIN", "GUIDANCE_COUNSELOR"].includes(currentUser?.role || "");
 
   const handleOpenPreview = async (docName: string, student: any) => {
+    const docData = student.vault?.[docName];
+    if (docData?.fileContent) {
+      setPreviewDoc({ 
+        name: docData.fileName || docName, 
+        content: docData.fileContent, 
+        type: docData.fileType?.startsWith("image/") ? "Image" : "PDF" 
+      });
+      setSelectedDoc(docName);
+      return;
+    }
+
     let content = "";
     let type = "PDF";
 
-    if (docName === "Letter of Intent" || docName === "Sketch of House") {
+    if (docName === "Letter of Intent" || docName === "Sketch of House" || docName === "LETTER OF INTENT" || docName === "HOUSE LOCATION SKETCH") {
       const { generateTemplate } = await import("@/lib/actions/templateActions");
       content = await generateTemplate(docName, student.name);
       type = "Template";
-    } else if (docName === "1x1 Photo") {
+    } else if (docName === "1x1 Photo" || docName === "IDENTIFICATION PHOTO 1X1") {
       content = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop"; 
       type = "Image";
     } else {

@@ -88,7 +88,7 @@ export type User = {
   program?: string | null;
   advisorySection?: string | null;
   role: "SYSTEM_ADMIN" | "OSAS_DIRECTOR" | "GUIDANCE_COUNSELOR" | "STUDENT_APPLICANT" | "STUDENT_LEADER" | "ADVISER";
-  vault: { [key: string]: { uploaded: boolean, date: string, status?: string, remarks?: string } };
+  vault: { [key: string]: { uploaded: boolean, date: string, status?: string, remarks?: string, fileName?: string, fileType?: string, fileContent?: string } };
 };
 
 export type ServiceRequest = {
@@ -313,7 +313,7 @@ type GlobalStateContextType = {
   login: (username: string, password: string) => Promise<{ success: boolean; message?: string; user?: any }>;
   register: (formData: { name: string, username: string, password: string }) => Promise<{ success: boolean; message?: string; user?: any }>;
   logout: () => void;
-  uploadToVault: (docName: string) => void;
+  uploadToVault: (docName: string, fileContent?: string, fileName?: string, fileType?: string) => void;
 
   announcements: Announcement[];
   addAnnouncement: (title: string, content: string, category: Announcement["category"]) => void;
@@ -536,9 +536,9 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
     setCurrentUser(null);
   };
 
-  const uploadToVault = async (docName: string) => {
+  const uploadToVault = async (docName: string, fileContent?: string, fileName?: string, fileType?: string) => {
     if (!currentUser) return;
-    const updatedUser = await dbUploadVault(currentUser.id, docName);
+    const updatedUser = await dbUploadVault(currentUser.id, docName, fileContent, fileName, fileType);
     if (updatedUser) {
       setCurrentUser(updatedUser as any);
       
@@ -550,7 +550,7 @@ export function GlobalStateProvider({ children }: { children: ReactNode }) {
       });
 
       addNotification("Upload Successful", `${docName} has been securely vaulted.`);
-      await logAudit("DOCUMENT_UPLOADED", `Doc: ${docName}`, "LOW");
+      await logAudit("DOCUMENT_UPLOADED", `Doc: ${docName} (${fileName || 'generated'})`, "LOW");
 
       // Refresh scholarship state too
       const updatedApps = await dbGetApps();

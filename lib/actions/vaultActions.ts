@@ -9,7 +9,13 @@ async function getDB() {
 
 export type VaultStatus = "Verified" | "Not Yet Verified" | "For Re-upload" | "Wrong Document" | "Blurred";
 
-export async function uploadToVault(userId: string, docName: string) {
+export async function uploadToVault(
+  userId: string,
+  docName: string,
+  fileContent?: string,
+  fileName?: string,
+  fileType?: string
+) {
   console.log(`[VAULT_ACTION] Attempting upload for User: ${userId}, Doc: ${docName}`);
   
   const db = await getDB();
@@ -32,7 +38,9 @@ export async function uploadToVault(userId: string, docName: string) {
         uploaded: true,
         status: "Not Yet Verified",
         date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-        fileType: "application/pdf"
+        fileType: fileType || "application/pdf",
+        fileName: fileName || docName,
+        fileContent: fileContent || null,
       }
     };
 

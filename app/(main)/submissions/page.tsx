@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { 
   FileText, 
   Image as ImageIcon, 
@@ -32,14 +32,42 @@ export default function SubmissionsPage() {
   const { currentUser, uploadToVault } = useGlobalState();
   const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
   const [templateName, setTemplateName] = useState("");
-  const [isHovered, setIsHovered] = useState<string | null>(null);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   const handleGenerateTemplate = async (docName: string) => {
     const { generateTemplate } = await import("@/lib/actions/templateActions");
     const template = await generateTemplate(docName, currentUser?.name || "Student");
     setActiveTemplate(template);
     setTemplateName(docName);
+  };
+
+  // Read a file via FileReader and return its content string + metadata
+  const readFile = (file: File): Promise<{ content: string; type: string }> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      if (file.type.startsWith("image/")) {
+        reader.onload = () => resolve({ content: reader.result as string, type: file.type });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      } else {
+        reader.onload = () => resolve({ content: reader.result as string, type: file.type || "text/plain" });
+        reader.onerror = reject;
+        reader.readAsText(file);
+      }
+    });
+  };
+
+  const handleFileSelect = async (docName: string, file: File) => {
+    try {
+      setUploadingDoc(docName);
+      const { content, type } = await readFile(file);
+      await uploadToVault(docName, content, file.name, type);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    } finally {
+      setUploadingDoc(null);
+    }
   };
 
   const essentialDocs = [
@@ -96,7 +124,12 @@ export default function SubmissionsPage() {
                   <Download size={16} /> Print & Sign
                 </button>
                 <button 
-                  onClick={() => { uploadToVault(templateName); setActiveTemplate(null); }}
+                  onClick={async () => {
+                    const blob = new Blob([activeTemplate], { type: "text/plain" });
+                    const file = new File([blob], `${templateName}.txt`, { type: "text/plain" });
+                    setActiveTemplate(null);
+                    await handleFileSelect(templateName, file);
+                  }}
                   style={{ padding: "0.85rem 1.5rem", background: "#3b82f6", color: "white", border: "none", borderRadius: "8px", fontWeight: "700", fontSize: "0.85rem", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
                 >
                   Save & Upload <Check size={16} />
@@ -198,6 +231,20 @@ export default function SubmissionsPage() {
                 position: "relative"
               }}
             >
+              {/* Hidden real file input */}
+              <input
+                ref={el => { fileInputRefs.current[doc.name] = el; }}
+                type="file"
+                accept={doc.type === "Image" ? "image/*" : "image/*,application/pdf,.txt,.doc,.docx"}
+                style={{ display: "none" }}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) await handleFileSelect(doc.name, file);
+                  // Reset so the same file can be re-selected
+                  e.target.value = "";
+                }}
+              />
+
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1.5rem", alignItems: "flex-start" }}>
                  <div style={{ 
                     width: "52px", 
@@ -232,6 +279,13 @@ export default function SubmissionsPage() {
                 <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#111827", marginBottom: "0.4rem" }}>{doc.label}</h3>
                 <p style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "2rem", lineHeight: "1.5" }}>{doc.desc}</p>
                 
+                {isUploaded && uploadInfo.fileName && (
+                  <div style={{ marginBottom: "1rem", padding: "0.6rem 0.9rem", background: "#f0fdf4", borderRadius: "8px", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <FileText size={14} color="#10b981" />
+                    <span style={{ fontSize: "0.75rem", fontWeight: "700", color: "#166534", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{uploadInfo.fileName}</span>
+                  </div>
+                )}
+
                 {isUploaded && uploadInfo.remarks && (
                   <div style={{ marginBottom: "1.5rem", padding: "1rem", background: "#f8fafc", borderRadius: "8px", borderLeft: "3px solid #3b82f6", fontSize: "0.8rem", display: "flex", gap: "0.75rem" }}>
                      <Info size={16} color="#3b82f6" style={{ flexShrink: 0, marginTop: "0.1rem" }} />
@@ -254,18 +308,7 @@ export default function SubmissionsPage() {
                 ) : (
                   <button 
                     disabled={uploadingDoc === doc.name}
-                    onClick={async () => {
-                      try {
-                        setUploadingDoc(doc.name);
-                        // Simulated processing/encryption delay
-                        await new Promise(resolve => setTimeout(resolve, 1800));
-                        await uploadToVault(doc.name);
-                      } catch (error) {
-                        console.error("Upload failed:", error);
-                      } finally {
-                        setUploadingDoc(null);
-                      }
-                    }}
+                    onClick={() => fileInputRefs.current[doc.name]?.click()}
                     style={{ 
                       flex: 1, 
                       padding: "0.85rem", 
@@ -289,7 +332,7 @@ export default function SubmissionsPage() {
                       <>
                         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                           <RefreshCw className="animate-spin" size={14} /> 
-                          <span>Encrypting...</span>
+                          <span>Uploading...</span>
                         </div>
                         <motion.div 
                           initial={{ x: "-100%" }}
@@ -300,7 +343,7 @@ export default function SubmissionsPage() {
                       </>
                     ) : isUploaded ? (
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <CloudUpload size={16} /> Update File
+                        <CloudUpload size={16} /> Replace File
                       </div>
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -344,3 +387,5 @@ export default function SubmissionsPage() {
     </div>
   );
 }
+
+
