@@ -91,12 +91,16 @@ export async function createUser(formData: any) {
 
 export async function deleteUser(userId: string) {
   try {
-    if (userId === "ADMIN-MASTER" || userId === "USER-ADMIN-RECOVERY") {
-      throw new Error("CANNOT_DELETE_MASTER_ADMIN");
-    }
-
     const db = await getDB();
     if (!db) throw new Error("DATABASE_UNAVAILABLE");
+
+    const target = await db.user.findUnique({ where: { id: userId } });
+    if (target && target.role === "SYSTEM_ADMIN") {
+      const adminCount = await db.user.count({ where: { role: "SYSTEM_ADMIN" } });
+      if (adminCount <= 1) {
+        throw new Error("CANNOT_DELETE_LAST_SYSTEM_ADMIN");
+      }
+    }
 
     await db.user.delete({ where: { id: userId } });
     revalidatePath("/admin");

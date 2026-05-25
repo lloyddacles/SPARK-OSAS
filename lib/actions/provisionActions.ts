@@ -1,6 +1,11 @@
 import { getPrisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export async function provisionTestAccounts() {
+  if (process.env.NODE_ENV !== "development") {
+    return { success: false, message: "PROVISIONING_DISABLED" };
+  }
+
   const db = getPrisma();
   if (!db) return { success: false, message: "DB_OFFLINE" };
 
@@ -13,6 +18,8 @@ export async function provisionTestAccounts() {
 
   console.log("[PROVISIONING] Initializing Institutional Test Accounts...");
 
+  const hashedPassword = await bcrypt.hash("admin", 12);
+
   for (const acc of testAccounts) {
     await db.user.upsert({
       where: { id: acc.id },
@@ -21,7 +28,7 @@ export async function provisionTestAccounts() {
         id: acc.id,
         name: acc.name,
         username: acc.username,
-        password: acc.username, // Default password matches username for tests
+        password: hashedPassword,
         role: acc.role,
         vault: {}
       }

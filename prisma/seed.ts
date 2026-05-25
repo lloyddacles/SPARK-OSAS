@@ -1,9 +1,12 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('💎 STARTING INSTITUTIONAL SEEDING...')
+
+  const hashedPassword = await bcrypt.hash('password123', 12);
 
   // 1. Create Master Admin
   const masterAdmin = await prisma.user.upsert({
@@ -11,7 +14,7 @@ async function main() {
     update: {},
     create: {
       username: 'osas_admin',
-      password: 'password123', // USER: PLEASE CHANGE THIS IMMEDIATELY
+      password: hashedPassword,
       name: 'System Administrator',
       role: 'SYSTEM_ADMIN',
       status: 'Active',

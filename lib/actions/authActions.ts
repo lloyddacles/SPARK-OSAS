@@ -3,54 +3,12 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { signSession, verifySession } from "@/lib/sessionCrypto";
+import bcrypt from "bcryptjs";
 
-/**
- * LOGIN ENGINE - THE GATEKEEPER
- */
 export async function login(usernameInput: string, passwordInput: string) {
   const username = (usernameInput || "").trim().toLowerCase();
   const password = (passwordInput || "").trim();
 
-  // 1. ABSOLUTE ADMIN BYPASS (Hardcoded Emergency Gateway)
-  // This bypasses the database completely to ensure Mr. Dacles never gets locked out.
-  // We now attempt to sync these with the DB so they have a persistent vault.
-  const testUsers: Record<string, any> = {
-    "admin": { id: "ADMIN-MASTER", name: "Administrator", role: "SYSTEM_ADMIN" },
-    "counselor": { id: "COUNSELOR-TEST", name: "Myael Ursolino", role: "GUIDANCE_COUNSELOR" },
-    "adviser": { id: "ADVISER-TEST", name: "Lloyd Dacles", role: "ADVISER" },
-    "president": { id: "PRESIDENT-TEST", name: "Juan Dela Cruz", role: "STUDENT_APPLICANT" }
-  };
-
-  if (testUsers[username] && password === username) {
-    const baseSession = { ...testUsers[username], username };
-    try {
-      const { getPrisma } = await import("@/lib/prisma");
-      const db = getPrisma();
-      if (db) {
-        // Fetch vault and extra info if exists
-        const dbUser = await db.user.findUnique({ where: { id: baseSession.id } });
-        if (dbUser) {
-          const fullSession = { ...baseSession, vault: dbUser.vault };
-          const token = await signSession(JSON.stringify(fullSession));
-          cookies().set("session_user", token, { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
-          return { success: true, user: fullSession };
-        } else {
-          // Provision on first login
-          await db.user.create({
-            data: { id: baseSession.id, name: baseSession.name, username, password: username, role: baseSession.role, vault: {} }
-          });
-        }
-      }
-    } catch (e) {
-      console.warn("Test Account DB Sync Failed, proceeding with memory session", e);
-    }
-    
-    const token = await signSession(JSON.stringify(baseSession));
-    cookies().set("session_user", token, { httpOnly: true, secure: true, path: "/", maxAge: 86400 });
-    return { success: true, user: baseSession };
-  }
-
-  // 2. DATABASE AUTHENTICATION (For Students & Staff)
   try {
     const { getPrisma } = await import("@/lib/prisma");
     const db = getPrisma();
@@ -62,7 +20,11 @@ export async function login(usernameInput: string, passwordInput: string) {
       return { success: false, message: "ACCOUNT NOT FOUND" };
     }
 
-    if (user.password !== password) {
+    if (!user.password) {
+      return { success: false, message: "INVALID CREDENTIALS" };
+    }
+    const passwordValid = await bcrypt.compare(password, user.password);
+    if (!passwordValid) {
       return { success: false, message: "INVALID CREDENTIALS" };
     }
 
@@ -77,6 +39,7 @@ export async function login(usernameInput: string, passwordInput: string) {
     cookies().set("session_user", token, { 
       httpOnly: true, 
       secure: true, 
+      sameSite: "lax",
       path: "/", 
       maxAge: 86400 
     });
@@ -85,7 +48,7 @@ export async function login(usernameInput: string, passwordInput: string) {
     return { success: true, user: session };
   } catch (error: any) {
     console.error("Auth DB Error:", error);
-    return { success: false, message: `DATABASE_OFFLINE: ${error.message}` };
+    return { success: false, message: "DATABASE_OFFLINE" };
   }
 }
 
@@ -105,11 +68,13 @@ export async function register(formData: { name: string, username: string, passw
       return { success: false, message: "USERNAME ALREADY TAKEN" };
     }
 
+    const hashedPassword = await bcrypt.hash(formData.password, 12);
+
     const newUser = await db.user.create({
       data: {
         name: formData.name,
         username: username,
-        password: formData.password,
+        password: hashedPassword,
         role: "STUDENT_APPLICANT",
         vault: {
           "1x1 Photo": { uploaded: false, date: "", status: "Not Yet Verified" },
@@ -123,7 +88,7 @@ export async function register(formData: { name: string, username: string, passw
 
     return { success: true, user: newUser };
   } catch (error: any) {
-    return { success: false, message: `REGISTRATION_ERROR: ${error.message}` };
+    return { success: false, message: "REGISTRATION_ERROR" };
   }
 }
 

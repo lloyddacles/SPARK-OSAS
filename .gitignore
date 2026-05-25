@@ -33,6 +33,9 @@ yarn-error.log*
 /prisma/manual-migrate.js
 /prisma/api-migrate.ts
 
+# TypeScript
+tsconfig.tsbuildinfo
+
 # OS Files
 .DS_Store
 Thumbs.db

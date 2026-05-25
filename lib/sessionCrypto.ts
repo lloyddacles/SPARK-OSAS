@@ -1,4 +1,10 @@
-const SESSION_SECRET = process.env.SESSION_SECRET || "spark-osas-super-secure-default-key-32chars";
+const SESSION_SECRET = process.env.SESSION_SECRET;
+if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
+  throw new Error(
+    "CRITICAL: SESSION_SECRET must be set in environment (min 32 characters). " +
+    "Generate one with: openssl rand -hex 32"
+  );
+}
 
 /**
  * Signs a payload string using HMAC-SHA256 via Web Crypto API.
