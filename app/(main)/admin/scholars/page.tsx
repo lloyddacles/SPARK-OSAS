@@ -305,17 +305,17 @@ export default function ScholarInventoryPage() {
         )}
       </AnimatePresence>
 
-      {isLoading && scholars.length === 0 ? (
-        <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-           <Loader2 size={48} className="animate-spin" color="#3b82f6" />
-        </div>
-      ) : !isAuth ? (
+      {(!isAuth && currentUser !== null) ? (
         <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "2rem" }}>
             <AlertCircle size={64} color="#ef4444" />
             <div style={{ textAlign: "center" }}>
                <h2 style={{ fontSize: "1.5rem", fontWeight: "800", color: "#111827" }}>Unauthorized Access</h2>
                <p style={{ color: "#6b7280", fontWeight: "600", marginTop: "0.5rem" }}>System Admin clearance required.</p>
             </div>
+        </div>
+      ) : (isLoading && scholars.length === 0) ? (
+        <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+           <Loader2 size={48} className="animate-spin" color="#3b82f6" />
         </div>
       ) : (
         <>

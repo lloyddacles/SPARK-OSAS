@@ -52,11 +52,7 @@ export default function GuidancePortal() {
   const pendingReferrals = (referrals || []).filter(r => r.status === "Referred to Guidance");
 
   if (!isHydrated) {
-    return (
-      <div style={{ height: "60vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-         <Activity size={48} className="animate-pulse" color="#3b82f6" />
-      </div>
-    );
+    return <div style={{ minHeight: "100vh" }} />;
   }
 
   if (!isAuth) {
@@ -265,6 +261,22 @@ export default function GuidancePortal() {
                   </div>
                 </div>
              </div>
+          </motion.div>
+        )}
+
+        {(activeTab === "Referrals" || activeTab === "Case Records") && (
+          <motion.div key="referrals" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+            <GuidanceCaseManagement />
+          </motion.div>
+        )}
+
+        {activeTab === "Appointments" && (
+          <motion.div key="appointments" initial={{ opacity: 0, x: 15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} transition={{ duration: 0.4, ease: "easeOut" }}>
+            <div style={{ padding: "4rem", textAlign: "center", background: "white", borderRadius: "16px", border: "1px dashed #cbd5e1" }}>
+               <CalendarClock size={48} color="#cbd5e1" style={{ margin: "0 auto 1.5rem" }} />
+               <h3 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1e293b", marginBottom: "0.5rem" }}>Appointments Module</h3>
+               <p style={{ fontSize: "0.95rem", color: "#64748b" }}>The appointment scheduling interface is currently being optimized. Please check back later.</p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

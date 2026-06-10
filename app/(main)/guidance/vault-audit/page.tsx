@@ -106,11 +106,7 @@ export default function VaultAuditPage() {
   };
 
   if (!isHydrated) {
-    return (
-      <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "white" }}>
-         <Activity size={48} className="animate-pulse" color="#3b82f6" />
-      </div>
-    );
+    return <div style={{ minHeight: "100vh", background: "white" }} />;
   }
 
   if (!isAuth) {
